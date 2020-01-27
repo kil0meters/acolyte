@@ -1,0 +1,54 @@
+<html>
+  <head>
+    <title>milesbenton.com</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/homepage.css">
+  </head>
+  <body>
+    <header>
+      <h1>Miles Benton</h1>
+      <ul class="greeter-links">
+        {{ range .Header }}
+          <li class="greeter-link"><a href="{{ .URL }}">{{ .Name }}</a></li>
+        {{ end }}
+      </ul>
+    </header>
+    <article class="content-wrapper">
+
+      <section>
+        <div class="subheading">
+          <h2>I MAKE YOUTUBE VIDEOS</h2>
+        </div>
+        <div class="video-display">
+          <div class="video-display--main-video" style="background-image: url('{{ .FeaturedVideo.Thumbnail }}')">
+            <span class="main-video-title">{{ .FeaturedVideo.Title }}</span>
+          </div>
+        </div>
+      </section>
+
+
+      <section>
+        <div class="subheading">
+          <h2 class="subheading">I LIVESTREAM SOMETIMES</h2> {{ if .IsLive }} <span class="live-indicator">LIVE</span> {{ end }}
+          <div class="livestream-container">
+        </div>
+      </section>
+      <section>
+        <div class="subheading">
+          <h2>CHECK OUT MY FORUM</h2>
+        </div>
+        Do you hate Reddit? Posts sitting at 0? Same tbh <br>
+        That's why you should go to milesbenton.com/forum people are nicer there I think
+      </section>
+      <section>
+        <div class="subheading">
+          <h2>I ALSO MAKE PROJECTS SOMETIMES</h2>
+        </div>
+        I sometimtes put technical writeups on my blog if you're interested.
+      </section>
+    </article>
+    <footer>
+      <span>contact. - me @ {this website}</span>
+    </footer>
+  </body>
+</html>

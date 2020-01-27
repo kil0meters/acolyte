@@ -1,0 +1,132 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+}
+
+footer {
+    text-align: center;
+    font-weight: bold;
+    margin: 16px 0;
+}
+
+header {
+    max-width: 800px;
+    line-height: 100px;
+    margin: auto;
+}
+
+header h1 {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.greeter-links {
+    list-style: none;
+    padding: 0;
+    right: 0;
+    float: right;
+    vertical-align: middle;
+}
+
+.greeter-link {
+    display: inline;
+    padding: 0 12px;
+}
+
+.greeter-link a {
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+    font-weight: bold;
+}
+
+.greeter-link a:hover {
+    color: blueviolet;
+    text-decoration: underline;
+}
+
+/* video display */
+
+
+.video-display {
+    display: grid;
+    width: 100%;
+    height: 450px;
+    grid-gap: 12px;
+}
+
+.video-display--main-video {
+    box-shadow: 8px 8px 47px 2px rgba(0,0,0,.14);
+    padding: 4px 16px;
+    background-size: cover;
+    transition: all 100ms ease-in-out;
+    grid-column-start: 1;
+    grid-column-end: 17;
+    grid-row-start: 1;
+    grid-row-end: 10;
+}
+
+.video-display--main-video:hover {
+    box-shadow: 0px 24px 64px 2px rgba(0,0,0,.28);
+    cursor: pointer;
+}
+
+.main-video-title {
+    color: white;
+    font-weight: bold;
+    font-size: 48px;
+    text-shadow: 0px 0px 16px rgba(0,0,0,1);
+}
+
+
+/* live section */
+
+@keyframes live-animation {
+    0% {
+        opacity: 1.0;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1.0;
+    }
+}
+
+.subheading {
+}
+
+.subheading h2 {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.subheading .live-indicator {
+    padding: 4px 8px;
+    font-weight: bold;
+    color: white;
+    background-color: red;
+    animation: live-animation 3s ease-in-out;
+    animation-iteration-count: infinite;
+    vertical-align: middle;
+}
+
+.content-wrapper {
+    max-width: 800px;
+    margin: auto;
+}
+
+.livestream-container {
+    width: 100%;
+    height: 500px;
+    box-shadow: 8px 8px 47px 2px rgba(0,0,0,.07);
+}
+
+@media screen and (max-width: 800px) {
+    .video-display {
+        height: 56.25vw;
+    }
+
+    .main-video-title {
+        font-size: 24px;
+    }
+}

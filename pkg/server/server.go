@@ -6,6 +6,8 @@ import (
 	"log"
 
 	"github.com/kil0meters/acolyte/pkg/chat"
+	"github.com/kil0meters/acolyte/pkg/homepage"
+
 	"github.com/urfave/negroni"
 
 	// "github.com/gorilla/handlers"
@@ -18,19 +20,18 @@ func StartServer() {
 	r := mux.NewRouter()
 	api := r.PathPrefix("/api/v1/").Subrouter()
 
-	// r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	// })
+	// live chat socket
+	pool := chat.NewPool()
+	go pool.Start()
 
-	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "acolyte-web/chat.html")
-	})
+	r.HandleFunc("/", homepage.ServeHomepage)
 
 	r.PathPrefix("/scripts/").Handler(http.StripPrefix("/scripts/", http.FileServer(http.Dir("./acolyte-web/scripts/"))))
 	r.PathPrefix("/styles/").Handler(http.StripPrefix("/styles/", http.FileServer(http.Dir("./acolyte-web/styles/"))))
 
-	// live chat socket
-	pool := chat.NewPool()
-	go pool.Start()
+	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "acolyte-web/chat.html")
+	})
 
 	api.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
 		chat.ServeWS(pool, w, r)
