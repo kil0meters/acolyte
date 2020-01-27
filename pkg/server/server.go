@@ -7,6 +7,7 @@ import (
 
 	"github.com/kil0meters/acolyte/pkg/chat"
 	"github.com/urfave/negroni"
+
 	// "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	// "github.com/gorilla/websocket"
@@ -17,7 +18,15 @@ func StartServer() {
 	r := mux.NewRouter()
 	api := r.PathPrefix("/api/v1/").Subrouter()
 
-	r.HandleFunc("/", indexHandler)
+	// r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// })
+
+	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "acolyte-web/chat.html")
+	})
+
+	r.PathPrefix("/scripts/").Handler(http.StripPrefix("/scripts/", http.FileServer(http.Dir("./acolyte-web/scripts/"))))
+	r.PathPrefix("/styles/").Handler(http.StripPrefix("/styles/", http.FileServer(http.Dir("./acolyte-web/styles/"))))
 
 	// live chat socket
 	pool := chat.NewPool()
