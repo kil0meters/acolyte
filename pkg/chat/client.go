@@ -1,8 +1,10 @@
 package chat
 
 import (
+	"encoding/json"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -15,8 +17,16 @@ type Client struct {
 
 // Message struct for handling websocket messages
 type Message struct {
-	Type int    `json:"type"`
-	Body string `json:"body"`
+	Type int         `json:"type"`
+	Body string      `json:"body"`
+	Data MessageData `json:"data"`
+}
+
+// MessageData a struct containing data for a message
+type MessageData struct {
+	Username string    `json:"username"`
+	ID       uuid.UUID `json:"id"`
+	Text     string    `json:"text"`
 }
 
 // Read Reads messages from a given client
@@ -32,9 +42,17 @@ func (c *Client) Read() {
 			log.Println(err.Error())
 			return
 		}
-		message := Message{Type: messageType, Body: string(p)}
+
+		messageData := MessageData{}
+		json.Unmarshal(p, &messageData)
+		messageData.ID = uuid.Must(uuid.NewRandom())
+
+		message := Message{
+			Type: messageType,
+			Data: messageData,
+		}
 
 		c.Pool.Broadcast <- message
-		log.Println("Received message", message)
+		log.Printf("[chat] [%s] <%s> %s\n", c.Conn.RemoteAddr(), message.Data.Username, message.Data.Text)
 	}
 }

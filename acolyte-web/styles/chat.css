@@ -32,8 +32,40 @@ body {
     margin-bottom: 88px;
 }
 
+#settings-overlay {
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    padding: 0 32px;
+
+    font-family: 'Open Sans';
+
+    background-color: white;
+}
+
+#settings-close-button {
+    position: absolute;
+    right: 24px;
+    top: 24px;
+    height: 32px;
+    height: 32px;
+    cursor: pointer;
+}
+
 #settings-button {
     float: right;
+}
+
+.hidden {
+    display: none;
+}
+
+.chat-message {
+    line-height: 20px;
 }
 
 .message-username {

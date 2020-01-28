@@ -1,6 +1,8 @@
 package chat
 
-import "log"
+import (
+	"github.com/google/uuid"
+)
 
 // Pool an echo pool of websocket connections
 type Pool struct {
@@ -21,10 +23,9 @@ func NewPool() *Pool {
 }
 
 // BroadcastMessage broadcasts a message to a given pool
-func (pool *Pool) BroadcastMessage(message interface{}) {
+func (pool *Pool) BroadcastMessage(message Message) {
 	for client := range pool.Clients {
-		log.Println(message)
-		client.Conn.WriteJSON(message)
+		client.Conn.WriteJSON(message.Data)
 	}
 }
 
@@ -34,10 +35,30 @@ func (pool *Pool) Start() {
 		select {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
-			pool.BroadcastMessage(Message{Type: 1, Body: "A new user joined"})
+
+			messageData := MessageData{
+				Username: "Server",
+				ID:       uuid.Must(uuid.NewRandom()),
+				Text:     "A user joined",
+			}
+
+			pool.BroadcastMessage(Message{
+				Type: 1,
+				Data: messageData,
+			})
 		case client := <-pool.Unregister:
 			delete(pool.Clients, client)
-			pool.BroadcastMessage(Message{Type: 1, Body: "A user left"})
+
+			messageData := MessageData{
+				Username: "Server",
+				ID:       uuid.Must(uuid.NewRandom()),
+				Text:     "A user left",
+			}
+
+			pool.BroadcastMessage(Message{
+				Type: 1,
+				Data: messageData,
+			})
 		case message := <-pool.Broadcast:
 			pool.BroadcastMessage(message)
 		}

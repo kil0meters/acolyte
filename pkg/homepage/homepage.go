@@ -1,15 +1,24 @@
 package homepage
 
 import (
+	"log"
 	"net/http"
 	"text/template"
+	"time"
 )
 
 var homepageTemplate *template.Template = template.Must(template.ParseFiles("./templates/homepage.html"))
+var isLive bool = false
+
+// YoutubeChannelID id of the channel featured
+// my channel - UCdXFe8CHwhS2nUT8JB5K2kQ
+// chill beats - UCSJ4gkVC6NrvII8umztf0Ow
+const YoutubeChannelID = "UCSJ4gkVC6NrvII8umztf0Ow"
 
 // Data data for home page
 type Data struct {
 	FeaturedVideo YoutubeVideo
+	ChannelID     string
 	IsLive        bool
 	Header        []HeaderListElement
 }
@@ -18,6 +27,27 @@ type Data struct {
 type HeaderListElement struct {
 	Name string
 	URL  string
+}
+
+// CheckIfLiveJob Checks if livestreaming every 5 minutes
+func CheckIfLiveJob() {
+	ticker := time.NewTicker(5 * time.Minute)
+	go func(ticker *time.Ticker) {
+		for {
+			select {
+			case <-ticker.C:
+				_isLive := CheckIfChannelIsLive(YoutubeChannelID)
+				if !_isLive && isLive {
+					log.Println("Channel is no longer live")
+				}
+				if _isLive && !isLive {
+					log.Println("Channel is now live")
+				}
+
+				isLive = _isLive
+			}
+		}
+	}(ticker)
 }
 
 // ServeHomepage serves the homepage
@@ -29,13 +59,14 @@ func ServeHomepage(w http.ResponseWriter, r *http.Request) {
 			Thumbnail: "https://i.ytimg.com/vi/g15-lvmIrcg/hq720.jpg",
 		},
 		Header: []HeaderListElement{
-			{Name: "Forum", URL: ""},
-			{Name: "Videos", URL: ""},
-			{Name: "Live", URL: "/chat"},
-			{Name: "Blog", URL: ""},
-			{Name: "Resume", URL: ""},
+			{Name: "Forum", URL: "/forum"},
+			{Name: "Videos", URL: "https://youtube.com/channel/" + YoutubeChannelID},
+			{Name: "Live", URL: "/live"},
+			{Name: "Blog", URL: "/blog"},
+			{Name: "Resume", URL: "/resume.pdf"},
 		},
-		IsLive: true,
+		ChannelID: YoutubeChannelID,
+		IsLive:    isLive,
 	}
 	homepageTemplate.Execute(w, data)
 }

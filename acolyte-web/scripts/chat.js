@@ -1,13 +1,25 @@
 var conn = new WebSocket('ws://localhost:3000/api/v1/chat')
 messageListElement = document.getElementById('message-list')
+username = "username"
+settingsShown = false
 const entryBody = document.getElementById('entry-body')
 
 messageList = {
   _list: [],
-  messageListener: function(message) {},
+  addMessageListener: function(message) {},
+  removeMessageListener: function(id) {},
   push(message) {
     this._list.push(message)
-    this.messageListener(message)
+    this.addMessageListener(message)
+  },
+  remove(id) {
+    for (i = 0; i < this._list.length; i++) {
+      if (this._list[i].id === id) {
+        this._list.splice(i, 1)
+        this.removeMessageListener(id)
+        break
+      }
+    }
   },
   get list() { 
     return this._list
@@ -16,6 +28,7 @@ messageList = {
 
 function buildMessage(message) {
   let messageElement = document.createElement("div")
+  messageElement.id = message.id
   messageElement.classList.add("chat-message")
 
   let usernameElement = document.createElement("a")
@@ -34,7 +47,7 @@ function buildMessage(message) {
   return messageElement
 }
 
-messageList.messageListener = function (message) {
+messageList.addMessageListener = function (message) {
   // messageListElement.children = []
   // for (let message in value) {
   messageListElement.appendChild(buildMessage(message))
@@ -42,27 +55,34 @@ messageList.messageListener = function (message) {
   // }
 }
 
+messageList.removeMessageListener = function (id) {
+  messageListElement.removeChild(document.getElementById(id))
+}
+
 // {"username": "<USERNAME>", "text": "<TEXT>"}
 
 function initializeConnection(_conn) {
   _conn.addEventListener("message", (m) => {
-    console.log(m)
+    // console.log(m)
   
     data = JSON.parse(m.data)
-    let text = document.createTextNode(data.body)
-    messageList.push({"username": "username", "text": data.body})
+    console.log(data)
+    // messageData = JSON.parse(data.body)
+
+    // console.log(messageData);
+    messageList.push(data)
   })
 
   _conn.addEventListener("close", (m) => {
-    messageList.push({"username": "System", "text": "Disconnected. Trying to reconnect in 5 seconds..."})
+    messageList.push({ "username": "Client", "text": "Disconnected. Trying to reconnect in 5 seconds..."})
     interval = setInterval(function() {
       console.log("Trying to reconnect")
-      messageList.push({"username": "System", "text": "Disconnected. Trying to reconnect in 5 seconds..."})
+      messageList.push({ "username": "Client", "text": "Disconnected. Trying to reconnect in 5 seconds..."})
       conn = new WebSocket('ws://localhost:3000/api/v1/chat')
 
       setTimeout(function () {
         if (conn.readyState == conn.OPEN) {
-          messageList.push({"username": "System", "text": "Reconnected."})
+          messageList.push({ "username": "Client", "text": "Reconnected."})
           initializeConnection(conn)
           console.log("Reconnected")
           clearInterval(interval)
@@ -76,7 +96,23 @@ initializeConnection(conn)
 
 document.getElementById('entry-body').addEventListener("keyup", function(event) {
   if (event.key == "Enter" && !event.shiftKey) {
-    conn.send(entryBody.value)
+    conn.send(JSON.stringify({
+      "username": username,
+      "text": entryBody.value,
+      }))
     entryBody.value = ""
   }
 })
+
+document.getElementById('settings-username-input').addEventListener("keyup", function(event) {
+  username = document.getElementById('settings-username-input').value
+})
+
+function toggleSettings() {
+  if (settingsShown) {
+    document.getElementById("settings-overlay").classList.add('hidden')
+  } else {
+    document.getElementById("settings-overlay").classList.remove('hidden')
+  }
+  settingsShown = !settingsShown
+}

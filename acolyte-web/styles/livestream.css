@@ -1,0 +1,52 @@
+body {
+    margin: 0;
+    font-family: 'Open Sans';
+}
+
+.fullscreen-viewer {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+#video {
+    height: 100%;
+    width: 100%;
+    background-color: white;
+}
+
+#chat {
+    height: 100%;
+    width: 100%;
+    background-color: white;
+}
+
+#stream-embed {
+    width: 100%;
+    height: calc(100% - 48px);
+}
+
+#header {
+    height: 48px;
+    font-weight: bold;
+    font-size: 32px;
+    padding-left: 8px;
+}
+
+#header a {
+    color: black;
+    text-decoration: none;
+}
+
+#header a:hover {
+    color: blueviolet;
+    text-decoration: underline;
+}
+
+.gutter {
+    transition: all 0.2s ease-in-out;
+}
+
+.gutter:hover {
+    background-color: lightgrey;
+}

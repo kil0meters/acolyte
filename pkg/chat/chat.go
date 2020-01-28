@@ -2,11 +2,13 @@ package chat
 
 import (
 	"log"
-
 	"net/http"
+	"text/template"
 
 	"github.com/gorilla/websocket"
 )
+
+var chatTemplate *template.Template = template.Must(template.ParseFiles("./templates/chat.html"))
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -16,7 +18,7 @@ var upgrader = websocket.Upgrader{
 
 // ServeWS allows a user to join the live chat room
 func ServeWS(pool *Pool, w http.ResponseWriter, r *http.Request) {
-	log.Println("Starting WS session")
+	log.Println("Starting WS session from user", r.RemoteAddr)
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -29,8 +31,11 @@ func ServeWS(pool *Pool, w http.ResponseWriter, r *http.Request) {
 		Pool: pool,
 	}
 
-	println(client)
-
 	pool.Register <- client
 	client.Read()
+}
+
+// ServeChat serves chat embed
+func ServeChat(w http.ResponseWriter, r *http.Request) {
+	chatTemplate.Execute(w, "")
 }

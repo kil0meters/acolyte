@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/kil0meters/acolyte/pkg/chat"
+	"github.com/kil0meters/acolyte/pkg/livestream"
 	"github.com/kil0meters/acolyte/pkg/homepage"
 
 	"github.com/urfave/negroni"
@@ -24,14 +25,15 @@ func StartServer() {
 	pool := chat.NewPool()
 	go pool.Start()
 
+	homepage.CheckIfLiveJob()
+
 	r.HandleFunc("/", homepage.ServeHomepage)
 
 	r.PathPrefix("/scripts/").Handler(http.StripPrefix("/scripts/", http.FileServer(http.Dir("./acolyte-web/scripts/"))))
 	r.PathPrefix("/styles/").Handler(http.StripPrefix("/styles/", http.FileServer(http.Dir("./acolyte-web/styles/"))))
 
-	r.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "acolyte-web/chat.html")
-	})
+	r.HandleFunc("/chat", chat.ServeChat)
+	r.HandleFunc("/live", livestream.ServeLivestream)
 
 	api.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
 		chat.ServeWS(pool, w, r)
