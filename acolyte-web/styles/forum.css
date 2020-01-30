@@ -1,0 +1,104 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+}
+
+header {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+
+    background-color: white;
+
+    height: 64px;
+    padding: 0 24px;
+
+    transition: all 0.2s ease-in-out;
+
+    box-shadow: 0 16px 32px 0px rgba(0, 0, 0, 0.07);
+}
+
+header .logo {
+    margin: 0;
+    height: 64px;
+    line-height: 64px;
+    font-size: 32px;
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+}
+
+header .logo:hover {
+    text-decoration: underline;
+    color: blueviolet;
+}
+
+header .header-link {
+    line-height: 64px;
+    margin-left: 12px;
+    float: right;
+}
+
+.wrapper {
+    max-width: 800px;
+    margin: 76px auto auto auto;
+
+    padding: 12px;
+
+    border-radius: 3px;
+    border: 1px solid lightgrey;
+}
+
+.header-hidden {
+    top: -64;
+
+    box-shadow: none;
+}
+
+.filler {
+    height: 1000px;
+}
+
+/* post memes */
+
+forum-post {
+    display: grid;
+
+    grid-gap: 12px;
+
+    grid-template-columns: 24px 24px auto;
+    grid-template-rows: 24px 24px auto;
+}
+
+.post-thumbnail {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 3;
+
+    border-radius: 3px;
+    border: 1px solid lightgrey;
+}
+
+.post-title {
+    font-weight: bold;
+    font-size: 24px;
+
+    grid-row: 1;
+    grid-column: 3;
+}
+
+.post-options {
+    grid-row: 2;
+    grid-column: 3;
+
+    list-style: none;
+    display: inline-block;
+
+    margin: 0;
+    padding: 0;
+}
+
+.post-option {
+    display: inline-block;
+}

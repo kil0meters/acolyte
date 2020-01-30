@@ -1,4 +1,4 @@
-var conn = new WebSocket('ws://localhost:3000/api/v1/chat')
+var conn = new WebSocket('ws://localhost:8080/api/v1/chat')
 messageListElement = document.getElementById('message-list')
 username = "username"
 settingsShown = false
@@ -51,7 +51,14 @@ messageList.addMessageListener = function (message) {
   // messageListElement.children = []
   // for (let message in value) {
   messageListElement.appendChild(buildMessage(message))
-  window.scrollTo(0,document.body.scrollHeight)
+
+  console.log('window.scrollY: ' + (window.innerHeight + window.scrollY));
+  console.log('document.body.scrollHeight: ' + document.body.scrollHeight);
+  console.log('document.body.offsetHeight: ' + document.body.offsetHeight);
+
+  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+    window.scrollTo(0,document.body.scrollHeight)
+  }
   // }
 }
 
@@ -78,7 +85,7 @@ function initializeConnection(_conn) {
     interval = setInterval(function() {
       console.log("Trying to reconnect")
       messageList.push({ "username": "Client", "text": "Disconnected. Trying to reconnect in 5 seconds..."})
-      conn = new WebSocket('ws://localhost:3000/api/v1/chat')
+      conn = new WebSocket('ws://localhost:8080/api/v1/chat')
 
       setTimeout(function () {
         if (conn.readyState == conn.OPEN) {

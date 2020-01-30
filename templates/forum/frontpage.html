@@ -1,0 +1,30 @@
+<html>
+
+<head>
+  <title>Forum - milesbenton.com</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/forum.css">
+  <script src="scripts/forum/frontpage.js"></script>
+</head>
+
+<body>
+  <header id="forum-header">
+    <a class="logo" href="/">Miles Benton Forum</a>
+    {{ if .IsLoggedIn }}
+    <a class="new-post-button header-link" href="/forum/create-post">New Post</a>
+    {{ else }}
+    <a class="new-post-button header-link" href="/forum/log-in">Sign Up</a>
+    <a class="new-post-button header-link" href="/forum/sign-up">Log In</a>
+    {{ end }}
+  </header>
+  <div class="wrapper">
+    <div id="post-list"></div>
+    {{ range .Posts }}
+    <forum-post title="{{ .Title }}" post-id="{{ .ID }}"></forum-post>
+    {{ end }}
+  </div>
+
+  <div class="filler"></div>
+</body>
+
+</html>
