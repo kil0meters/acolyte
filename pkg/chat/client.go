@@ -3,6 +3,7 @@ package chat
 import (
 	"encoding/json"
 	"log"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -10,9 +11,9 @@ import (
 
 // Client struct for chat client
 type Client struct {
-	ID   string
-	Conn *websocket.Conn
-	Pool *Pool
+	Username string
+	Conn     *websocket.Conn
+	Pool     *Pool
 }
 
 // Message struct for handling websocket messages
@@ -45,6 +46,8 @@ func (c *Client) Read() {
 
 		messageData := MessageData{}
 		json.Unmarshal(p, &messageData)
+		messageData.Username = c.Username // force username to be forum username
+		messageData.Text = strings.TrimSpace(messageData.Text)
 		messageData.ID = uuid.Must(uuid.NewRandom())
 
 		message := Message{

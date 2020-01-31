@@ -1,6 +1,8 @@
 package chat
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 )
 
@@ -36,29 +38,47 @@ func (pool *Pool) Start() {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
 
-			messageData := MessageData{
-				Username: "Server",
-				ID:       uuid.Must(uuid.NewRandom()),
-				Text:     "A user joined",
+			hasAnotherSession := false
+			for testClient := range pool.Clients {
+				if client.Username == testClient.Username && client != testClient {
+					hasAnotherSession = true
+				}
 			}
 
-			pool.BroadcastMessage(Message{
-				Type: 1,
-				Data: messageData,
-			})
+			if hasAnotherSession == false {
+				messageData := MessageData{
+					Username: "Server",
+					ID:       uuid.Must(uuid.NewRandom()),
+					Text:     fmt.Sprintf("%s joined", client.Username),
+				}
+
+				pool.BroadcastMessage(Message{
+					Type: 1,
+					Data: messageData,
+				})
+			}
 		case client := <-pool.Unregister:
 			delete(pool.Clients, client)
 
-			messageData := MessageData{
-				Username: "Server",
-				ID:       uuid.Must(uuid.NewRandom()),
-				Text:     "A user left",
+			hasAnotherSession := false
+			for testClient := range pool.Clients {
+				if client.Username == testClient.Username {
+					hasAnotherSession = true
+				}
 			}
 
-			pool.BroadcastMessage(Message{
-				Type: 1,
-				Data: messageData,
-			})
+			if hasAnotherSession == false {
+				messageData := MessageData{
+					Username: "Server",
+					ID:       uuid.Must(uuid.NewRandom()),
+					Text:     fmt.Sprintf("%s user left", client.Username),
+				}
+
+				pool.BroadcastMessage(Message{
+					Type: 1,
+					Data: messageData,
+				})
+			}
 		case message := <-pool.Broadcast:
 			pool.BroadcastMessage(message)
 		}
