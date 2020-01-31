@@ -11,7 +11,7 @@ const idChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 func GenerateID(length int) string {
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	idBytes := make([]byte, 6)
+	idBytes := make([]byte, length)
 	for i := 0; i < length; i++ {
 		idBytes[i] = idChars[rand.Intn(len(idChars))]
 	}

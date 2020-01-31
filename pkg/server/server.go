@@ -18,7 +18,7 @@ import (
 
 // StartServer starts the server
 func StartServer() {
-	r := mux.NewRouter()
+	r := mux.NewRouter().StrictSlash(true)
 	api := r.PathPrefix("/api/v1/").Subrouter()
 
 	// live chat socket
@@ -33,6 +33,10 @@ func StartServer() {
 	r.PathPrefix("/scripts/").Handler(http.StripPrefix("/scripts/", http.FileServer(http.Dir("./acolyte-web/scripts/"))))
 	r.PathPrefix("/styles/").Handler(http.StripPrefix("/styles/", http.FileServer(http.Dir("./acolyte-web/styles/"))))
 	r.HandleFunc("/forum", forum.ServeForum)
+	r.HandleFunc("/log-in", forum.ServeLogin).Methods("GET")
+	r.HandleFunc("/log-in", forum.LoginForm).Methods("POST")
+	r.HandleFunc("/sign-up", forum.ServeSignup).Methods("GET")
+	r.HandleFunc("/sign-up", forum.SignupForm).Methods("POST")
 	r.HandleFunc("/chat", chat.ServeChat)
 	r.HandleFunc("/live", livestream.ServeLivestream)
 
@@ -49,6 +53,7 @@ func StartServer() {
 		"title", "{title}",
 		"body", "{body}",
 		"link", "{link}")
+
 	// api.HandleFunc("/getComment", _).Queries("id", "{id:[a-zA-Z]{6}}")
 
 	n := negroni.Classic() // Includes some default middlewares

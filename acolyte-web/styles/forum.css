@@ -102,3 +102,54 @@ forum-post {
 .post-option {
     display: inline-block;
 }
+
+/* sign in/log in */
+
+.authorize-form-input {
+    display: block;
+
+    font-family: 'Courier', monospace;
+    font-size: 16px;
+
+    border-radius: 3px;
+    border: 3px solid lightgrey;
+
+    width: 100%;
+    /* max-width: 800px; */
+
+    padding: 8px;
+    margin-bottom: 12px;
+}
+
+.authorize-form-input:focus {
+    border-color: blueviolet;
+}
+
+.authorize-form-input:invalid {
+    border-color: red;
+    box-shadow: none;
+}
+
+.authorize-form-label {
+    font-family: 'Courier', monospace;
+    font-size: 14px;
+}
+
+.authorize-form-button {
+    border: none;
+    border-radius: 3px;
+
+    cursor: pointer;
+
+    font-family: 'Courier', monospace;
+    font-weight: bold;
+    font-size: 16px;
+
+    padding: 8px 32px;
+    background-color: lightgrey;
+}
+
+.authorize-form-button:hover {
+    color: white;
+    background-color: blueviolet;
+}

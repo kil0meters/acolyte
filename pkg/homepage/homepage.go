@@ -29,22 +29,27 @@ type HeaderListElement struct {
 	URL  string
 }
 
+func checkIfLive() {
+	_isLive := CheckIfChannelIsLive(YoutubeChannelID)
+	if !_isLive && isLive {
+		log.Println("Channel is no longer live")
+	}
+	if _isLive && !isLive {
+		log.Println("Channel is now live")
+	}
+
+	isLive = _isLive
+}
+
 // CheckIfLiveJob Checks if livestreaming every 5 minutes
 func CheckIfLiveJob() {
+	checkIfLive()
 	ticker := time.NewTicker(5 * time.Minute)
 	go func(ticker *time.Ticker) {
 		for {
 			select {
 			case <-ticker.C:
-				_isLive := CheckIfChannelIsLive(YoutubeChannelID)
-				if !_isLive && isLive {
-					log.Println("Channel is no longer live")
-				}
-				if _isLive && !isLive {
-					log.Println("Channel is now live")
-				}
-
-				isLive = _isLive
+				checkIfLive()
 			}
 		}
 	}(ticker)

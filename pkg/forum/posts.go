@@ -31,6 +31,7 @@ const (
 // Post struct containing data for a post
 type Post struct {
 	ID        string `db:"id"        valid:"ascii,required"`
+	UserID    string `db:"user_id"   valid:"ascii,required"`
 	Title     string `db:"title"     valid:"ascii,required"`
 	Link      string `db:"link"      valid:"url"`
 	Body      string `db:"body"      valid:"ascii"`

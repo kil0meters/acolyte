@@ -28,11 +28,10 @@ func InitDatabase(connStr string) {
 		log.Panic(err)
 	}
 
-	_, err = DB.Exec("CREATE TABLE IF NOT EXISTS acolyte.posts (ID text UNIQUE PRIMARY KEY, userID text, title text NOT NULL, body text, link text, upvotes integer DEFAULT 0, downvotes integer DEFAULT 0)")
+	_, err = DB.Exec("CREATE TABLE IF NOT EXISTS acolyte.posts (id text UNIQUE PRIMARY KEY, user_id text, title text NOT NULL, body text, link text, upvotes integer DEFAULT 0, downvotes integer DEFAULT 0)")
 	if err != nil {
 		log.Panic(err)
 	}
 
-	_, err = DB.Exec("CREATE TABLE IF NOT EXISTS acolyte.accounts (ID text UNIQUE PRIMARY KEY, username text UNIQUE NOT NULL, password_hash text NOT NULL)")
-
+	_, err = DB.Exec("CREATE TABLE IF NOT EXISTS acolyte.accounts (id text UNIQUE PRIMARY KEY, username text UNIQUE NOT NULL, email text UNIQUE, password_hash text NOT NULL, sessions text[] DEFAULT '{}'::text[])")
 }

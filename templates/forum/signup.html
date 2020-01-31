@@ -1,0 +1,32 @@
+<html>
+
+<head>
+  <title>Sign up - milesbenton.com</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/forum.css">
+  <script src="scripts/forum/frontpage.js"></script>
+</head>
+
+<body>
+  <header>
+    <a class="logo" href="/">Miles Benton</a>
+  </header>
+
+  <div class="wrapper">
+    <form action="/sign-up" method="POST">
+      <span class="authorize-form-label">Username</span>
+      <input name="username" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1" maxlength="16">
+      <span class="authorize-form-label">Email</span>
+      <input name="email" class="authorize-form-input" type="email">
+      <span class="authorize-form-label">Password</span>
+      <input name="password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8" maxlength="256" type="password">
+      <span class="authorize-form-label">Verify Password</span>
+      <input name="verify_password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8" maxlength="256" type="password">
+
+      <button class="authorize-form-button" type="submit">LOG IN</button>
+    </form>
+
+  </div>
+</body>
+
+</html>
