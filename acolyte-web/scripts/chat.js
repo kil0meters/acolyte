@@ -2,7 +2,11 @@ var conn = new WebSocket('ws://localhost:8080/api/v1/chat')
 messageListElement = document.getElementById('message-list')
 username = "username"
 settingsShown = false
+loginPromptShown = false
+isUnauthroized = true
 const entryBody = document.getElementById('entry-body')
+
+var chatCommands = ["/ban", "/mute"]
 
 messageList = {
   _list: [],
@@ -50,16 +54,24 @@ function buildMessage(message) {
 messageList.addMessageListener = function (message) {
   // messageListElement.children = []
   // for (let message in value) {
-  messageListElement.appendChild(buildMessage(message))
+  
+  messageElement = buildMessage(message)
+
+  messageListElement.appendChild(messageElement)
 
   console.log('window.scrollY: ' + (window.innerHeight + window.scrollY));
   console.log('document.body.scrollHeight: ' + document.body.scrollHeight);
   console.log('document.body.offsetHeight: ' + document.body.offsetHeight);
 
-  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+  renderMathInElement(messageElement,{delimiters: [
+    {left: "$$", right: "$$", display: true},
+    {left: "$", right: "$", display: false}
+  ]})
+
+  if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - messageElement.offsetHeight)) {
     window.scrollTo(0,document.body.scrollHeight)
   }
-  // }
+
 }
 
 messageList.removeMessageListener = function (id) {
@@ -71,13 +83,19 @@ messageList.removeMessageListener = function (id) {
 function initializeConnection(_conn) {
   _conn.addEventListener("message", (m) => {
     // console.log(m)
-  
-    data = JSON.parse(m.data)
-    console.log(data)
-    // messageData = JSON.parse(data.body)
 
-    // console.log(messageData);
-    messageList.push(data)
+    if (m.data == "UNAUTHORIZED") {
+      isUnauthroized = true
+    }
+    else {
+      isUnauthroized = false
+      data = JSON.parse(m.data)
+      console.log(data)
+      // messageData = JSON.parse(data.body)
+
+      // console.log(messageData);
+      messageList.push(data)
+    }
   })
 
   _conn.addEventListener("close", (m) => {
@@ -103,17 +121,48 @@ initializeConnection(conn)
 
 document.getElementById('entry-body').addEventListener("keyup", function(event) {
   if (event.key == "Enter" && !event.shiftKey) {
-    conn.send(JSON.stringify({
-      "username": username,
-      "text": entryBody.value,
-      }))
-    entryBody.value = ""
+    if (isUnauthroized) {
+      toggleLoginPrompt()
+    } else {
+      conn.send(JSON.stringify({
+        "username": username,
+        "text": entryBody.value,
+        }))
+      entryBody.value = ""
+    }
   }
+})
+
+document.getElementById('entry-body').addEventListener("keyup", function(event) {
+  text = document.getElementById('entry-body').value
+
+  suggestions = []
+
+  for (autocompleteOption of chatCommands) {
+    if (autocompleteOption.startsWith(text)) {
+      suggestions.push(autocompleteOption)
+    }
+  }
+
+  if (event.key == "Tab") {
+    
+  }
+
+  console.log(suggestions);
 })
 
 document.getElementById('settings-username-input').addEventListener("keyup", function(event) {
   username = document.getElementById('settings-username-input').value
 })
+
+function toggleLoginPrompt() {
+  if (loginPromptShown) {
+    document.getElementById("login-prompt").classList.add('hidden')
+  } else {
+    document.getElementById("login-prompt").classList.remove('hidden')
+  }
+  loginPromptShown = !loginPromptShown
+}
 
 function toggleSettings() {
   if (settingsShown) {

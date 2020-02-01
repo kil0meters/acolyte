@@ -26,8 +26,10 @@ func NewPool() *Pool {
 
 // BroadcastMessage broadcasts a message to a given pool
 func (pool *Pool) BroadcastMessage(message Message) {
-	for client := range pool.Clients {
-		client.Conn.WriteJSON(message.Data)
+	if message.Data.Username != "ANON" {
+		for client := range pool.Clients {
+			client.Conn.WriteJSON(message.Data)
+		}
 	}
 }
 
@@ -45,7 +47,7 @@ func (pool *Pool) Start() {
 				}
 			}
 
-			if hasAnotherSession == false {
+			if hasAnotherSession == false && client.Username != "ANON" {
 				messageData := MessageData{
 					Username: "Server",
 					ID:       uuid.Must(uuid.NewRandom()),
@@ -67,7 +69,7 @@ func (pool *Pool) Start() {
 				}
 			}
 
-			if hasAnotherSession == false {
+			if hasAnotherSession == false && client.Username != "ANON" {
 				messageData := MessageData{
 					Username: "Server",
 					ID:       uuid.Must(uuid.NewRandom()),

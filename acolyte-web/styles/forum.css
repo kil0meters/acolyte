@@ -55,10 +55,6 @@ header .header-link {
     box-shadow: none;
 }
 
-.filler {
-    height: 1000px;
-}
-
 /* post memes */
 
 forum-post {
@@ -140,8 +136,9 @@ forum-post {
     border-radius: 3px;
 
     cursor: pointer;
+    text-align: center;
 
-    font-family: 'Courier', monospace;
+    font-family: 'Open Sans', sans-serif;
     font-weight: bold;
     font-size: 16px;
 
@@ -152,4 +149,17 @@ forum-post {
 .authorize-form-button:hover {
     color: white;
     background-color: blueviolet;
+}
+
+.authorize-form-grid {
+    width: 100%;
+    grid-gap: 12px;
+    display: grid;
+}
+
+/* post editing */
+
+#markdown-editor {
+    width: 100%;
+    resize: vertical;
 }

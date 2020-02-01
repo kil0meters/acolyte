@@ -7,37 +7,20 @@
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/contrib/auto-render.min.js" integrity="sha384-dq1/gEHSxPZQ7DdrM82ID4YVol9BYyU7GbWlIwnwyPzotpoc57wDw/guX8EaYGPx" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
   <script defer src="scripts/chat.js"></script>
-  <link rel="stylesheet" href="styles/chat.css">
+  <link rel="stylesheet" href="styles/chat-stream-embed.css">
   
   <title>meters.sh - Chat</title>
 </head>
 
 <body>
   <div id="settings-overlay" class="hidden">
-    <svg class="overlay-close-button" onclick="toggleSettings()"  viewBox="0 0 24 24">
+    <svg id="settings-close-button" onclick="toggleSettings()"  viewBox="0 0 24 24">
       <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
     </svg>
     <h1>Settings</h1>
     <input id="settings-username-input" type="text" placeholder="username"></input>
   </div>
-  <div id="login-prompt" class="hidden">
-    <svg class="overlay-close-button" onclick="toggleLoginPrompt()"  viewBox="0 0 24 24">
-      <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-    </svg>
-    <div class="login-prompt-container">
-      <span class="login-prompt-big">Woah there partner</span>
-      <span class="login-prompt-small">You need to have an account to chat</span> 
-      <a href="/log-in?target=/chat" class="login-prompt-button">LOG IN</a>
-      <a href="/sign-up?target=/chat" class="login-prompt-button">SIGN UP</a>
-    </div>
-  </div>
   <div id="message-list">
-    <div class="chat-message">
-    </div>
-  </div>
-  <div id="message-entry">
-    <textarea id="entry-body" placeholder="Say something loser" autocomplete="off"></textarea>
-    <a id="settings-button" href="#" onclick="toggleSettings()">Settings</a>
   </div>
 </body>
 

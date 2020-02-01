@@ -9,11 +9,11 @@
 
 <body>
   <header>
-    <a class="logo" href="/">Miles Benton</a>
+    <a class="logo" href="/">Sign Up</a>
   </header>
 
   <div class="wrapper">
-    <form action="/sign-up" method="POST">
+    <form action="/sign-up?target={{.}}" method="POST">
       <span class="authorize-form-label">Username</span>
       <input name="username" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1" maxlength="16">
       <span class="authorize-form-label">Email</span>

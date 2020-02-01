@@ -37,6 +37,10 @@ func (c *Client) Read() {
 		c.Conn.Close()
 	}()
 
+	if c.Username == "ANON" {
+		c.Conn.WriteMessage(websocket.TextMessage, []byte("UNAUTHORIZED"))
+	}
+
 	for {
 		messageType, p, err := c.Conn.ReadMessage()
 		if err != nil {

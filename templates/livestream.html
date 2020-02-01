@@ -8,9 +8,10 @@
 <div class="fullscreen-viewer">
   <div class="split" id="video">
     <div id="header">
-      <a href="/">Miles Benton</a>
+      <a class="logo" href="/">Miles Benton</a>
+      <a class="subscribe-button" href="https://youtube.com/channel/{{.ChannelID}}?sub_confirmation=1">SUBSCRIBE (it's free)</a>
     </div>
-    <iframe id="stream-embed" src="https://www.youtube.com/embed/live_stream?channel={{.ChannelID}}&modestbranding=1" frameborder="0" allowfullscreen></iframe>
+    <iframe id="stream-embed" src="https://www.youtube-nocookie.com/embed/live_stream?channel={{.ChannelID}}&modestbranding=1" frameborder="0" allowfullscreen></iframe>
   </div>
   <iframe class="split" id="chat" src="http://localhost:8080/chat" frameborder="0"></iframe>
 </div>

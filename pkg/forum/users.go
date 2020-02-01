@@ -126,7 +126,6 @@ func ServeLogin(w http.ResponseWriter, r *http.Request) {
 
 // LoginForm wow
 func LoginForm(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.Referer())
 	r.ParseForm()
 
 	username := r.Form.Get("username")
@@ -134,29 +133,39 @@ func LoginForm(w http.ResponseWriter, r *http.Request) {
 
 	target := r.Form.Get("target")
 	if target == "" {
-		target = "/forum"
+		target = "/forum?logged_in=1"
 	}
 
 	if CreateSessionCookies(w, username, password) {
 		http.Redirect(w, r, target, http.StatusSeeOther)
 	} else {
-		http.Redirect(w, r, "log-in?error=1", http.StatusSeeOther)
+		http.Redirect(w, r, "/log-in?error=1", http.StatusSeeOther)
 	}
 }
 
 // ServeSignup shows signin screen
 func ServeSignup(w http.ResponseWriter, r *http.Request) {
-	signupTemplate.Execute(w, nil)
+	target := r.URL.Query().Get("target")
+
+	if target == "" {
+		target = "/?login_success=1"
+	}
+
+	signupTemplate.Execute(w, target)
 }
 
 // SignupForm wow
 func SignupForm(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.Referer())
 	r.ParseForm()
 
 	username := r.Form.Get("username")
 	email := r.Form.Get("email")
 	password := r.Form.Get("password")
+
+	target := r.Form.Get("target")
+	if target == "" {
+		target = "/forum?account_created=1"
+	}
 
 	_, err := CreateUser(username, email, password)
 	if err == ErrInvalidUserData {
@@ -167,6 +176,10 @@ func SignupForm(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	} else {
 		// sets session cookie because storing username/password pair is not safe
-		CreateSessionCookies(w, username, password)
+		if CreateSessionCookies(w, username, password) {
+			http.Redirect(w, r, target, http.StatusSeeOther)
+		} else {
+			http.Redirect(w, r, "/sign-in?error=1", http.StatusSeeOther)
+		}
 	}
 }

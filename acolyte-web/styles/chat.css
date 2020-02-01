@@ -7,6 +7,7 @@ body {
 #message-entry {
     position: fixed;
     background-color: white;
+
     /* height: 48px; */
     left: 0;
     right: 0;
@@ -18,12 +19,23 @@ body {
 
 #entry-body {
     border: 1px grey solid;
-    width: 100%;
+    width: calc(100% - 18px);
+
+    font-family: 'Courier', monospace;
 
     border-radius: 3px;
+    border: 3px solid lightgrey;
+
+    outline: none;
+
+    font-size: 14px;
+    border-radius: 3px;
     padding: 8px;
-    margin-right: 128px;
     resize: vertical;
+}
+
+#entry-body:hover {
+    border-color: blueviolet;
 }
 
 /* messages */
@@ -47,7 +59,65 @@ body {
     background-color: white;
 }
 
-#settings-close-button {
+#login-prompt {
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    
+    font-family: 'Open Sans', sans-serif;
+
+    background-color: rgba(1,1,1,0.3);
+}
+
+.login-prompt-container {
+    position: relative;
+    top: 40%;
+    margin: auto;
+    text-align: center;
+}
+
+.login-prompt-big {
+    display: block;
+    font-size: 32px;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.login-prompt-small {
+    display: block;
+    margin-top: 0;
+    margin-bottom: 24px;
+}
+
+.login-prompt-button {
+    border: none;
+    border-radius: 3px;
+
+    color: blueviolet;
+
+    cursor: pointer;
+    text-align: center;
+
+    font-family: 'Open Sans', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    text-decoration: none;
+
+    padding: 8px 32px;
+    background-color: lightgrey;
+}
+
+.login-prompt-button:hover {
+    color: white;
+    background-color: blueviolet;
+}
+
+
+.overlay-close-button {
     position: absolute;
     right: 24px;
     top: 24px;
