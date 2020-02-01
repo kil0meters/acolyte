@@ -146,4 +146,5 @@ body {
 
 .message-text {
     color: darkslategrey;
+    overflow-wrap: break-word;
 }
