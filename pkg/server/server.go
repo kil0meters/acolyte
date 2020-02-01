@@ -20,6 +20,7 @@ import (
 func StartServer() {
 	r := mux.NewRouter().StrictSlash(true)
 	api := r.PathPrefix("/api/v1/").Subrouter()
+	forumRouter := r.PathPrefix("/forum").Subrouter()
 
 	// live chat socket
 	pool := chat.NewPool()
@@ -32,12 +33,16 @@ func StartServer() {
 
 	r.PathPrefix("/scripts/").Handler(http.StripPrefix("/scripts/", http.FileServer(http.Dir("./acolyte-web/scripts/"))))
 	r.PathPrefix("/styles/").Handler(http.StripPrefix("/styles/", http.FileServer(http.Dir("./acolyte-web/styles/"))))
-	r.HandleFunc("/forum", forum.ServeForum)
+	forumRouter.HandleFunc("", forum.ServeForum)
+	forumRouter.HandleFunc("/create-post", forum.ServePostEditor).Methods("GET")
+	forumRouter.HandleFunc("/create-post", forum.NewPost).Methods("POST")
+	forumRouter.HandleFunc("/posts/{id}", forum.ServePost)
 	r.HandleFunc("/log-in", forum.ServeLogin).Methods("GET")
 	r.HandleFunc("/log-in", forum.LoginForm).Methods("POST")
 	r.HandleFunc("/sign-up", forum.ServeSignup).Methods("GET")
 	r.HandleFunc("/sign-up", forum.SignupForm).Methods("POST")
 	r.HandleFunc("/chat", chat.ServeChat)
+	r.HandleFunc("/chat-stream-embed", chat.ServeChatStreamEmbed)
 	r.HandleFunc("/live", livestream.ServeLivestream)
 
 	api.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {

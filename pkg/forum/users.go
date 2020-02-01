@@ -73,14 +73,20 @@ func CreateUser(username string, email string, password string) (*User, error) {
 }
 
 // CreateSessionCookies creates a new session cookie
-func CreateSessionCookies(w http.ResponseWriter, username string, password string) {
+func CreateSessionCookies(w http.ResponseWriter, username string, password string) bool {
 	sessionID := GenerateID(16)
 	hashedSessionID, _ := hashString(sessionID)
 
-	_, err := database.DB.Exec("UPDATE acolyte.accounts SET sessions = array_append(sessions, $1) WHERE username = $2", hashedSessionID, username)
+	meme, err := database.DB.Exec("UPDATE acolyte.accounts SET sessions = array_append(sessions, $1) WHERE username = $2", hashedSessionID, username)
 	if err != nil {
 		log.Println(err)
-		return
+		return false
+	}
+
+	rowsAffected, _ := meme.RowsAffected()
+
+	if rowsAffected == 0 {
+		return false
 	}
 
 	http.SetCookie(w, &http.Cookie{
@@ -96,6 +102,8 @@ func CreateSessionCookies(w http.ResponseWriter, username string, password strin
 
 		SameSite: http.SameSiteStrictMode,
 	})
+
+	return true
 }
 
 // InvalidateSessionCookie invalidates a session cookie
@@ -107,7 +115,13 @@ func InvalidateSessionCookie(username string, password string, sessionHash strin
 
 // ServeLogin shows login screen
 func ServeLogin(w http.ResponseWriter, r *http.Request) {
-	loginTemplate.Execute(w, nil)
+	target := r.URL.Query().Get("target")
+
+	if target == "" {
+		target = "/?login_success=1"
+	}
+
+	loginTemplate.Execute(w, target)
 }
 
 // LoginForm wow
@@ -118,7 +132,16 @@ func LoginForm(w http.ResponseWriter, r *http.Request) {
 	username := r.Form.Get("username")
 	password := r.Form.Get("password")
 
-	CreateSessionCookies(w, username, password)
+	target := r.Form.Get("target")
+	if target == "" {
+		target = "/forum"
+	}
+
+	if CreateSessionCookies(w, username, password) {
+		http.Redirect(w, r, target, http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, "log-in?error=1", http.StatusSeeOther)
+	}
 }
 
 // ServeSignup shows signin screen

@@ -15,6 +15,7 @@ var signupTemplate *template.Template = template.Must(template.ParseFiles("./tem
 // Data contains data for the forum pages wow
 type Data struct {
 	IsLoggedIn bool
+	Post       *Post
 	Posts      []Post
 }
 
@@ -36,10 +37,6 @@ func IsAuthorized(r *http.Request) *User {
 	username := usernameCookie.Value
 
 	row := database.DB.QueryRowx("SELECT * FROM acolyte.accounts WHERE username = $1", username)
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
 
 	err = row.StructScan(&user)
 	if err != nil {

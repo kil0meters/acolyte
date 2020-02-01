@@ -13,7 +13,7 @@
   </header>
 
   <div class="wrapper">
-    <form action="/log-in" method="POST">
+    <form action="/log-in?target={{.}}" method="POST">
       <span class="authorize-form-label">Username</span>
       <input name="username" class="authorize-form-input" type="[a-zA-Z0-9]+" minlength="1" maxlength="16">
       <span class="authorize-form-label">Password</span>
