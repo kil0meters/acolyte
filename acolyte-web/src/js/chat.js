@@ -77,6 +77,7 @@ export class MBChat {
     this.conn = new WebSocket(`ws://${window.location.host}/api/v1/chat`)
     this.username = "username"
     this.isUnauthorized = false 
+
     this.entryBody = document.getElementById('entry-body')
 
     this.timeoutInterval = null
@@ -85,9 +86,9 @@ export class MBChat {
 
     if (noEntry != true) { 
       this.initializeEntryBody()
-    }
+      this.autocompletionHelper = new Autocompletion()
 
-    this.autocompletionHelper = new Autocompletion()
+    }
   }
 
   initializeConnection() {

@@ -11,7 +11,6 @@ import (
 )
 
 var chatTemplate *template.Template = template.Must(template.ParseFiles("./templates/chat.html"))
-var chatStreamEmbedTemplate *template.Template = template.Must(template.ParseFiles("./templates/chat-stream-embed.html"))
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -48,10 +47,11 @@ func ServeWS(pool *Pool, w http.ResponseWriter, r *http.Request) {
 
 // ServeChat serves chat embed
 func ServeChat(w http.ResponseWriter, r *http.Request) {
-	chatTemplate.Execute(w, "")
-}
+	r.ParseForm()
 
-// ServeChatStreamEmbed serves chat embed
-func ServeChatStreamEmbed(w http.ResponseWriter, r *http.Request) {
-	chatStreamEmbedTemplate.Execute(w, "")
+	isStreamEmbed := r.Form.Get("stream_embed") == "1"
+
+	log.Println(isStreamEmbed)
+
+	chatTemplate.Execute(w, isStreamEmbed)
 }

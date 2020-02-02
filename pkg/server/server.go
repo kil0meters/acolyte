@@ -41,7 +41,6 @@ func StartServer() {
 	r.HandleFunc("/sign-up", forum.ServeSignup).Methods("GET")
 	r.HandleFunc("/sign-up", forum.SignupForm).Methods("POST")
 	r.HandleFunc("/chat", chat.ServeChat)
-	// r.HandleFunc("/chat-stream-embed", chat.ServeChatStreamEmbed)
 	r.HandleFunc("/live", livestream.ServeLivestream)
 
 	api.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
