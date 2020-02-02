@@ -79,7 +79,6 @@ export class MBChat {
     this.isUnauthorized = false 
     this.entryBody = document.getElementById('entry-body')
 
-    this.chatCommands = ["/ban", "/mute"]
     this.timeoutInterval = null
 
     this.messageList = new MessageList(document.getElementById('message-list'), this.maxHeight)
@@ -87,12 +86,12 @@ export class MBChat {
     if (noEntry != true) { 
       this.initializeEntryBody()
     }
+
+    this.autocompletionHelper = new Autocompletion()
   }
 
   initializeConnection() {
     this.conn.addEventListener("message", (m) => {
-      console.log("sending message")
-
       if (m.data == "UNAUTHORIZED") {
         this.isUnauthorized = true
       }
@@ -124,11 +123,15 @@ export class MBChat {
   }
 
   initializeEntryBody() {
-    document.getElementById('entry-body').addEventListener("keyup", (event) => {
+    document.getElementById('entry-body').addEventListener("keydown", (event) => {
       if (event.key == "Enter" && !event.shiftKey) {
+        event.preventDefault()
+
         if (this.isUnauthorized) {
           toggleLoginPrompt()
         } else {
+          this.autocompletionHelper.sentMessage(document.getElementById('entry-body').value)
+
           this.conn.send(JSON.stringify({
             "username": this.username,
             "text": document.getElementById('entry-body').value,
@@ -143,26 +146,120 @@ export class MBChat {
 
 class Autocompletion {
   constructor(entry) {
+    this.entry = document.getElementById('entry-body')
+    this.popup = document.getElementById('autocompletion-popup')
 
+    this.chatCommands = ["/ban", "/mute", "/addcommand", "/toggle-dark-mode"]
+
+    this.suggestions = []
+    this.tabIndex = 1
+
+    this.previousMessages = []
+    this.messageIndex = 0
+
+    this.currentValue = ""
+
+    this.registerEventListeners()
+  }
+
+  setPopupToSuggestions() {
+    if (this.suggestions == []) {
+      this.popup.classList.add('hidden') 
+    } else {
+      while (this.popup.firstChild) {
+        this.popup.removeChild(this.popup.firstChild)
+      }
+
+      this.popup.classList.remove('hidden')
+
+      for (let suggestion of this.suggestions) {
+        let suggestionElement = document.createElement('p')
+        suggestionElement.textContent = suggestion
+        
+        this.popup.appendChild(suggestionElement)
+      }
+    }
+  }
+
+  setHighlightedSuggestion(index) {
+    for (let suggestionElement of this.popup.children) {
+      suggestionElement.classList.remove('highlighted')
+    }
+
+    this.popup.children[index].classList.add('highlighted')
+  }
+
+  sentMessage(message) {
+    if (this.previousMessages[this.previousMessages.length-1] != message) {
+      this.previousMessages.push(message)
+    }
+    this.messageIndex = 0
   }
 
   registerEventListeners() {
-    document.getElementById('entry-body').addEventListener("keyup", function(event) {
-      let text = document.getElementById('entry-body').value
-  
-      let suggestions = []
-  
-      for (autocompleteOption of chatCommands) {
-        if (autocompleteOption.startsWith(text)) {
-          suggestions.push(autocompleteOption)
+    this.entry.addEventListener("keydown", (event) => {
+      if (event.key == "Tab") {
+        event.preventDefault()
+
+        if (!event.shiftKey) {
+          this.tabIndex = Math.min(this.suggestions.length, this.tabIndex+1)
+        } else {
+          this.tabIndex = Math.max(1, this.tabIndex-1)
+        }
+
+        if (this.suggestions.length != 0) {
+          this.entry.value = this.suggestions[this.suggestions.length-this.tabIndex]
+          this.setHighlightedSuggestion(this.suggestions.length-this.tabIndex)
         }
       }
-  
-      if (event.key == "Tab") {
-        
+
+      else if (event.key == "ArrowDown") {
+        event.preventDefault()
+        this.messageIndex = Math.max(this.messageIndex-1, 0)
+        if (this.messageIndex == 0 ) {
+          this.entry.value = this.currentValue
+        } else {
+          this.entry.value = this.previousMessages[this.previousMessages.length - this.messageIndex]
+        }
       }
-  
-      console.log(suggestions)
+      else if (event.key == "ArrowUp") {
+        event.preventDefault()
+        this.messageIndex = Math.min(this.messageIndex+1, this.previousMessages.length)
+        this.entry.value = this.previousMessages[this.previousMessages.length - this.messageIndex]
+      }
+    })
+
+    this.entry.addEventListener("keyup", (event) => {
+      if (event.key != "ArrowUp" &&
+          event.key != "ArrowDown" &&
+          event.key != "Tab" &&
+          // event.key != "Enter" &&
+          event.key != "Shift" &&
+          event.key != "Control" &&
+          event.key != "Meta" &&
+          event.key != "Alt") {
+
+        let text = this.entry.value
+      
+        if (this.messageIndex == 0) {
+          this.currentValue = text
+        }
+
+        this.tabIndex = 0
+        this.suggestions = []
+        if (text == "") {
+          this.messageIndex = 0
+          this.setPopupToSuggestions()
+        } else {
+          for (let suggestion of this.chatCommands) {
+            if (suggestion.startsWith(text)) {
+              this.suggestions.push(suggestion)
+            }
+          }
+
+          this.setPopupToSuggestions()
+        }
+      }
     })
   }
 }
