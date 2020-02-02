@@ -1,26 +1,24 @@
-<html>
+<!DOCTYPE html>
+<html id="html-max-size">
 
 <head>
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles/livestream.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.5.11/split.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="/static/bundle.min.css">
+  <script src="/static/bundle.min.js"></script>
 </head>
-<div class="fullscreen-viewer">
+
+<body id="fullscreen-viewer">
   <div class="split" id="video">
-    <div id="header">
+    <div id="livestream-header">
       <a class="logo" href="/">Miles Benton</a>
       <a class="subscribe-button" href="https://youtube.com/channel/{{.ChannelID}}?sub_confirmation=1">SUBSCRIBE (it's free)</a>
     </div>
     <iframe id="stream-embed" src="https://www.youtube-nocookie.com/embed/live_stream?channel={{.ChannelID}}&modestbranding=1" frameborder="0" allowfullscreen></iframe>
   </div>
   <iframe class="split" id="chat" src="http://localhost:8080/chat" frameborder="0"></iframe>
-</div>
+</body>
 <script>
-  Split(['#video', '#chat'], {
-    sizes: [70, 30],
-    gutterSize: 10,
-    minSize: 200,
-  })
+  acolyte.setupSplitpanes('#video', '#chat')
 </script>
 
 </html>

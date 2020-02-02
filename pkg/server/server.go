@@ -31,8 +31,7 @@ func StartServer() {
 
 	r.HandleFunc("/", homepage.ServeHomepage)
 
-	r.PathPrefix("/scripts/").Handler(http.StripPrefix("/scripts/", http.FileServer(http.Dir("./acolyte-web/scripts/"))))
-	r.PathPrefix("/styles/").Handler(http.StripPrefix("/styles/", http.FileServer(http.Dir("./acolyte-web/styles/"))))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./acolyte-web/dist/"))))
 	forumRouter.HandleFunc("", forum.ServeForum)
 	forumRouter.HandleFunc("/create-post", forum.ServePostEditor).Methods("GET")
 	forumRouter.HandleFunc("/create-post", forum.NewPost).Methods("POST")
@@ -42,7 +41,7 @@ func StartServer() {
 	r.HandleFunc("/sign-up", forum.ServeSignup).Methods("GET")
 	r.HandleFunc("/sign-up", forum.SignupForm).Methods("POST")
 	r.HandleFunc("/chat", chat.ServeChat)
-	r.HandleFunc("/chat-stream-embed", chat.ServeChatStreamEmbed)
+	// r.HandleFunc("/chat-stream-embed", chat.ServeChatStreamEmbed)
 	r.HandleFunc("/live", livestream.ServeLivestream)
 
 	api.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {

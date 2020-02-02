@@ -1,4 +1,4 @@
-body {
+#live-chat {
     margin: 0;
     font-family: 'Courier', monospace;
     font-size: 16px;
@@ -54,7 +54,7 @@ body {
 
     padding: 0 32px;
 
-    font-family: 'Open Sans';
+    font-family: 'Open Sans', sans-serif;
 
     background-color: white;
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"text/template"
 
 	"github.com/gorilla/mux"
@@ -16,7 +17,7 @@ import (
 var postTemplate *template.Template = template.Must(template.ParseFiles("./templates/forum/post.html"))
 
 // ErrInvalidPostData shows invalid post data
-var ErrInvalidPostData = errors.New("Received invalid user data")
+var ErrInvalidPostData = errors.New("Received invalid post data")
 
 // SortingType the type of sorting to use for posts/comments
 type SortingType int
@@ -34,11 +35,11 @@ const (
 
 // Post struct containing data for a post
 type Post struct {
-	ID        string `db:"id"        valid:"ascii,required"`
-	UserID    string `db:"user_id"   valid:"ascii,required"`
-	Title     string `db:"title"     valid:"ascii,required"`
-	Link      string `db:"link"      valid:"url"`
-	Body      string `db:"body"      valid:"ascii"`
+	ID        string `db:"id"        valid:"printableascii,required"`
+	UserID    string `db:"user_id"   valid:"printableascii,required"`
+	Title     string `db:"title"     valid:"printableascii,required"`
+	Link      string `db:"link"      valid:"printableascii,optional"`
+	Body      string `db:"body"      valid:"printableascii,optional"`
 	Upvotes   int    `db:"upvotes"   valid:"-"`
 	Downvotes int    `db:"downvotes" valid:"-"`
 }
@@ -48,6 +49,7 @@ func (post Post) IsValid() bool {
 	result, err := govalidator.ValidateStruct(post)
 
 	if err != nil || result == false {
+		log.Println(err)
 		return false
 	}
 
@@ -66,7 +68,7 @@ func CreateNewPost(title string, user *User, body string, link string) (*Post, e
 
 	log.Println(post)
 
-	if !post.IsValid() {
+	if !post.IsValid() { // TODO: post.Link still needs to be validated
 		return nil, ErrInvalidPostData
 	}
 
@@ -106,9 +108,9 @@ func PostFromID(id string) *Post {
 func NewPost(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
-	title := r.Form.Get("title")
-	body := r.Form.Get("body")
-	link := r.Form.Get("link")
+	title := strings.Trim(r.Form.Get("title"), " \n\t")
+	body := strings.Trim(r.Form.Get("body"), " \n\t")
+	link := strings.Trim(r.Form.Get("link"), " \n\t")
 
 	user := IsAuthorized(r)
 	if user == nil {

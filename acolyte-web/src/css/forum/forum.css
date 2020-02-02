@@ -1,8 +1,4 @@
-body {
-    font-family: 'Open Sans', sans-serif;
-}
-
-header {
+#forum-header {
     position: fixed;
     left: 0;
     right: 0;
@@ -50,9 +46,9 @@ header .header-link {
 }
 
 .header-hidden {
-    top: -64;
-
-    box-shadow: none;
+    top: -64px !important;
+    opacity: 0;
+    box-shadow: none !important;
 }
 
 /* post memes */
@@ -107,6 +103,7 @@ forum-post {
     font-family: 'Courier', monospace;
     font-size: 16px;
 
+    box-sizing: border-box;
     border-radius: 3px;
     border: 3px solid lightgrey;
 
@@ -160,6 +157,5 @@ forum-post {
 /* post editing */
 
 #markdown-editor {
-    width: 100%;
     resize: vertical;
 }

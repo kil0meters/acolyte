@@ -23,5 +23,6 @@ yarn-error.log*
 *.phd
 *.trc
 
+dist
 main
 acolyte

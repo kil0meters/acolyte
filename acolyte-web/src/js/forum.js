@@ -1,13 +1,20 @@
-oldWindowScrollY = 0
+export class TransientHeader {
+    constructor(id) {
+        this.oldWindowScrollY = 0
+        this.id = id
 
-window.addEventListener("scroll", function () {
-    if (window.scrollY > oldWindowScrollY && window.scrollY > 64) {
-        document.getElementById('forum-header').classList.add('header-hidden')
-    } else {
-        document.getElementById('forum-header').classList.remove('header-hidden')
+
+        window.addEventListener("scroll", () => {
+            console.log(window.scrollY - this.oldWindowScrollY);
+            if (window.scrollY > this.oldWindowScrollY && window.scrollY > 64) {
+                document.getElementById(this.id).classList.add('header-hidden')
+            } else {
+                document.getElementById(this.id).classList.remove('header-hidden')
+            }
+            this.oldWindowScrollY = window.scrollY
+        })
     }
-    oldWindowScrollY = window.scrollY
-})
+}
 
 class ForumPost extends HTMLElement {
     constructor() {

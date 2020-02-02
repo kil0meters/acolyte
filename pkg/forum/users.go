@@ -19,7 +19,7 @@ type User struct {
 	ID       string         `db:"id"            valid:"alphanum"`
 	Username string         `db:"username"      valid:"alphanum"`
 	Email    string         `db:"email"         valid:"email"`
-	Hash     string         `db:"password_hash" valid:"ascii"`
+	Hash     string         `db:"password_hash" valid:"printableascii"`
 	Sessions pq.StringArray `db:"sessions"      valid:"-"`
 }
 

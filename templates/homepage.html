@@ -1,25 +1,37 @@
+<!DOCTYPE html>
 <html>
 
 <head>
   <title>milesbenton.com</title>
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles/homepage.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="/static/bundle.min.css">
 </head>
 
 <body>
-  <header>
+  <header class="static-header">
     <h1>Miles Benton</h1>
     <ul class="greeter-links">
       {{ range .Header }}
       <li class="greeter-link"><a href="{{ .URL }}">{{ .Name }}</a></li>
       {{ end }}
     </ul>
+    <ul class="greeter-hamburger-menu-container">
+      <input type="checkbox" class="greeter-hamburger-menu">
+      <span></span>
+      <span></span>
+      <span></span>
+      <div class="greeter-hamburger-links">
+        {{ range .Header }}
+        <li class="greeter-link"><a href="{{ .URL }}">{{ .Name }}</a></li>
+        {{ end }}
+      </div>
+    </ul>
   </header>
   <article class="content-wrapper">
     {{ if .IsLive }}
     <section>
       <div class="subheading">
-        <h2 class="subheading">WOW I'M LIVESTREAMING HOW NEAT</h2> <span class="live-indicator">LIVE</span>
+        <h2 class="subheading">WOW I'M LIVESTREAMING HOW NEAT <span class="live-indicator">LIVE</span></h2> 
         <iframe class="video-display" src="https://www.youtube-nocookie.com/embed/live_stream?channel={{.ChannelID}}&modestbranding=1" frameborder="0" allowfullscreen></iframe>
       </div>
     </section>

@@ -8,7 +8,7 @@ footer {
     margin: 16px 0;
 }
 
-header {
+header.static-header {
     max-width: 800px;
     line-height: 100px;
     margin: auto;
@@ -27,8 +27,82 @@ header h1 {
     vertical-align: middle;
 }
 
+.greeter-hamburger-menu-container {
+    display: none;
+}
+
+.greeter-hamburger-links {
+    visibility: hidden;
+    position: absolute;
+    z-index: 100;
+    top: 128px;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: none;
+    background-color: white;
+    transform: translateY(16px);
+}
+
+.greeter-hamburger-links .greeter-link {
+    display: block;
+    line-height: 48px;
+}
+
+.greeter-hamburger-menu {
+    position: absolute;
+    right: 8px;
+    top: 56px;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+}
+
+.greeter-hamburger-menu-container span {
+    position: absolute;
+    right: 8px;
+    top: 64px;
+    width: 32px;
+    height: 4px;
+    border-radius: 50px;
+    background-color: black;
+    pointer-events: none;
+    transition: 0.5s;
+}
+
+.greeter-hamburger-menu-container span:nth-child(2) {
+    top: 72px;
+}
+.greeter-hamburger-menu-container span:nth-child(3) {
+    top: 80px;
+}
+
+.greeter-hamburger-menu:checked ~ span {
+    transform: translateY(8px) rotate(-45deg)
+}
+
+.greeter-hamburger-menu:checked ~ span:nth-child(2) {
+    transform: none;
+    opacity: 0;
+}
+
+.greeter-hamburger-menu:checked ~ span:nth-child(3) {
+    transform: translateY(-8px) rotate(45deg)
+}
+
+.greeter-hamburger-menu:checked ~ .greeter-hamburger-links {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    box-shadow: 0px 64px 47px 2px rgba(0,0,0,.14);
+}
+
 .greeter-link {
     display: inline;
+    cursor: pointer;
     padding: 0 12px;
 }
 
@@ -98,6 +172,7 @@ header h1 {
 }
 
 .subheading .live-indicator {
+    font-size: 14px;
     padding: 4px 8px;
     font-weight: bold;
     color: white;
@@ -120,11 +195,19 @@ header h1 {
 
 @media screen and (max-width: 800px) {
     .video-display {
-        height: 56.25vw;
+        height: calc(56.25vw - 9px); /* offset from 16px / 0.5625 */
     }
 
     .main-video-title {
         font-size: 24px;
     }
+}
 
+@media screen and (max-width: 650px) {
+    .greeter-links {
+        display: none;
+    }
+    .greeter-hamburger-menu-container {
+        display: inline-block;
+    }
 }

@@ -1,12 +1,41 @@
-body {
-    margin: 0;
-    font-family: 'Open Sans';
+#html-max-size {
+    height: 100%;
+    width: 100%;
+    overflow-y: hidden;
 }
 
-.fullscreen-viewer {
+#fullscreen-viewer {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
     display: flex;
     flex-direction: row;
     height: 100%;
+}
+
+@media screen and (max-width: 600px) {
+    #fullscreen-viewer {
+        flex-direction: column;
+    }
+
+    #video {
+        width: 100% !important;
+        height: calc(48px + 56.25vw) !important;
+    }
+
+    #stream-embed {
+        width: 100% !important;
+        height: 56.25vw !important;
+    }
+
+    #chat {
+        width: 100% !important;
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .subscribe-button {
+        display: none;
+    }
 }
 
 #video {
@@ -26,8 +55,9 @@ body {
     height: calc(100% - 48px);
 }
 
-#header {
+#livestream-header {
     height: 48px;
+    overflow-y: hidden;
     line-height: 48px;
     padding: 0 8px;
 }

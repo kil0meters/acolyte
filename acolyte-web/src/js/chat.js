@@ -1,3 +1,8 @@
+// import katex from 'katex'
+import renderMathInElement from 'katex/dist/contrib/auto-render'
+import Split from 'split.js'
+
+
 class MessageList {
   constructor(messageListElement, maxHeight) {
     this._list = []
@@ -66,12 +71,12 @@ class MessageList {
   }
 }
 
-class MBChat {
+export class MBChat {
   constructor(maxHeight, noEntry) { 
     this.maxHeight = maxHeight
     this.conn = new WebSocket('ws://localhost:8080/api/v1/chat')
     this.username = "username"
-    this.isUnauthroized = true
+    this.isUnauthorized = false 
     this.entryBody = document.getElementById('entry-body')
 
     this.chatCommands = ["/ban", "/mute"]
@@ -89,11 +94,9 @@ class MBChat {
       console.log("sending message")
 
       if (m.data == "UNAUTHORIZED") {
-        this.isUnauthroized = true
+        this.isUnauthorized = true
       }
       else {
-        this.isUnauthroized = false
-
         let data = JSON.parse(m.data)
 
         this.messageList.push(data)
@@ -123,7 +126,7 @@ class MBChat {
   initializeEntryBody() {
     document.getElementById('entry-body').addEventListener("keyup", (event) => {
       if (event.key == "Enter" && !event.shiftKey) {
-        if (this.isUnauthroized) {
+        if (this.isUnauthorized) {
           toggleLoginPrompt()
         } else {
           this.conn.send(JSON.stringify({
@@ -145,9 +148,9 @@ class Autocompletion {
 
   registerEventListeners() {
     document.getElementById('entry-body').addEventListener("keyup", function(event) {
-      text = document.getElementById('entry-body').value
+      let text = document.getElementById('entry-body').value
   
-      suggestions = []
+      let suggestions = []
   
       for (autocompleteOption of chatCommands) {
         if (autocompleteOption.startsWith(text)) {
@@ -164,10 +167,10 @@ class Autocompletion {
   }
 }
 
-loginPromptShown = false
-settingsShown = false
+var loginPromptShown = false
+var settingsShown = false
 
-function toggleLoginPrompt() {
+export function toggleLoginPrompt() {
   if (loginPromptShown) {
     document.getElementById("login-prompt").classList.add('hidden')
   } else {
@@ -176,7 +179,7 @@ function toggleLoginPrompt() {
   loginPromptShown = !loginPromptShown
 }
 
-function toggleSettings() {
+export function toggleSettings() {
   if (settingsShown) {
     document.getElementById("settings-overlay").classList.add('hidden')
   } else {
@@ -185,3 +188,10 @@ function toggleSettings() {
   settingsShown = !settingsShown
 }
 
+export function setupSplitpanes(left, right) {
+  Split([left, right], {
+    sizes: [70, 30],
+    gutterSize: 10,
+    minSize: 200,
+  })
+}
