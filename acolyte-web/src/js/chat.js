@@ -1,7 +1,7 @@
 // import katex from 'katex'
 import renderMathInElement from 'katex/dist/contrib/auto-render'
 import Split from 'split.js'
-
+import { replaceTextWithEmotes, getEmotes } from './emotes.js'
 
 class MessageList {
   constructor(messageListElement, maxHeight) {
@@ -21,7 +21,7 @@ class MessageList {
     usernameElement.classList.add("message-username")
 
     let textElement = document.createElement("span")
-    textElement.textContent = message.text
+    textElement.innerHTML = replaceTextWithEmotes(message.text)
     textElement.classList.add("message-text")
 
     messageElement.appendChild(usernameElement)
@@ -151,6 +151,7 @@ class Autocompletion {
     this.popup = document.getElementById('autocompletion-popup')
 
     this.chatCommands = ["/ban", "/mute", "/addcommand", "/toggle-dark-mode"]
+    this.emotes = getEmotes()
 
     this.suggestions = []
     this.tabIndex = 1
@@ -175,7 +176,12 @@ class Autocompletion {
 
       for (let suggestion of this.suggestions) {
         let suggestionElement = document.createElement('p')
-        suggestionElement.textContent = suggestion
+
+        if (this.emotes.includes(suggestion)) {
+          suggestionElement.innerHTML = replaceTextWithEmotes(suggestion) + ' ' + suggestion
+        } else {
+          suggestionElement.textContent = suggestion
+        }
         
         this.popup.appendChild(suggestionElement)
       }
@@ -209,7 +215,10 @@ class Autocompletion {
         }
 
         if (this.suggestions.length != 0) {
-          this.entry.value = this.suggestions[this.suggestions.length-this.tabIndex]
+          let words = this.entry.value.split(' ')
+          words[words.length-1] = this.suggestions[this.suggestions.length-this.tabIndex]
+
+          this.entry.value = words.join(' ')
           this.setHighlightedSuggestion(this.suggestions.length-this.tabIndex)
         }
       }
@@ -252,9 +261,21 @@ class Autocompletion {
           this.messageIndex = 0
           this.setPopupToSuggestions()
         } else {
+          let completionText = text.toLowerCase()
+
           for (let suggestion of this.chatCommands) {
-            if (suggestion.startsWith(text)) {
+            if (suggestion.startsWith(completionText)) {
               this.suggestions.push(suggestion)
+            }
+          }
+
+          for (let suggestion of this.emotes) {
+            let words = completionText.split(' ')
+            let word = words[words.length - 1]
+            if (word != '') {
+              if (suggestion.toLowerCase().startsWith(words[words.length - 1])) {
+                this.suggestions.push(suggestion)
+              }
             }
           }
 

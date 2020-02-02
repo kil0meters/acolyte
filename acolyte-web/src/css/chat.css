@@ -129,6 +129,11 @@
     line-height: 20px;
 }
 
+.emote {
+    height: 32px;
+    vertical-align: middle;
+}
+
 .message-username {
     font-weight: bold;
     color: var(--text-color-bold);

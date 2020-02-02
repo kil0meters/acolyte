@@ -5,7 +5,6 @@ export class TransientHeader {
 
 
         window.addEventListener("scroll", () => {
-            console.log(window.scrollY - this.oldWindowScrollY);
             if (window.scrollY > this.oldWindowScrollY && window.scrollY > 64) {
                 document.getElementById(this.id).classList.add('header-hidden')
             } else {
