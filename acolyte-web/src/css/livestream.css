@@ -1,3 +1,5 @@
+@import url("variables.css");
+
 #html-max-size {
     height: 100%;
     width: 100%;
@@ -41,13 +43,13 @@
 #video {
     height: 100%;
     width: 100%;
-    background-color: white;
+    background-color: var(--background-color);
 }
 
 #chat {
     height: 100%;
     width: 100%;
-    background-color: white;
+    background-color: var(--background-color);
 }
 
 #stream-embed {
@@ -65,12 +67,12 @@
 .logo {
     font-size: 32px;
     font-weight: bold;
-    color: black;
+    color: var(--text-color-bold);
     text-decoration: none;
 }
 
 .logo:hover {
-    color: blueviolet;
+    color: var(--link-color);
     text-decoration: underline;
 }
 
@@ -93,5 +95,5 @@
 }
 
 .gutter:hover {
-    background-color: lightgrey;
+    background-color: var(--accent-color);
 }

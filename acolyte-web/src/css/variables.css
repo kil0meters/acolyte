@@ -1,0 +1,17 @@
+:root {
+    --background-color: white;
+    --text-color-bold: black;
+    --text-color-subtle: darkslategrey;
+    --link-color: blueviolet;
+    --accent-color: lightgrey;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #021615;
+        --text-color-bold: white;
+        --text-color-subtle: #e0e0e0;
+        --link-color: #ebf745;
+        --accent-color: #092d2c;
+    }
+}

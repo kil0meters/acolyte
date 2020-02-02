@@ -6,7 +6,7 @@
 
 #message-entry {
     position: fixed;
-    background-color: white;
+    background-color: var(--background-color);
 
     /* height: 48px; */
     left: 0;
@@ -17,31 +17,10 @@
     box-shadow: 16px 0px 47px 2px rgba(0,0,0,.07);
 }
 
-#entry-body {
-    border: 1px grey solid;
-    width: calc(100% - 18px);
-
-    font-family: 'Courier', monospace;
-
-    border-radius: 3px;
-    border: 3px solid lightgrey;
-
-    outline: none;
-
-    font-size: 14px;
-    border-radius: 3px;
-    padding: 8px;
-    resize: vertical;
-}
-
-#entry-body:hover {
-    border-color: blueviolet;
-}
-
 /* messages */
 #message-list {
     padding: 12px;
-    margin-bottom: 88px;
+    margin-bottom: 96px;
 }
 
 #settings-overlay {
@@ -56,7 +35,7 @@
 
     font-family: 'Open Sans', sans-serif;
 
-    background-color: white;
+    background-color: var(--background-color);
 }
 
 #login-prompt {
@@ -97,7 +76,7 @@
     border: none;
     border-radius: 3px;
 
-    color: blueviolet;
+    color: var(--link-color);
 
     cursor: pointer;
     text-align: center;
@@ -108,12 +87,12 @@
     text-decoration: none;
 
     padding: 8px 32px;
-    background-color: lightgrey;
+    background-color: var(--accent-color);
 }
 
 .login-prompt-button:hover {
-    color: white;
-    background-color: blueviolet;
+    color: var(--background-color);
+    background-color: var(--link-color);
 }
 
 
@@ -140,11 +119,11 @@
 
 .message-username {
     font-weight: bold;
-    color: black;
+    color: var(--text-color-bold);
     padding-right: 12px;
 }
 
 .message-text {
-    color: darkslategrey;
+    color: var(--text-color-subtle);
     overflow-wrap: break-word;
 }

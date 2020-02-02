@@ -1,10 +1,12 @@
+@import url("../variables.css");
+
 #forum-header {
     position: fixed;
     left: 0;
     right: 0;
     top: 0;
 
-    background-color: white;
+    background-color: var(--background-color);
 
     height: 64px;
     padding: 0 24px;
@@ -21,12 +23,12 @@ header .logo {
     font-size: 32px;
     font-weight: bold;
     text-decoration: none;
-    color: black;
+    color: var(--text-color-bold);
 }
 
 header .logo:hover {
     text-decoration: underline;
-    color: blueviolet;
+    color: var(--link-color);
 }
 
 header .header-link {
@@ -42,7 +44,7 @@ header .header-link {
     padding: 12px;
 
     border-radius: 3px;
-    border: 1px solid lightgrey;
+    border: 1px solid var(--accent-color);
 }
 
 .header-hidden {
@@ -69,7 +71,7 @@ forum-post {
     grid-row-end: 3;
 
     border-radius: 3px;
-    border: 1px solid lightgrey;
+    border: 1px solid var(--accent-color);
 }
 
 .post-title {
@@ -103,9 +105,12 @@ forum-post {
     font-family: 'Courier', monospace;
     font-size: 16px;
 
+    background-color: var(--background-color);
+    color: var(--text-color-bold);
+
     box-sizing: border-box;
     border-radius: 3px;
-    border: 3px solid lightgrey;
+    border: 3px solid var(--accent-color);
 
     width: 100%;
     /* max-width: 800px; */
@@ -115,7 +120,7 @@ forum-post {
 }
 
 .authorize-form-input:focus {
-    border-color: blueviolet;
+    border-color: var(--link-color);
 }
 
 .authorize-form-input:invalid {
@@ -140,12 +145,13 @@ forum-post {
     font-size: 16px;
 
     padding: 8px 32px;
-    background-color: lightgrey;
+    color: var(--text-color-bold);
+    background-color: var(--accent-color);
 }
 
 .authorize-form-button:hover {
-    color: white;
-    background-color: blueviolet;
+    color: var(--background-color);
+    background-color: var(--link-color);
 }
 
 .authorize-form-grid {

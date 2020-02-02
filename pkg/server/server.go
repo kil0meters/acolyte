@@ -72,8 +72,3 @@ func StartServer() {
 
 	http.ListenAndServe(":"+port, n)
 }
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "acolyte-web/index.html")
-	return
-}

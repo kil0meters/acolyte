@@ -5,11 +5,12 @@
   <title>milesbenton.com</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="/static/bundle.min.css">
+  <script src="/static/bundle.min.js"></script>
 </head>
 
 <body>
   <header class="static-header">
-    <h1>Miles Benton</h1>
+    <span class="logo">Miles Benton</span>
     <ul class="greeter-links">
       {{ range .Header }}
       <li class="greeter-link"><a href="{{ .URL }}">{{ .Name }}</a></li>
@@ -63,7 +64,7 @@
     </section>
   </article>
   <footer>
-    <span>contact. - me @ {this website}</span>
+    <span>contact: me @ {this website}</span> - <a onclick="acolyte.toggleDarkMode()" style="cursor: pointer;">Toggle Theme</a>
   </footer>
 </body>
 

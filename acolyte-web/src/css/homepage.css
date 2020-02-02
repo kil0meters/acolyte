@@ -1,3 +1,18 @@
+@import url("variables.css");
+
+html {
+    color: var(--text-color-bold);
+    background-color: var(--background-color);
+}
+
+a {
+    color: var(--text-color-bold);
+}
+
+a:hover {
+    color: var(--link-color);
+}
+
 body {
     font-family: 'Open Sans', sans-serif;
 }
@@ -8,20 +23,16 @@ footer {
     margin: 16px 0;
 }
 
-header.static-header {
+.static-header {
     max-width: 800px;
-    line-height: 100px;
+    line-height: 64px;
     margin: auto;
-}
-
-header h1 {
-    display: inline-block;
-    vertical-align: middle;
 }
 
 .greeter-links {
     list-style: none;
     padding: 0;
+    margin: 0;
     right: 0;
     float: right;
     vertical-align: middle;
@@ -35,13 +46,13 @@ header h1 {
     visibility: hidden;
     position: absolute;
     z-index: 100;
-    top: 128px;
+    top: 72px;
     left: 0;
     right: 0;
     opacity: 0;
     transition: all 0.3s ease;
     box-shadow: none;
-    background-color: white;
+    background-color: var(--background-color);
     transform: translateY(16px);
 }
 
@@ -53,7 +64,7 @@ header h1 {
 .greeter-hamburger-menu {
     position: absolute;
     right: 8px;
-    top: 56px;
+    top: 32px;
     margin: 0;
     opacity: 0;
     cursor: pointer;
@@ -64,20 +75,20 @@ header h1 {
 .greeter-hamburger-menu-container span {
     position: absolute;
     right: 8px;
-    top: 64px;
+    top: 32px;
     width: 32px;
     height: 4px;
     border-radius: 50px;
-    background-color: black;
+    background-color: var(--text-color-bold);
     pointer-events: none;
     transition: 0.5s;
 }
 
 .greeter-hamburger-menu-container span:nth-child(2) {
-    top: 72px;
+    top: 40px;
 }
 .greeter-hamburger-menu-container span:nth-child(3) {
-    top: 80px;
+    top: 48px;
 }
 
 .greeter-hamburger-menu:checked ~ span {
@@ -109,12 +120,12 @@ header h1 {
 .greeter-link a {
     text-decoration: none;
     font-size: 18px;
-    color: black;
+    color: var(--text-color-bold);
     font-weight: bold;
 }
 
 .greeter-link a:hover {
-    color: blueviolet;
+    color: var(--link-color);
     text-decoration: underline;
 }
 
@@ -145,7 +156,7 @@ header h1 {
 }
 
 .main-video-title {
-    color: white;
+    color: var(--background-color);
     font-weight: bold;
     font-size: 48px;
     text-shadow: 0px 0px 16px rgba(0,0,0,1);

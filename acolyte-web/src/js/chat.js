@@ -74,7 +74,7 @@ class MessageList {
 export class MBChat {
   constructor(maxHeight, noEntry) { 
     this.maxHeight = maxHeight
-    this.conn = new WebSocket('ws://localhost:8080/api/v1/chat')
+    this.conn = new WebSocket(`ws://${window.location.host}/api/v1/chat`)
     this.username = "username"
     this.isUnauthorized = false 
     this.entryBody = document.getElementById('entry-body')

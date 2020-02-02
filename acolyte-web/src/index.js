@@ -1,5 +1,6 @@
 import { MBChat, toggleLoginPrompt, toggleSettings, setupSplitpanes } from './js/chat.js'
 import { TransientHeader } from './js/forum.js'
+import { toggleDarkMode } from './js/toggle-darkmode.js'
 import * as postEditor from './js/post-editor.js'
 
 import './css/chat.css'
@@ -17,5 +18,7 @@ export {
     toggleSettings,
     setupSplitpanes,
 
-    TransientHeader
+    TransientHeader,
+
+    toggleDarkMode,
 }
