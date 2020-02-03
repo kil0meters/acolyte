@@ -126,8 +126,14 @@ class MessageList {
 
 export class MBChat {
   constructor(maxHeight, noEntry) { 
+    if (location.protocol == 'https:') {
+      this.wsProtocol = 'wss:'  
+    } else {
+      this.wsProtocol = 'ws:'
+    }
+
     this.maxHeight = maxHeight
-    this.conn = new WebSocket(`ws://${window.location.host}/api/v1/chat`)
+    this.conn = new WebSocket(`${this.wsProtocol}//${window.location.host}/api/v1/chat`)
     this.username = "username"
     this.isUnauthorized = false 
 
@@ -166,7 +172,7 @@ export class MBChat {
         console.log("Trying to reconnect")
         this.messageList.push({ "username": "Client", "text": "Disconnected. Trying to reconnect in 5 seconds..."})
 
-        this.conn = new WebSocket('ws://localhost:8080/api/v1/chat')
+        this.conn = new WebSocket(`${this.wsProtocol}//${window.location.host}/api/v1/chat`)
 
         setTimeout(() => {
           if (this.conn.readyState == this.conn.OPEN) {
