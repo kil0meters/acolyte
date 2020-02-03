@@ -5,7 +5,7 @@
   <title>Forum - milesbenton.com</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="/static/bundle.min.css">
-  <script src="/static/bundle.min.js"></script>
+  <script defer src="/static/bundle.min.js"></script>
 </head>
 
 <body>
@@ -19,10 +19,23 @@
     {{ end }}
   </header>
   <div class="wrapper">
-      <h1>{{.Post.Title}}</h1>
-      <span>{{.Post.Link}}</span>
-      <div>{{.Post.Body}}</div>
+    <div class="post-meta">
+      <span class="post-title">{{.Post.Title}}</span>
+      <span class="post-byline">posted by <a href="/user/{{.User.Username}}">{{.User.Username}}</a> on {{.Post.CreatedAt.Format "2006-01-02"}}</span>
+      <a href="{{.Post.Link}}">{{.Post.Link}}</a>
+    </div>
+    <div id="post-body" class="post-body">
+      {{.Post.Body}}
+    </div>
   </div>
+  <script>
+    window.addEventListener('load', function() {
+      new acolyte.TransientHeader("forum-header")
+      acolyte.renderMarkdownInElement(document.getElementById("post-body"))
+      acolyte.renderEmotesInElement(document.getElementById("post-body"))
+      acolyte.renderMathInElement(document.getElementById("post-body"))
+    })
+  </script>
 </body>
 
 </html>

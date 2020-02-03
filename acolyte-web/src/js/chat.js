@@ -1,6 +1,5 @@
 // import katex from 'katex'
 import renderMathInElement from 'katex/dist/contrib/auto-render'
-import Split from 'split.js'
 import { replaceTextWithEmotes, getEmotes } from './emotes.js'
 
 class MessageList {
@@ -373,13 +372,5 @@ export function toggleEmotePopup() {
     document.getElementById("emote-popup").classList.remove("hidden")
   }
   emotePopupShown = !emotePopupShown
-}
-
-export function setupSplitpanes(left, right) {
-  Split([left, right], {
-    sizes: [70, 30],
-    gutterSize: 10,
-    minSize: 200,
-  })
 }
 

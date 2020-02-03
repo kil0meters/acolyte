@@ -26,9 +26,14 @@ export function getEmotes() {
 
 export function replaceTextWithEmotes(text, onclick) {
     Object.keys(emotes).forEach((emoteName) => {
-        let regex = new RegExp(`(${regexEscape(emoteName)})(\\s|$)`, 'g')
+        let regex = new RegExp(`(${regexEscape(emoteName)})(\\s|$|[,.<>?/!'"])`, 'g')
 
         text = text.replace(regex, `<img class="emote" alt="$1" onclick="${onclick}" src="/static/${emotes[emoteName]}">$2`)
     })
     return text
+}
+
+// this is done in a rather inefficient manner 
+export function renderEmotesInElement(element) {
+    element.innerHTML = replaceTextWithEmotes(element.innerHTML)
 }

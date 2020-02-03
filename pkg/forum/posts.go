@@ -7,9 +7,12 @@ import (
 	"net/http"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/kil0meters/acolyte/pkg/database"
+
+	"github.com/microcosm-cc/bluemonday"
 
 	"github.com/asaskevich/govalidator"
 )
@@ -35,13 +38,15 @@ const (
 
 // Post struct containing data for a post
 type Post struct {
-	ID        string `db:"id"        valid:"printableascii,required"`
-	UserID    string `db:"user_id"   valid:"printableascii,required"`
-	Title     string `db:"title"     valid:"printableascii,required"`
-	Link      string `db:"link"      valid:"printableascii,optional"`
-	Body      string `db:"body"      valid:"printableascii,optional"`
-	Upvotes   int    `db:"upvotes"   valid:"-"`
-	Downvotes int    `db:"downvotes" valid:"-"`
+	ID        string    `db:"id"         valid:"printableascii,required"`
+	UserID    string    `db:"user_id"    valid:"printableascii,required"`
+	Title     string    `db:"title"      valid:"type(string),required"`
+	Link      string    `db:"link"       valid:"printableascii,optional"`
+	Body      string    `db:"body"       valid:"type(string),optional"`
+	Removed   bool      `db:"removed"    valid:"type(bool),optional"`
+	CreatedAt time.Time `db:"created_at" valid:"type(time.Time),optional"`
+	Upvotes   int       `db:"upvotes"    valid:"-"`
+	Downvotes int       `db:"downvotes"  valid:"-"`
 }
 
 // IsValid tests if a post contains valid data
@@ -65,8 +70,6 @@ func CreateNewPost(title string, user *User, body string, link string) (*Post, e
 		Link:   link,
 		Body:   body,
 	}
-
-	log.Println(post)
 
 	if !post.IsValid() { // TODO: post.Link still needs to be validated
 		return nil, ErrInvalidPostData
@@ -101,6 +104,8 @@ func PostFromID(id string) *Post {
 		return nil
 	}
 
+	fmt.Printf("%+v\n", post)
+
 	return &post
 }
 
@@ -134,10 +139,14 @@ func ServePost(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	post := PostFromID(params["id"])
+	post.Body = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(post.Body)))
+
+	user := UserFromUserID(post.UserID)
 
 	data := Data{
 		IsLoggedIn: false,
 		Post:       post,
+		User:       user,
 	}
 
 	postTemplate.Execute(w, data)

@@ -3,7 +3,9 @@ var lightTheme = {
     textColorBold: 'black',
     textColorSubtle: 'darkslategrey',
     linkColor: 'blueviolet',
-    accentColor: 'lightgrey'
+    accentColor: 'lightgrey',
+    shadowColor: 'rgba(0,0,0,0.07)',
+    shadowColorIntense: 'rgba(0,0,0,.28)',
 }
 
 var darkTheme = {
@@ -11,7 +13,9 @@ var darkTheme = {
     textColorBold: 'white',
     textColorSubtle: '#e0e0e0',
     linkColor: '#ebf745',
-    accentColor: '#092d2c'
+    accentColor: '#092d2c',
+    shadowColor: 'rgba(235, 247, 69, 0.07)',
+    shadowColorIntense: 'rgba(235, 247, 69, 0.28)',
 }
 
 var currentTheme = lightTheme
@@ -24,6 +28,8 @@ function setToTheme(theme) {
     document.documentElement.style.setProperty('--text-color-subtle', theme.textColorSubtle)
     document.documentElement.style.setProperty('--link-color', theme.linkColor)
     document.documentElement.style.setProperty('--accent-color', theme.accentColor)
+    document.documentElement.style.setProperty('--shadow-color', theme.shadowColor)
+    document.documentElement.style.setProperty('--shadow-color-intense', theme.shadowColorIntense)
 }
 
 function setThemeToStorage() {

@@ -4,6 +4,9 @@
     --text-color-subtle: darkslategrey;
     --link-color: blueviolet;
     --accent-color: lightgrey;
+
+    --shadow-color: rgba(0,0,0,0.07);
+    --shadow-color-intense: rgba(0,0,0,.28);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,5 +16,8 @@
         --text-color-subtle: #e0e0e0;
         --link-color: #ebf745;
         --accent-color: #092d2c;
+
+        --shadow-color: rgba(235, 247, 69, 0.07);
+        --shadow-color-intense: rgba(235, 247, 69, 0.28);
     }
 }

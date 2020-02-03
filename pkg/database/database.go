@@ -23,15 +23,27 @@ func InitDatabase(connStr string) {
 		log.Panic(err)
 	}
 
-	_, err = DB.Exec("CREATE SCHEMA IF NOT EXISTS acolyte")
-	if err != nil {
-		log.Panic(err)
-	}
+	DB.MustExec("CREATE SCHEMA IF NOT EXISTS acolyte")
 
-	_, err = DB.Exec("CREATE TABLE IF NOT EXISTS acolyte.posts (id text UNIQUE PRIMARY KEY, user_id text, title text NOT NULL, body text, link text, upvotes integer DEFAULT 0, downvotes integer DEFAULT 0)")
-	if err != nil {
-		log.Panic(err)
-	}
+	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.posts (id text UNIQUE PRIMARY KEY,
+														   user_id text,
+														   title text NOT NULL,
+														   body text,
+														   link text,
+														   removed boolean DEFAULT FALSE,
+														   created_at timestamp DEFAULT NOW(),
+														   upvotes integer DEFAULT 0,
+														   downvotes integer DEFAULT 0)`)
 
-	_, err = DB.Exec("CREATE TABLE IF NOT EXISTS acolyte.accounts (id text UNIQUE PRIMARY KEY, username text UNIQUE NOT NULL, email text UNIQUE, password_hash text NOT NULL, sessions text[] DEFAULT '{}'::text[])")
+	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.accounts (id text UNIQUE PRIMARY KEY,
+															  username text UNIQUE NOT NULL,
+															  email text UNIQUE,
+															  password_hash text NOT NULL,
+															  created_at timestamp DEFAULT NOW(),
+															  sessions text[] DEFAULT '{}'::text[])`)
+
+	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.bans (user_id text UNIQUE PRIMARY KEY,
+														  banned_until timestamp NOT NULL,
+														  ban_reason text,
+														  banned_by text NOT NULL)`)
 }

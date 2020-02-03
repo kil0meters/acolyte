@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/kil0meters/acolyte/pkg/database"
@@ -16,11 +17,12 @@ var ErrInvalidUserData = errors.New("Received invalid user data")
 
 // User struct represents a user
 type User struct {
-	ID       string         `db:"id"            valid:"alphanum"`
-	Username string         `db:"username"      valid:"alphanum"`
-	Email    string         `db:"email"         valid:"email"`
-	Hash     string         `db:"password_hash" valid:"printableascii"`
-	Sessions pq.StringArray `db:"sessions"      valid:"-"`
+	ID        string         `db:"id"            valid:"alphanum"`
+	Username  string         `db:"username"      valid:"alphanum"`
+	Email     string         `db:"email"         valid:"email"`
+	Hash      string         `db:"password_hash" valid:"printableascii"`
+	CreatedAt time.Time      `db:"created_at"    valid:"type(time.Time)"`
+	Sessions  pq.StringArray `db:"sessions"      valid:"-"`
 }
 
 // IsValid tests if a user struct contains valid data
@@ -32,6 +34,20 @@ func (user User) IsValid() bool {
 	}
 
 	return true
+}
+
+// UserFromUserID gets a user from an id
+func UserFromUserID(id string) *User {
+	user := User{}
+
+	row := database.DB.QueryRowx("SELECT * FROM acolyte.accounts WHERE id = $1", id)
+
+	err := row.StructScan(&user)
+	if err != nil {
+		return nil
+	}
+
+	return &user
 }
 
 func hashString(password string) (string, error) {

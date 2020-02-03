@@ -5,7 +5,7 @@
   <title>Sign up - milesbenton.com</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="/static/bundle.min.css">
-  <script src="/static/bundle.min.js"></script>
+  <script defer src="/static/bundle.min.js"></script>
 </head>
 
 <body>
@@ -13,7 +13,7 @@
     <a class="logo" href="/">Post Editor</a>
   </header>
 
-  <div class="wrapper">
+  <div class="wrapper padded">
     <form action="/forum/create-post" method="POST" style="margin: 0;">
       <input name="title" type="text" class="authorize-form-input" placeholder="Title">
       <input name="link" type="url" class="authorize-form-input" placeholder="Link/Image">

@@ -17,6 +17,7 @@ type Data struct {
 	IsLoggedIn bool
 	Post       *Post
 	Posts      []Post
+	User       *User
 }
 
 // IsAuthorized tests if a session token is valid

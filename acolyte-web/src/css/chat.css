@@ -14,7 +14,7 @@
     bottom: 0;
 
     padding: 12px;
-    box-shadow: 16px 0px 47px 2px rgba(0,0,0,.07);
+    box-shadow: 16px 0px 47px 2px var(--shadow-color);
 }
 
 /* messages */
@@ -118,7 +118,7 @@
     opacity: 1;
     transition: all 0.5s ease;
 
-    box-shadow: 0px 0px 47px 2px rgba(0,0,0,0.07);
+    box-shadow: 0px 0px 47px 2px var(--shadow-color);
 }
 
 #emote-popup .emote {
@@ -176,7 +176,7 @@
 #autocompletion-popup {
     background-color: var(--background-color);
 
-    box-shadow: 0px 0px 47px 2px rgba(0,0,0,0.07);
+    box-shadow: 0px 0px 47px 2px var(--shadow-color);
 
     position: fixed;
 
