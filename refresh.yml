@@ -22,6 +22,6 @@ binary_name: refresh-build
 # Extra command line flags you want passed to the built binary when running it.
 command_flags: ["--env", "development"]
 # Extra environment variables you want defined when the built binary is run.
-command_env: ["PORT=8080"]
+command_env: ["PORT=8080", "DATABASE_URL=postgres://kilometers@localhost:5432/kilometers?sslmode=disable"]
 # If you want colors to be used when printing out log messages.
 enable_colors: true

@@ -27,7 +27,8 @@ func StartServer() {
 	go pool.Start()
 
 	homepage.CheckIfLiveJob()
-	database.InitDatabase("postgres://kilometers@localhost:5432/kilometers?sslmode=disable")
+
+	database.InitDatabase(os.Getenv("DATABASE_URL"))
 
 	r.HandleFunc("/", homepage.ServeHomepage)
 
