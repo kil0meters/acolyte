@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "build": "./node_modules/.bin/webpack --mode production --config webpack.config.js"
+  },
   "dependencies": {
     "css-loader": "^3.4.2",
     "file-loader": "^5.0.2",
