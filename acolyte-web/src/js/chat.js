@@ -7,7 +7,10 @@ class MessageList {
   constructor(messageListElement, maxHeight) {
     this._list = []
     this.messageListElement = messageListElement
+    this.emotes = getEmotes()
     this.maxHeight = maxHeight
+
+    this.currentCombo = []
   }
 
   static buildMessage(message) {
@@ -42,6 +45,9 @@ class MessageList {
       {left: "$", right: "$", display: false}
     ]})
 
+    this.checkForCombos()
+    this.replaceComboListWithElement()
+
     if ((window.innerHeight + window.scrollY + 64) >= (document.body.offsetHeight - messageElement.offsetHeight)) {
       window.scrollTo(0,document.body.scrollHeight)
 
@@ -51,19 +57,67 @@ class MessageList {
     }
   }
 
+  checkForCombos() {
+    this.currentCombo = []
+
+    let recentMessage = this._list[this._list.length-1]
+    var prevMessage = recentMessage
+
+    if (!this.emotes.includes(recentMessage.text)) {
+      return
+    }
+
+    for (let i = 1; recentMessage.text === prevMessage.text && i <= this._list.length; i++) {
+      this.currentCombo.push(this._list[this._list.length-i])
+      prevMessage = this._list[this._list.length-i]
+    }
+
+    if (this.currentCombo[this.currentCombo.length-1].text != recentMessage.text) {
+      this.currentCombo.pop() // combo broken
+    }
+  }
+
+  replaceComboListWithElement() {
+    if (this.currentCombo.length > 1) {
+      for (let message of this.currentCombo) {
+        let elementToRemove = document.getElementById(message.id)
+
+        if (elementToRemove != undefined) {
+          this.messageListElement.removeChild(document.getElementById(message.id))
+        }
+      }
+
+      let currentComboElement = document.createElement('div')
+
+
+      let mostRecentMessage = this.messageListElement.lastChild
+
+      if (mostRecentMessage != null) {
+        if (Array.from(mostRecentMessage.classList).includes('combo-message') && mostRecentMessage.firstChild.getAttribute('alt') == this.currentCombo[0].text) {
+          currentComboElement = mostRecentMessage;
+        }
+      }
+      replaceTextWithEmotes
+
+      currentComboElement.classList.add('chat-message', 'combo-message')
+      currentComboElement.innerHTML = `${replaceTextWithEmotes(this.currentCombo[0].text)} ${this.currentCombo.length}x`
+
+      this.messageListElement.appendChild(currentComboElement)
+      // if (currentComboElement.classList)
+      console.log(currentComboElement);
+    }
+  }
+
   removeByIndex(index) {
     this._list.splice(index, 1)
     this.messageListElement.children[0].remove()
   }
 
   removeByID(id) {
-    for (i = 0; i < this._list.length; i++) {
-      if (this._list[i].id === id) {
-        this._list.splice(i, 1)
-        this.messageListElement.removeChild(document.getElementById(id))
-        break
-      }
-    }
+    let i = this._list.indexOf(id)
+    if (i != -1) this._list.splice(i, 1)
+
+    this.messageListElement.removeChild(document.getElementById(id))
   }
 
   get list() { 
