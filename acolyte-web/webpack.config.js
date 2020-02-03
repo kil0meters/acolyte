@@ -7,7 +7,7 @@ const libraryName = 'acolyte';
 
 module.exports = {
   optimization: {
-    // minimize: false,
+    minimize: false,
     minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})]
   },
   plugins: [new MiniCssExtractPlugin({

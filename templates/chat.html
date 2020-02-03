@@ -37,7 +37,9 @@
   {{ else }}
   <div id="message-entry">
     <div id="autocompletion-popup"></div>
+    <div id="emote-popup" class="hidden"></div>
     <textarea id="entry-body" style="resize: none;" class="authorize-form-input" placeholder="Say something loser" autocomplete="off"></textarea>
+    <a id="emote-button" href="#" onclick="acolyte.toggleEmotePopup()">Emotes</a>
     <a id="settings-button" href="#" onclick="acolyte.toggleSettings()">Settings</a>
   </div>
   <script>

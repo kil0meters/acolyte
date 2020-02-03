@@ -134,6 +134,11 @@ export class MBChat {
 
     this.entryBody = document.getElementById('entry-body')
 
+    let emotePopup = document.getElementById('emote-popup')
+    getEmotes().forEach((emote) => {
+      emotePopup.innerHTML += replaceTextWithEmotes(emote, `document.getElementById('entry-body').value += '${emote} '`)
+    })
+
     this.timeoutInterval = null
 
     this.messageList = new MessageList(document.getElementById('message-list'), this.maxHeight)
@@ -141,7 +146,6 @@ export class MBChat {
     if (noEntry != true) { 
       this.initializeEntryBody()
       this.autocompletionHelper = new Autocompletion()
-
     }
   }
 
@@ -342,6 +346,7 @@ class Autocompletion {
 
 var loginPromptShown = false
 var settingsShown = false
+var emotePopupShown = false
 
 export function toggleLoginPrompt() {
   if (loginPromptShown) {
@@ -361,6 +366,15 @@ export function toggleSettings() {
   settingsShown = !settingsShown
 }
 
+export function toggleEmotePopup() {
+  if (emotePopupShown) {
+    document.getElementById("emote-popup").classList.add("hidden")
+  } else {
+    document.getElementById("emote-popup").classList.remove("hidden")
+  }
+  emotePopupShown = !emotePopupShown
+}
+
 export function setupSplitpanes(left, right) {
   Split([left, right], {
     sizes: [70, 30],
@@ -368,3 +382,4 @@ export function setupSplitpanes(left, right) {
     minSize: 200,
   })
 }
+
