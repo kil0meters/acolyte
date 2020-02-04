@@ -9,7 +9,7 @@
     background-color: var(--background-color);
 
     height: 64px;
-    padding: 0 24px;
+    padding: 0 16px;
 
     transition: all 0.2s ease-in-out;
 

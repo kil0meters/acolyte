@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Logs - milesbenton.com</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="/static/bundle.min.css">
+  <script defer src="/static/bundle.min.js"></script>
+</head>
+
+<body>
+  <header id="forum-header">
+      <a href="/logs" class="logo">Logs</a>
+  </header>
+  <div id="logs-results" class="wrapper padded">
+    {{ if not . }}
+      Yikes that person hasn't said anything
+    {{ else }}
+      {{ range . }}
+          <p>{{ .Timestamp.Format "2006-01-02 15:04:05" }} [{{ .Username }}] {{ .Message }}</p>
+      {{ end }}
+    {{ end }}
+  </div>
+</body>
+
+</html>

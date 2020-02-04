@@ -1,0 +1,14 @@
+#logs-search-bar {
+    height: 48px;
+    margin: 8px auto;
+    max-width: 832px;
+}
+
+#logs-results {
+    font-family: 'Courier', monospace;
+}
+
+#logs-results p, #logs-results a {
+    margin: 0;
+    text-decoration: none;
+}

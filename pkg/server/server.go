@@ -11,6 +11,7 @@ import (
 	"github.com/kil0meters/acolyte/pkg/forum"
 	"github.com/kil0meters/acolyte/pkg/homepage"
 	"github.com/kil0meters/acolyte/pkg/livestream"
+	"github.com/kil0meters/acolyte/pkg/logs"
 
 	"github.com/gorilla/mux"
 	"github.com/urfave/negroni"
@@ -21,6 +22,7 @@ func StartServer() {
 	r := mux.NewRouter().StrictSlash(true)
 	api := r.PathPrefix("/api/v1/").Subrouter()
 	forumRouter := r.PathPrefix("/forum").Subrouter()
+	logsRouter := r.PathPrefix("/logs").Subrouter()
 
 	// live chat socket
 	pool := chat.NewPool()
@@ -44,6 +46,12 @@ func StartServer() {
 	r.HandleFunc("/chat", chat.ServeChat)
 	r.HandleFunc("/live", livestream.ServeLivestream)
 
+	logsRouter.HandleFunc("", logs.ServeHomepage)
+	logsRouter.HandleFunc("/search", logs.ServeSearch)
+	logsRouter.HandleFunc("/stalk", logs.ServeStalk).Queries("username", "{username}")
+	logsRouter.HandleFunc("/messages", logs.ServeMessages)
+	// logsRouter.HandleFunc("/messages/{message_id}", logs.ServeLogs)
+
 	api.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
 		chat.ServeWS(pool, w, r)
 	})
@@ -56,6 +64,10 @@ func StartServer() {
 		"title", "{title}",
 		"body", "{body}",
 		"link", "{link}")
+
+	api.HandleFunc("/search-logs", logs.SearchLogs).Queries(
+		"search", "{search}")
+	// "username", "{username}")
 
 	n := negroni.Classic() // Includes some default middlewares
 	n.UseHandler(r)

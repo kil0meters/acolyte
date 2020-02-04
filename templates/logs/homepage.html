@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Logs - milesbenton.com</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="/static/bundle.min.css">
+  <script defer src="/static/bundle.min.js"></script>
+</head>
+
+<body>
+  <header class="static-header">
+    <a class="logo" href="/">Logs</a>
+  </header>
+  <article class="content-wrapper">
+    <form action="/logs/stalk" method="GET">
+      <span class="authorize-form-label">Stalk</span>
+      <input name="username" type="text" class="authorize-form-input" placeholder="stalk someone">
+    </form>
+    <form action="/logs/search" method="GET">
+      <span class="authorize-form-label">Search</span>
+      <input name="search" type="text" class="authorize-form-input" placeholder="search for a meme">
+    </form>
+  </article>
+  <script>
+  </script>
+</body>
+
+</html>
