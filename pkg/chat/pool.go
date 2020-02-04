@@ -73,7 +73,7 @@ func (pool *Pool) Start() {
 				messageData := MessageData{
 					Username: "Server",
 					ID:       uuid.Must(uuid.NewRandom()),
-					Text:     fmt.Sprintf("%s user left", client.Username),
+					Text:     fmt.Sprintf("%s left", client.Username),
 				}
 
 				pool.BroadcastMessage(Message{

@@ -1,4 +1,4 @@
-package forum
+package authorization
 
 import (
 	"math/rand"

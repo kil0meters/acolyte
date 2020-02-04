@@ -7,7 +7,7 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/kil0meters/acolyte/pkg/forum"
+	"github.com/kil0meters/acolyte/pkg/authorization"
 )
 
 var chatTemplate *template.Template = template.Must(template.ParseFiles("./templates/chat.html"))
@@ -18,13 +18,13 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true }, // TODO: this is not safe
 }
 
-// ServeWS allows a user to join the live chat room
+// ServeWS allows a account to join the live chat room
 func ServeWS(pool *Pool, w http.ResponseWriter, r *http.Request) {
-	log.Println("Starting WS session from user", r.RemoteAddr)
+	log.Println("Starting WS session from address", r.RemoteAddr)
 
-	user := forum.IsAuthorized(r)
-	if user == nil {
-		user = &forum.User{
+	account := authorization.IsAuthorized(r, authorization.Banned)
+	if account == nil {
+		account = &authorization.Account{
 			Username: "ANON",
 		}
 	}
@@ -36,7 +36,7 @@ func ServeWS(pool *Pool, w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := &Client{
-		Username: user.Username,
+		Username: account.Username,
 		Conn:     conn,
 		Pool:     pool,
 	}

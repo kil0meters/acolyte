@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/kil0meters/acolyte/pkg/authorization"
 	"github.com/kil0meters/acolyte/pkg/database"
 )
 
@@ -17,46 +18,7 @@ type Data struct {
 	IsLoggedIn bool
 	Post       *Post
 	Posts      []Post
-	User       *User
-}
-
-// IsAuthorized tests if a session token is valid
-func IsAuthorized(r *http.Request) *User {
-	sessionCookie, err := r.Cookie("session_token")
-	if err != nil {
-		return nil
-	}
-
-	usernameCookie, err := r.Cookie("username")
-	if err != nil {
-		return nil
-	}
-
-	user := User{}
-
-	sessionToken := sessionCookie.Value
-	username := usernameCookie.Value
-
-	row := database.DB.QueryRowx("SELECT * FROM acolyte.accounts WHERE username = $1", username)
-
-	err = row.StructScan(&user)
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-
-	isValid := false
-	for i := 0; i < len(user.Sessions); i++ {
-		if verifyHash(sessionToken, user.Sessions[i]) {
-			isValid = true
-		}
-	}
-
-	if isValid {
-		return &user
-	}
-
-	return nil
+	Account    *authorization.Account
 }
 
 // ServeForum serves forum front page
@@ -69,7 +31,7 @@ func ServeForum(w http.ResponseWriter, r *http.Request) {
 	}
 
 	isLoggedIn := false
-	if user := IsAuthorized(r); user != nil {
+	if user := authorization.IsAuthorized(r, authorization.Banned); user != nil {
 		isLoggedIn = true
 	}
 

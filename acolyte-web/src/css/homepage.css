@@ -156,7 +156,7 @@ footer {
 }
 
 .main-video-title {
-    color: var(--background-color);
+    color: white;
     font-weight: bold;
     font-size: 48px;
     text-shadow: 0px 0px 16px rgba(0,0,0,1);

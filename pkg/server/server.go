@@ -47,7 +47,6 @@ func StartServer() {
 	api.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
 		chat.ServeWS(pool, w, r)
 	})
-	// api.HandleFunc("/getPost", _).Queries("id", "{id:[a-zA-Z]{6}}")
 	api.HandleFunc("/list-posts", forum.ListPosts).Queries(
 		"sorting-type", "{sorting-type:(?:hot|top|controversial|new)}",
 		"amount", "{amount:(?:0?[1-9]|[12][0-9]|3[012])}",
@@ -57,8 +56,6 @@ func StartServer() {
 		"title", "{title}",
 		"body", "{body}",
 		"link", "{link}")
-
-	// api.HandleFunc("/getComment", _).Queries("id", "{id:[a-zA-Z]{6}}")
 
 	n := negroni.Classic() // Includes some default middlewares
 	n.UseHandler(r)

@@ -9,12 +9,12 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/gorilla/mux"
-	"github.com/kil0meters/acolyte/pkg/database"
-
 	"github.com/microcosm-cc/bluemonday"
 
-	"github.com/asaskevich/govalidator"
+	"github.com/kil0meters/acolyte/pkg/authorization"
+	"github.com/kil0meters/acolyte/pkg/database"
 )
 
 var postTemplate *template.Template = template.Must(template.ParseFiles("./templates/forum/post.html"))
@@ -38,8 +38,8 @@ const (
 
 // Post struct containing data for a post
 type Post struct {
-	ID        string    `db:"id"         valid:"printableascii,required"`
-	UserID    string    `db:"user_id"    valid:"printableascii,required"`
+	ID        string    `db:"post_id"    valid:"printableascii,required"`
+	AccountID string    `db:"account_id" valid:"printableascii,required"`
 	Title     string    `db:"title"      valid:"type(string),required"`
 	Link      string    `db:"link"       valid:"printableascii,optional"`
 	Body      string    `db:"body"       valid:"type(string),optional"`
@@ -62,20 +62,20 @@ func (post Post) IsValid() bool {
 }
 
 // CreateNewPost adds a new post to the database
-func CreateNewPost(title string, user *User, body string, link string) (*Post, error) {
+func CreateNewPost(title string, account *authorization.Account, body string, link string) (*Post, error) {
 	post := Post{
-		ID:     GenerateID(6),
-		UserID: user.ID,
-		Title:  title,
-		Link:   link,
-		Body:   body,
+		ID:        authorization.GenerateID(6),
+		AccountID: account.ID,
+		Title:     title,
+		Link:      link,
+		Body:      body,
 	}
 
 	if !post.IsValid() { // TODO: post.Link still needs to be validated
 		return nil, ErrInvalidPostData
 	}
 
-	_, err := database.DB.NamedExec("INSERT INTO acolyte.posts (id, user_id, title, body, link) VALUES (:id, :user_id, :title, :body, :link)", post)
+	_, err := database.DB.NamedExec("INSERT INTO acolyte.posts (post_id, account_id, title, body, link) VALUES (:post_id, :account_id, :title, :body, :link)", post)
 	if err != nil {
 		return &post, err
 	}
@@ -117,13 +117,13 @@ func NewPost(w http.ResponseWriter, r *http.Request) {
 	body := strings.Trim(r.Form.Get("body"), " \n\t")
 	link := strings.Trim(r.Form.Get("link"), " \n\t")
 
-	user := IsAuthorized(r)
-	if user == nil {
+	account := authorization.IsAuthorized(r, authorization.Standard)
+	if account == nil {
 		http.Error(w, "error: Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	post, err := CreateNewPost(title, user, body, link)
+	post, err := CreateNewPost(title, account, body, link)
 	if err != nil {
 		log.Println(err) // TODO: Unhandled error
 		return
@@ -138,15 +138,15 @@ func NewPost(w http.ResponseWriter, r *http.Request) {
 func ServePost(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
-	post := PostFromID(params["id"])
+	post := PostFromID(params["message_id"])
 	post.Body = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(post.Body)))
 
-	user := UserFromUserID(post.UserID)
+	account := authorization.AccountFromID(post.AccountID)
 
 	data := Data{
 		IsLoggedIn: false,
 		Post:       post,
-		User:       user,
+		Account:    account,
 	}
 
 	postTemplate.Execute(w, data)

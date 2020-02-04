@@ -25,25 +25,39 @@ func InitDatabase(connStr string) {
 
 	DB.MustExec("CREATE SCHEMA IF NOT EXISTS acolyte")
 
-	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.posts (id text UNIQUE PRIMARY KEY,
-														   user_id text,
-														   title text NOT NULL,
-														   body text,
-														   link text,
-														   removed boolean DEFAULT FALSE,
-														   created_at timestamp DEFAULT NOW(),
-														   upvotes integer DEFAULT 0,
-														   downvotes integer DEFAULT 0)`)
+	// this fails if the type doesn't exist initially..
+	// DB.MustExec(`CREATE TYPE permission_level AS ENUM ('AUTH_ADMIN',
+	// 																'AUTH_MODERATOR',
+	// 																'AUTH_STANDARD',
+	// 																'AUTH_BANNED')`)
 
-	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.accounts (id text UNIQUE PRIMARY KEY,
-															  username text UNIQUE NOT NULL,
-															  email text UNIQUE,
-															  password_hash text NOT NULL,
-															  created_at timestamp DEFAULT NOW(),
-															  sessions text[] DEFAULT '{}'::text[])`)
+	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.posts (post_id text UNIQUE PRIMARY KEY,
+														account_id text,
+														title text NOT NULL,
+														body text,
+														link text,
+														removed boolean DEFAULT FALSE,
+														created_at timestamp DEFAULT NOW(),
+														upvotes integer DEFAULT 0,
+														downvotes integer DEFAULT 0)`)
 
-	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.bans (user_id text UNIQUE PRIMARY KEY,
-														  banned_until timestamp NOT NULL,
-														  ban_reason text,
-														  banned_by text NOT NULL)`)
+	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.accounts (account_id text UNIQUE PRIMARY KEY,
+															username text UNIQUE NOT NULL,
+															email text UNIQUE,
+															password_hash text NOT NULL,
+															created_at timestamp DEFAULT NOW(),
+															permissions permission_level DEFAULT 'AUTH_STANDARD',
+															sessions text[] DEFAULT '{}'::text[])`)
+
+	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.bans (account_id text UNIQUE PRIMARY KEY,
+														banned_until timestamp NOT NULL,
+														ban_reason text,
+														banned_by text NOT NULL)`)
+
+	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.chat_log (message_id uuid UNIQUE PRIMARY KEY,
+															account_id text,
+															username text NOT NULL,
+															time timestamp DEFAULT NOW(),
+															message text NOT NULL)`)
+
 }

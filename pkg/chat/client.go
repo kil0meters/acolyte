@@ -30,6 +30,21 @@ type MessageData struct {
 	Text     string    `json:"text"`
 }
 
+// ReadMessage reads a message from websocket data
+func ReadMessage(messageType int, body []byte) Message {
+	messageData := MessageData{}
+	json.Unmarshal(body, &messageData)
+	messageData.Text = strings.TrimSpace(messageData.Text)
+	messageData.ID = uuid.Must(uuid.NewRandom())
+
+	message := Message{
+		Type: messageType,
+		Data: messageData,
+	}
+
+	return message
+}
+
 // Read Reads messages from a given client
 func (c *Client) Read() {
 	defer func() {
@@ -42,22 +57,14 @@ func (c *Client) Read() {
 	}
 
 	for {
-		messageType, p, err := c.Conn.ReadMessage()
+		messageType, body, err := c.Conn.ReadMessage()
 		if err != nil {
 			log.Println(err.Error())
 			return
 		}
 
-		messageData := MessageData{}
-		json.Unmarshal(p, &messageData)
-		messageData.Username = c.Username // force username to be forum username
-		messageData.Text = strings.TrimSpace(messageData.Text)
-		messageData.ID = uuid.Must(uuid.NewRandom())
-
-		message := Message{
-			Type: messageType,
-			Data: messageData,
-		}
+		message := ReadMessage(messageType, body)
+		message.Data.Username = c.Username // force username to be forum username
 
 		c.Pool.Broadcast <- message
 		log.Printf("[chat] [%s] <%s> %s\n", c.Conn.RemoteAddr(), message.Data.Username, message.Data.Text)
