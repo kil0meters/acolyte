@@ -1,4 +1,4 @@
-import { MBChat, toggleLoginPrompt, toggleSettings, toggleEmotePopup, setupSplitpanes } from './js/chat.js'
+import { MBChat, toggleLoginPrompt, toggleSettings, toggleEmotePopup } from './js/chat.js'
 import { TransientHeader } from './js/forum.js'
 import { toggleDarkMode } from './js/toggle-darkmode.js'
 import { renderEmotesInElement } from './js/emotes.js'
@@ -25,7 +25,6 @@ export {
     toggleLoginPrompt,
     toggleSettings,
     toggleEmotePopup,
-    setupSplitpanes,
 
     TransientHeader,
     renderMathInElement,

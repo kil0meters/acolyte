@@ -33,7 +33,22 @@ module.exports = {
       },
       {
         test: /\.(png|jpe?g|gif)$/i,
-        use: ["file-loader"],
+        use: [
+          'file-loader',
+          {
+            loader: 'image-webpack-loader',
+            options: {
+              optipng: {
+                enabled: true,
+                optimizationLevel: 3,
+              },
+              pngquant: {
+                quality: [0.65, 0.90],
+                speed: 4
+              },
+            },
+          }
+        ],
       },
     ],
   }

@@ -5,6 +5,7 @@ import F from "../emotes/F.png"
 import Fukushima from "../emotes/Fukushima.png"
 import Tetrahydrocannabinol from "../emotes/Tetrahydrocannabinol.png"
 import Australia from "../emotes/Australia.png"
+import WOW from "../emotes/WOW.png"
 
 const emotes = {
     "AwwMan": AwwMan,
@@ -14,6 +15,7 @@ const emotes = {
     "FeelsBadMan": FeelsBadMan,
     "Fukushima": Fukushima,
     "F": F,
+    "WOW": WOW,
 }
 
 function regexEscape(str) {
