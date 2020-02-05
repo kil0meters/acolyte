@@ -17,16 +17,14 @@
     <form action="/sign-up?target={{.}}" method="POST">
       <span class="authorize-form-label">Username</span>
       <input name="username" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1" maxlength="16">
-      <span class="authorize-form-label">Email</span>
+      <span class="authorize-form-label">Email (optional)</span>
       <input name="email" class="authorize-form-input" type="email">
       <span class="authorize-form-label">Password</span>
       <input name="password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8" maxlength="256" type="password">
       <span class="authorize-form-label">Verify Password</span>
       <input name="verify_password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8" maxlength="256" type="password">
-
       <button class="authorize-form-button" type="submit">LOG IN</button>
     </form>
-
   </div>
 </body>
 

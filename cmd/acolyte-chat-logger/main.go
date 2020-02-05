@@ -19,6 +19,7 @@ import (
 var addr = flag.String("addr", "localhost:8080", "http service address")
 
 func main() {
+	webURL, _ := url.Parse(os.Getenv("WEB_URL"))
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "80"
@@ -32,7 +33,7 @@ func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: fmt.Sprintf("localhost:%s", port), Path: "/api/v1/chat"}
+	u := url.URL{Scheme: "wss", Host: fmt.Sprintf("%s:%s", webURL.Hostname(), port), Path: "/api/v1/chat"}
 	log.Printf("Serving to %s", u.String())
 
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)

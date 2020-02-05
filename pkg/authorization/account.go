@@ -19,7 +19,7 @@ var ErrInvalidAccountData = errors.New("Received invalid account data")
 type Account struct {
 	ID          string          `db:"account_id"    valid:"alphanum"`
 	Username    string          `db:"username"      valid:"alphanum"`
-	Email       string          `db:"email"         valid:"email"`
+	Email       string          `db:"email"         valid:"-"`
 	Hash        string          `db:"password_hash" valid:"printableascii"`
 	CreatedAt   time.Time       `db:"created_at"    valid:"-"`
 	Permissions PermissionLevel `db:"permissions"   valid:"-"`
@@ -31,6 +31,7 @@ func (account Account) IsValid() bool {
 	result, err := govalidator.ValidateStruct(account)
 
 	if err != nil || result == false {
+		log.Println(err)
 		return false
 	}
 
@@ -75,11 +76,14 @@ func CreateAccount(username string, email string, password string) (*Account, er
 	account := Account{
 		ID:       GenerateID(6),
 		Username: username,
-		Email:    email,
 		Hash:     hash,
 	}
 
-	log.Printf("Creating account %s with username %s and email %s", account.ID, account.Username, account.Email)
+	log.Printf("'%s'", email)
+
+	if email != "" {
+		account.Email = email
+	}
 
 	if !account.IsValid() {
 		return nil, ErrInvalidAccountData

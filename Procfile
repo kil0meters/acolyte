@@ -1,2 +1,2 @@
 web: ./bin/acolyte
-worker: ./bin/acolyte-chat-logger
+logger: ./bin/acolyte-chat-logger
