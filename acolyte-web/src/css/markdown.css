@@ -24,29 +24,23 @@ pre {
     padding: 12px;
     border-radius: 3px;
     background-color: var(--accent-color);
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
-.hljs{
-    display:block;
-    overflow-x:auto;
-    padding:.5em;
-    background:#F0F0F0
-}
 .hljs,.hljs-subst{
-    color:#444
+    /* color:#444 */
 }
 .hljs-comment{
-    color:#888888
+    color: var(--text-color-subtle)
 }
 .hljs-keyword,.hljs-attribute,.hljs-selector-tag,.hljs-meta-keyword,.hljs-doctag,.hljs-name{
     font-weight:bold
 }
 .hljs-type,.hljs-string,.hljs-number,.hljs-selector-id,.hljs-selector-class,.hljs-quote,.hljs-template-tag,.hljs-deletion{
-    color:#880000
+    color: var(--link-color)
 }
 .hljs-title,.hljs-section{
-    color:#880000;
+    color:var(--link-color);
     font-weight:bold
 }
 .hljs-regexp,.hljs-symbol,.hljs-variable,.hljs-template-variable,.hljs-link,.hljs-selector-attr,.hljs-selector-pseudo{

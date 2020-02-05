@@ -3,6 +3,7 @@ package forum
 import (
 	"errors"
 	"fmt"
+	"html"
 	"log"
 	"net/http"
 	"strings"
@@ -11,7 +12,6 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gorilla/mux"
-	"github.com/microcosm-cc/bluemonday"
 
 	"github.com/kil0meters/acolyte/pkg/authorization"
 	"github.com/kil0meters/acolyte/pkg/database"
@@ -43,8 +43,8 @@ type Post struct {
 	Title     string    `db:"title"      valid:"type(string),required"`
 	Link      string    `db:"link"       valid:"printableascii,optional"`
 	Body      string    `db:"body"       valid:"type(string),optional"`
-	Removed   bool      `db:"removed"    valid:"type(bool),optional"`
-	CreatedAt time.Time `db:"created_at" valid:"type(time.Time),optional"`
+	Removed   bool      `db:"removed"    valid:"-"`
+	CreatedAt time.Time `db:"created_at" valid:"-"`
 	Upvotes   int       `db:"upvotes"    valid:"-"`
 	Downvotes int       `db:"downvotes"  valid:"-"`
 }
@@ -96,9 +96,8 @@ func ListPosts(w http.ResponseWriter, r *http.Request) {
 // PostFromID retrieves a post from an ID
 func PostFromID(id string) *Post {
 	post := Post{}
-	row := database.DB.QueryRowx("SELECT * FROM acolyte.posts WHERE id = $1", id)
+	err := database.DB.QueryRowx("SELECT * FROM acolyte.posts WHERE post_id = $1", id).StructScan(&post)
 
-	err := row.StructScan(&post)
 	if err != nil {
 		log.Println(err)
 		return nil
@@ -113,9 +112,9 @@ func PostFromID(id string) *Post {
 func NewPost(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
-	title := strings.Trim(r.Form.Get("title"), " \n\t")
-	body := strings.Trim(r.Form.Get("body"), " \n\t")
-	link := strings.Trim(r.Form.Get("link"), " \n\t")
+	title := html.EscapeString(strings.Trim(r.Form.Get("title"), " \n\t"))
+	body := html.EscapeString(strings.Trim(r.Form.Get("body"), " \n\t"))
+	link := html.EscapeString(strings.Trim(r.Form.Get("link"), " \n\t"))
 
 	account := authorization.IsAuthorized(r, authorization.Standard)
 	if account == nil {
@@ -130,24 +129,26 @@ func NewPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/forum/posts/%s", post.ID), http.StatusSeeOther)
-
-	// log.Println(post)
 }
 
 // ServePost serves a post
 func ServePost(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
+	log.Println(params["message_id"])
+
 	post := PostFromID(params["message_id"])
-	post.Body = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(post.Body)))
+	if post != nil {
+		log.Println(post.Body)
 
-	account := authorization.AccountFromID(post.AccountID)
+		account := authorization.AccountFromID(post.AccountID)
 
-	data := Data{
-		IsLoggedIn: false,
-		Post:       post,
-		Account:    account,
+		data := Data{
+			IsLoggedIn: false,
+			Post:       post,
+			Account:    account,
+		}
+
+		postTemplate.Execute(w, data)
 	}
-
-	postTemplate.Execute(w, data)
 }

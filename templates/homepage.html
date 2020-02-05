@@ -11,19 +11,19 @@
 <body>
   <header class="static-header">
     <span class="logo">Miles Benton</span>
-    <ul class="greeter-links">
+    <ul class="header-links">
       {{ range .Header }}
-      <li class="greeter-link"><a href="{{ .URL }}">{{ .Name }}</a></li>
+      <li class="header-link"><a href="{{ .URL }}">{{ .Name }}</a></li>
       {{ end }}
     </ul>
-    <ul class="greeter-hamburger-menu-container">
-      <input type="checkbox" class="greeter-hamburger-menu">
+    <ul class="header-hamburger-menu-container">
+      <input type="checkbox" class="header-hamburger-menu">
       <span></span>
       <span></span>
       <span></span>
-      <div class="greeter-hamburger-links">
+      <div class="header-hamburger-links">
         {{ range .Header }}
-        <li class="greeter-link"><a href="{{ .URL }}">{{ .Name }}</a></li>
+        <li class="header-link"><a href="{{ .URL }}">{{ .Name }}</a></li>
         {{ end }}
       </div>
     </ul>

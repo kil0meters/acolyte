@@ -38,7 +38,7 @@ func StartServer() {
 	forumRouter.HandleFunc("", forum.ServeForum)
 	forumRouter.HandleFunc("/create-post", forum.ServePostEditor).Methods("GET")
 	forumRouter.HandleFunc("/create-post", forum.NewPost).Methods("POST")
-	forumRouter.HandleFunc("/posts/{id}", forum.ServePost)
+	forumRouter.HandleFunc("/posts/{message_id:[a-zA-Z]{6}}", forum.ServePost)
 	r.HandleFunc("/log-in", forum.ServeLogin).Methods("GET")
 	r.HandleFunc("/log-in", forum.LoginForm).Methods("POST")
 	r.HandleFunc("/sign-up", forum.ServeSignup).Methods("GET")

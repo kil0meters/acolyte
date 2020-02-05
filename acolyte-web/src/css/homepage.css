@@ -29,7 +29,7 @@ footer {
     margin: auto;
 }
 
-.greeter-links {
+.header-links {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -38,11 +38,11 @@ footer {
     vertical-align: middle;
 }
 
-.greeter-hamburger-menu-container {
+.header-hamburger-menu-container {
     display: none;
 }
 
-.greeter-hamburger-links {
+.header-hamburger-links {
     visibility: hidden;
     position: absolute;
     z-index: 100;
@@ -56,12 +56,12 @@ footer {
     transform: translateY(16px);
 }
 
-.greeter-hamburger-links .greeter-link {
+.header-hamburger-links .header-link {
     display: block;
     line-height: 48px;
 }
 
-.greeter-hamburger-menu {
+.header-hamburger-menu {
     position: absolute;
     right: 8px;
     top: 32px;
@@ -72,7 +72,7 @@ footer {
     height: 36px;
 }
 
-.greeter-hamburger-menu-container span {
+.header-hamburger-menu-container span {
     position: absolute;
     right: 8px;
     top: 32px;
@@ -84,47 +84,47 @@ footer {
     transition: 0.5s;
 }
 
-.greeter-hamburger-menu-container span:nth-child(2) {
+.header-hamburger-menu-container span:nth-child(2) {
     top: 40px;
 }
-.greeter-hamburger-menu-container span:nth-child(3) {
+.header-hamburger-menu-container span:nth-child(3) {
     top: 48px;
 }
 
-.greeter-hamburger-menu:checked ~ span {
+.header-hamburger-menu:checked ~ span {
     transform: translateY(8px) rotate(-45deg)
 }
 
-.greeter-hamburger-menu:checked ~ span:nth-child(2) {
+.header-hamburger-menu:checked ~ span:nth-child(2) {
     transform: none;
     opacity: 0;
 }
 
-.greeter-hamburger-menu:checked ~ span:nth-child(3) {
+.header-hamburger-menu:checked ~ span:nth-child(3) {
     transform: translateY(-8px) rotate(45deg)
 }
 
-.greeter-hamburger-menu:checked ~ .greeter-hamburger-links {
+.header-hamburger-menu:checked ~ .header-hamburger-links {
     visibility: visible;
     opacity: 1;
     transform: translateY(0);
     box-shadow: 0px 64px 47px 2px var(--shadow-color-intense);
 }
 
-.greeter-link {
+.header-link {
     display: inline;
     cursor: pointer;
     padding: 0 12px;
 }
 
-.greeter-link a {
+.header-link a {
     text-decoration: none;
     font-size: 18px;
     color: var(--text-color-bold);
     font-weight: bold;
 }
 
-.greeter-link a:hover {
+.header-link a:hover {
     color: var(--link-color);
     text-decoration: underline;
 }
@@ -215,10 +215,10 @@ footer {
 }
 
 @media screen and (max-width: 650px) {
-    .greeter-links {
+    .header-links {
         display: none;
     }
-    .greeter-hamburger-menu-container {
+    .header-hamburger-menu-container {
         display: inline-block;
     }
 }

@@ -2,6 +2,7 @@ package chat
 
 import (
 	"encoding/json"
+	"html"
 	"log"
 	"strings"
 
@@ -41,6 +42,8 @@ func ReadMessage(messageType int, body []byte) Message {
 		Type: messageType,
 		Data: messageData,
 	}
+
+	message.Data.Text = html.EscapeString(message.Data.Text)
 
 	return message
 }

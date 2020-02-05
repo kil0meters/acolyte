@@ -1,40 +1,32 @@
-var hljs = require('highlight.js');
-var md = require('markdown-it')({
-  html:         false,        // Enable HTML tags in source
-  xhtmlOut:     false,        // Use '/' to close single tags (<br />).
-                              // This is only for full CommonMark compatibility.
-  breaks:       false,        // Convert '\n' in paragraphs into <br>
-  langPrefix:   'language-',  // CSS language prefix for fenced blocks. Can be
-                              // useful for external highlighters.
-  linkify:      true,        // Autoconvert URL-like text to links
+import highlightjs from 'highlight.js'
+import marked, { Renderer } from 'marked'
 
-  // Enable some language-neutral replacement + quotes beautification
-  typographer:  true,
+const escapeMap = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;"
+};
 
-  // Double + single quotes replacement pairs, when typographer enabled,
-  // and smartquotes on. Could be either a String or an Array.
-  //
-  // For example, you can use '«»„“' for Russian, '„“‚‘' for German,
-  // and ['«\xA0', '\xA0»', '‹\xA0', '\xA0›'] for French (including nbsp).
-  quotes: '“”‘’',
+function escapeForHTML(input) {
+  return input.replace(/([&<>'"])/g, char => escapeMap[char]);
+}
 
-  // Highlighter function. Should return escaped HTML,
-  // or '' if the source string is not changed and should be escaped externally.
-  // If result starts with <pre... internal wrapper is skipped.
-  highlight: function (str, lang) {
-    if (lang && hljs.getLanguage(lang)) {
-      try {
-        return hljs.highlight(lang, str).value;
-      } catch (__) {}
-    }
+const renderer = new Renderer();
+renderer.code = (code, language) => {
+  const validLang = !!(language && highlightjs.getLanguage(language));
 
-    return ''; // use external default escaping
-  }
-}).disable('image')
-  .use(require('markdown-it-sub'))
-  .use(require('markdown-it-sup'));
+  const highlighted = validLang
+    ? highlightjs.highlight(language, code).value
+    : escapeForHTML(code);
 
+  return `<pre><code class="hljs ${language}">${highlighted}</code></pre>`;
+};
+
+marked.setOptions({ renderer })
 
 export function renderMarkdownInElement(element) {
-  element.innerHTML = md.render(element.innerHTML)
+  console.log(element.innerHTML);
+  element.innerHTML = marked(element.innerHTML)
 }

@@ -64,18 +64,6 @@
     padding: 0 8px;
 }
 
-.logo {
-    font-size: 32px;
-    font-weight: bold;
-    color: var(--text-color-bold);
-    text-decoration: none;
-}
-
-.logo:hover {
-    color: var(--link-color);
-    text-decoration: underline;
-}
-
 .subscribe-button {
     color: white;
     margin: 6px 0;
