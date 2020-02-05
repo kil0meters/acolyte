@@ -1,7 +1,7 @@
 #logs-search-bar {
     height: 48px;
     margin: 8px auto;
-    max-width: 832px;
+    max-width: 800px;
 }
 
 #logs-results {
@@ -11,4 +11,50 @@
 #logs-results p, #logs-results a {
     margin: 0;
     text-decoration: none;
+}
+
+#log-results p::before {
+    display: block; 
+    content: " "; 
+    margin-top: -285px; 
+    height: 285px; 
+    visibility: hidden; 
+    pointer-events: none;
+}
+
+.paginator {
+    display: grid;
+    max-width: 800px;
+    margin: auto;
+    margin-top: 16px;
+
+    grid-template-columns: 50fr 50fr;
+    grid-gap: 16px;
+}
+
+.log-date {
+    padding: 16px;
+    display: inline-block;
+    width: 100%;
+    cursor: pointer;
+    border-bottom: 1px solid var(--accent-color);
+}
+
+.log-date:last-child {
+    border: none;
+}
+
+:target {
+    animation: target-fade 3s 1;
+}
+
+@keyframes target-fade {
+    0% {
+        background-color: var(--link-color);
+        color: var(--background-color);
+    }
+    100% {
+        background-color: rgba(0,0,0,0);
+        color: var(--text-color-bold);
+    }
 }

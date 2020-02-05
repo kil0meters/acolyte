@@ -15,12 +15,18 @@
   <article class="content-wrapper">
     <form action="/logs/stalk" method="GET">
       <span class="authorize-form-label">Stalk</span>
-      <input name="username" type="text" class="authorize-form-input" placeholder="stalk someone">
+      <input name="username" type="text" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1" maxlength="16" placeholder="stalk someone">
     </form>
     <form action="/logs/search" method="GET">
       <span class="authorize-form-label">Search</span>
       <input name="search" type="text" class="authorize-form-input" placeholder="search for a meme">
     </form>
+    <h2>Messages By Day</h2>
+    <div class="wrapper" style="margin: 0;">
+      {{ range . }}
+      <a class="log-date" href='/logs/messages/{{ .Format "2006-01-02" }}'>{{ .Format "January 2, 2006" }}</a>
+      {{ end }}
+    </div>
   </article>
   <script>
   </script>

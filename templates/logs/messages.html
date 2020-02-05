@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Logs - milesbenton.com</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="/static/bundle.min.css">
+  <script defer src="/static/bundle.min.js"></script>
+</head>
+
+<body>
+  <header id="forum-header">
+      <a href="/logs" class="logo">{{ .Title }}</a>
+  </header>
+  <div id="logs-results" class="wrapper padded">
+    {{ if not .Results }}
+      Nothing has been said on that day :(
+    {{ else }}
+      {{ range .Results }}
+          <p id="{{ .MessageID }}">{{ .Timestamp.Format "2006-01-02 15:04:05" }} [{{ .Username }}] {{ .Message }}</p>
+      {{ end }}
+    {{ end }}
+  </div>
+  <div class="paginator">
+    <a class="authorize-form-button" style="grid-column: 1;" href='/logs/messages/{{ (.Date.AddDate 0 0 -1).Format "2006-01-02" }}'>< PREVIOUS DAY</a>
+    <a class="authorize-form-button" style="grid-column: 2;" href='/logs/messages/{{ (.Date.AddDate 0 0 1).Format "2006-01-02" }}'>NEXT DAY ></a>
+  </div>
+  <script>
+    if(window.location.hash != '') {
+      window.scrollTo(window.scrollX, window.scrollY - 128)
+    }
+  </script>
+</body>
+
+</html>

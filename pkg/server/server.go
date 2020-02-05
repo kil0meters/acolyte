@@ -49,7 +49,7 @@ func StartServer() {
 	logsRouter.HandleFunc("", logs.ServeHomepage)
 	logsRouter.HandleFunc("/search", logs.ServeSearch)
 	logsRouter.HandleFunc("/stalk", logs.ServeStalk).Queries("username", "{username}")
-	logsRouter.HandleFunc("/messages", logs.ServeMessages)
+	logsRouter.HandleFunc("/messages/{date:(?:[12]\\d{3}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01]))}", logs.ServeMessagesByDate)
 	// logsRouter.HandleFunc("/messages/{message_id}", logs.ServeLogs)
 
 	api.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {

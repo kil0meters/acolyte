@@ -67,6 +67,7 @@ func ServeHomepage(w http.ResponseWriter, r *http.Request) {
 			{Name: "Forum", URL: "/forum"},
 			{Name: "Videos", URL: "https://youtube.com/channel/" + YoutubeChannelID},
 			{Name: "Live", URL: "/live"},
+			{Name: "Logs", URL: "/logs"},
 			{Name: "Blog", URL: "/blog"},
 			{Name: "Resume", URL: "/resume.pdf"},
 		},
