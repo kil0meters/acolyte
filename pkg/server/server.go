@@ -6,6 +6,7 @@ import (
 
 	"log"
 
+	"github.com/kil0meters/acolyte/pkg/authorization"
 	"github.com/kil0meters/acolyte/pkg/chat"
 	"github.com/kil0meters/acolyte/pkg/database"
 	"github.com/kil0meters/acolyte/pkg/forum"
@@ -33,18 +34,20 @@ func StartServer() {
 	database.InitDatabase(os.Getenv("DATABASE_URL"))
 
 	r.HandleFunc("/", homepage.ServeHomepage)
-
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./acolyte-web/dist/"))))
+
 	forumRouter.HandleFunc("", forum.ServeForum)
 	forumRouter.HandleFunc("/create-post", forum.ServePostEditor).Methods("GET")
-	forumRouter.HandleFunc("/create-post", forum.NewPost).Methods("POST")
+	forumRouter.HandleFunc("/create-post", forum.CreatePostForm).Methods("POST")
 	forumRouter.HandleFunc("/posts/{message_id:[a-zA-Z]{6}}", forum.ServePost)
-	r.HandleFunc("/log-in", forum.ServeLogin).Methods("GET")
-	r.HandleFunc("/log-in", forum.LoginForm).Methods("POST")
-	r.HandleFunc("/sign-up", forum.ServeSignup).Methods("GET")
-	r.HandleFunc("/sign-up", forum.SignupForm).Methods("POST")
+
 	r.HandleFunc("/chat", chat.ServeChat)
 	r.HandleFunc("/live", livestream.ServeLivestream)
+
+	r.HandleFunc("/log-in", authorization.ServeLogin).Methods("GET")
+	r.HandleFunc("/log-in", authorization.LoginForm).Methods("POST")
+	r.HandleFunc("/sign-up", authorization.ServeSignup).Methods("GET")
+	r.HandleFunc("/sign-up", authorization.SignupForm).Methods("POST")
 
 	logsRouter.HandleFunc("", logs.ServeHomepage)
 	logsRouter.HandleFunc("/search", logs.ServeSearch)
@@ -59,11 +62,6 @@ func StartServer() {
 		"sorting-type", "{sorting-type:(?:hot|top|controversial|new)}",
 		"amount", "{amount:(?:0?[1-9]|[12][0-9]|3[012])}",
 		"start", "{start:[0-9]+}")
-
-	api.HandleFunc("/new-post", forum.NewPost).Queries(
-		"title", "{title}",
-		"body", "{body}",
-		"link", "{link}")
 
 	api.HandleFunc("/search-logs", logs.SearchLogs).Queries(
 		"search", "{search}")

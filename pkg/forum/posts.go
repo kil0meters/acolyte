@@ -3,15 +3,12 @@ package forum
 import (
 	"errors"
 	"fmt"
-	"html"
 	"log"
 	"net/http"
-	"strings"
 	"text/template"
 	"time"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/gorilla/mux"
 
 	"github.com/kil0meters/acolyte/pkg/authorization"
 	"github.com/kil0meters/acolyte/pkg/database"
@@ -106,49 +103,4 @@ func PostFromID(id string) *Post {
 	fmt.Printf("%+v\n", post)
 
 	return &post
-}
-
-// NewPost creates a new post
-func NewPost(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-
-	title := html.EscapeString(strings.Trim(r.Form.Get("title"), " \n\t"))
-	body := html.EscapeString(strings.Trim(r.Form.Get("body"), " \n\t"))
-	link := html.EscapeString(strings.Trim(r.Form.Get("link"), " \n\t"))
-
-	account := authorization.IsAuthorized(r, authorization.Standard)
-	if account == nil {
-		http.Error(w, "error: Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	post, err := CreateNewPost(title, account, body, link)
-	if err != nil {
-		log.Println(err) // TODO: Unhandled error
-		return
-	}
-
-	http.Redirect(w, r, fmt.Sprintf("/forum/posts/%s", post.ID), http.StatusSeeOther)
-}
-
-// ServePost serves a post
-func ServePost(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-
-	log.Println(params["message_id"])
-
-	post := PostFromID(params["message_id"])
-	if post != nil {
-		log.Println(post.Body)
-
-		account := authorization.AccountFromID(post.AccountID)
-
-		data := Data{
-			IsLoggedIn: false,
-			Post:       post,
-			Account:    account,
-		}
-
-		postTemplate.Execute(w, data)
-	}
 }

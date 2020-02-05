@@ -30,6 +30,11 @@ type LogResult struct {
 	Results []LogMessage
 }
 
+// LogMessage
+// func LogMessage(message ) {
+// 	_, err = database.DB.Exec("INSERT INTO acolyte.chat_log (message_id, account_id, username, message) VALUES ($1, $2, $3, $4)", message.Data.ID, user.ID, user.Username, message.Data.Text)
+// }
+
 // ServeHomepage serves logs homepage
 func ServeHomepage(w http.ResponseWriter, r *http.Request) {
 	t1, _ := time.Parse("2006-01-02", "2020-01-01")

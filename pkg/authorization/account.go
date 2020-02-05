@@ -79,8 +79,6 @@ func CreateAccount(username string, email string, password string) (*Account, er
 		Hash:     hash,
 	}
 
-	log.Printf("'%s'", email)
-
 	if email != "" {
 		account.Email = email
 	}

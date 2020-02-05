@@ -3,9 +3,11 @@ package authorization
 import (
 	"log"
 	"net/http"
-
-	"github.com/kil0meters/acolyte/pkg/database"
+	"text/template"
 )
+
+var loginTemplate *template.Template = template.Must(template.ParseFiles("./templates/forum/login.html"))
+var signupTemplate *template.Template = template.Must(template.ParseFiles("./templates/forum/signup.html"))
 
 // PermissionLevel enum for different forum permissions
 type PermissionLevel string
@@ -21,41 +23,73 @@ const (
 	Banned PermissionLevel = "AUTH_BANNED"
 )
 
-// IsAuthorized tests if a session token is valid
-func IsAuthorized(r *http.Request, requiredPermission PermissionLevel) *Account {
-	sessionCookie, err := r.Cookie("session_token")
-	if err != nil {
-		return nil
+// ServeLogin shows login screen
+func ServeLogin(w http.ResponseWriter, r *http.Request) {
+	target := r.URL.Query().Get("target")
+
+	if target == "" {
+		target = "/?login_success=1"
 	}
 
-	usernameCookie, err := r.Cookie("username")
-	if err != nil {
-		return nil
+	loginTemplate.Execute(w, target)
+}
+
+// LoginForm wow
+func LoginForm(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	username := r.Form.Get("username")
+	password := r.Form.Get("password")
+
+	target := r.Form.Get("target")
+	if target == "" {
+		target = "/forum?logged_in=1"
 	}
 
-	account := Account{}
+	if CreateSessionCookies(w, username, password) {
+		http.Redirect(w, r, target, http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, "/log-in?error=1", http.StatusSeeOther)
+	}
+}
 
-	sessionToken := sessionCookie.Value
-	username := usernameCookie.Value
+// ServeSignup shows signin screen
+func ServeSignup(w http.ResponseWriter, r *http.Request) {
+	target := r.URL.Query().Get("target")
 
-	row := database.DB.QueryRowx("SELECT * FROM acolyte.accounts WHERE username = $1", username)
+	if target == "" {
+		target = "/?login_success=1"
+	}
 
-	err = row.StructScan(&account)
-	if err != nil {
+	signupTemplate.Execute(w, target)
+}
+
+// SignupForm wow
+func SignupForm(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	username := r.Form.Get("username")
+	email := r.Form.Get("email")
+	password := r.Form.Get("password")
+
+	target := r.Form.Get("target")
+	if target == "" {
+		target = "/forum?account_created=1"
+	}
+
+	_, err := CreateAccount(username, email, password)
+	if err == ErrInvalidAccountData {
+		http.Error(w, "Invalid account data", 400)
 		log.Println(err)
-		return nil
-	}
-
-	isValid := false
-	for i := 0; i < len(account.Sessions); i++ {
-		if VerifyHash(sessionToken, account.Sessions[i]) {
-			isValid = true
+	} else if err != nil {
+		http.Error(w, "User with that email address or username already exists", 400)
+		log.Println(err)
+	} else {
+		// sets session cookie because storing username/password pair is not safe
+		if CreateSessionCookies(w, username, password) {
+			http.Redirect(w, r, target, http.StatusSeeOther)
+		} else {
+			http.Redirect(w, r, "/sign-in?error=1", http.StatusSeeOther)
 		}
 	}
-
-	if isValid {
-		return &account
-	}
-
-	return nil
 }
