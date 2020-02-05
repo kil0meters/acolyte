@@ -1,3 +1,6 @@
+import { renderEmotesInElement } from './emotes.js'
+import renderMathInElement from 'katex/dist/contrib/auto-render'
+
 export class LogSearch {
   constructor() {
     this.searchbar = document.getElementById('logs-search-bar')
@@ -34,6 +37,9 @@ export class LogSearch {
 
             this.results.appendChild(logElement)
           }
+          renderEmotesInElement(document.getElementById("logs-results"))
+          renderMathInElement(document.getElementById("logs-results"))
+
           console.log(JSON.stringify(messages))
         })
     } else {

@@ -21,6 +21,12 @@
       {{ end }}
     {{ end }}
   </div>
+  <script>
+    window.addEventListener('load', function() {
+      acolyte.renderEmotesInElement(document.getElementById("logs-results"))
+      acolyte.renderMathInElement(document.getElementById("logs-results"))
+    })
+  </script>
 </body>
 
 </html>

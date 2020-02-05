@@ -19,6 +19,9 @@
     window.addEventListener('load', function() {
       let logSearchbar = new acolyte.LogSearch()
       logSearchbar.initializeCallbacks()
+
+      acolyte.renderEmotesInElement(document.getElementById("logs-results"))
+      acolyte.renderMathInElement(document.getElementById("logs-results"))
     })
   </script>
 </body>
