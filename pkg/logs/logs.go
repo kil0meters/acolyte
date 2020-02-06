@@ -2,11 +2,13 @@ package logs
 
 import (
 	"html/template"
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/kil0meters/acolyte/pkg/database"
 )
 
 var homepageTemplate *template.Template = template.Must(template.ParseFiles("./templates/logs/homepage.html"))
@@ -30,10 +32,17 @@ type LogResult struct {
 	Results []LogMessage
 }
 
-// LogMessage
-// func LogMessage(message ) {
-// 	_, err = database.DB.Exec("INSERT INTO chat_log (message_id, account_id, username, message) VALUES ($1, $2, $3, $4)", message.Data.ID, user.ID, user.Username, message.Data.Text)
-// }
+// RecordMessage logs a message
+func RecordMessage(messageID uuid.UUID, accountID string, username string, message string) {
+	if accountID == "" {
+		return
+	}
+
+	_, err := database.DB.Exec("INSERT INTO chat_log (message_id, account_id, username, message) VALUES ($1, $2, $3, $4)", messageID, accountID, username, message)
+	if err != nil {
+		log.Println("error logging message:", err.Error())
+	}
+}
 
 // ServeHomepage serves logs homepage
 func ServeHomepage(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +57,7 @@ func ServeHomepage(w http.ResponseWriter, r *http.Request) {
 		dates = append(dates, t1)
 	}
 
-	dates = dates[:len(dates)-1]
+	dates = dates[:len(dates)-2]
 	homepageTemplate.Execute(w, dates)
 }
 

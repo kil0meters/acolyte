@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/kil0meters/acolyte/pkg/logs"
 )
 
 // Pool an echo pool of websocket connections
@@ -27,6 +28,8 @@ func NewPool() *Pool {
 // BroadcastMessage broadcasts a message to a given pool
 func (pool *Pool) BroadcastMessage(message Message) {
 	if message.Data.Username != "ANON" {
+		logs.RecordMessage(message.Data.ID, message.Data.AccountID, message.Data.Username, message.Data.Text)
+
 		for client := range pool.Clients {
 			client.Conn.WriteJSON(message.Data)
 		}
@@ -42,16 +45,16 @@ func (pool *Pool) Start() {
 
 			hasAnotherSession := false
 			for testClient := range pool.Clients {
-				if client.Username == testClient.Username && client != testClient {
+				if client.Account.Username == testClient.Account.Username && client != testClient {
 					hasAnotherSession = true
 				}
 			}
 
-			if hasAnotherSession == false && client.Username != "ANON" {
+			if hasAnotherSession == false && client.Account.Username != "ANON" {
 				messageData := MessageData{
 					Username: "Server",
 					ID:       uuid.Must(uuid.NewRandom()),
-					Text:     fmt.Sprintf("%s joined", client.Username),
+					Text:     fmt.Sprintf("%s joined", client.Account.Username),
 				}
 
 				pool.BroadcastMessage(Message{
@@ -64,16 +67,16 @@ func (pool *Pool) Start() {
 
 			hasAnotherSession := false
 			for testClient := range pool.Clients {
-				if client.Username == testClient.Username {
+				if client.Account.Username == testClient.Account.Username {
 					hasAnotherSession = true
 				}
 			}
 
-			if hasAnotherSession == false && client.Username != "ANON" {
+			if hasAnotherSession == false && client.Account.Username != "ANON" {
 				messageData := MessageData{
 					Username: "Server",
 					ID:       uuid.Must(uuid.NewRandom()),
-					Text:     fmt.Sprintf("%s left", client.Username),
+					Text:     fmt.Sprintf("%s left", client.Account.Username),
 				}
 
 				pool.BroadcastMessage(Message{

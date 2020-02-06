@@ -39,9 +39,9 @@ func ServeWS(pool *Pool, w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := &Client{
-		Username: account.Username,
-		Conn:     conn,
-		Pool:     pool,
+		Account: account,
+		Conn:    conn,
+		Pool:    pool,
 	}
 
 	pool.Register <- client

@@ -22,6 +22,12 @@
     pointer-events: none;
 }
 
+:target {
+    background-color: var(--link-color);
+    color: var(--background-color);
+    /* animation: target-fade 3s 1; */
+}
+
 .paginator {
     display: grid;
     max-width: 800px;
@@ -44,9 +50,7 @@
     border: none;
 }
 
-:target {
-    animation: target-fade 3s 1;
-}
+
 
 @keyframes target-fade {
     0% {

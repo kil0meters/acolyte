@@ -17,7 +17,7 @@
       Yikes that person hasn't said anything
     {{ else }}
       {{ range . }}
-          <p>{{ .Timestamp.Format "2006-01-02 15:04:05" }} [{{ .Username }}] {{ .Message }}</p>
+          <p><a href='/logs/messages/{{ .Timestamp.Format "2006-01-02" }}#{{ .MessageID }}'>{{ .Timestamp.Format "2006-01-02 15:04:05" }} [{{ .Username }}] {{ .Message }}</a></p>
       {{ end }}
     {{ end }}
   </div>

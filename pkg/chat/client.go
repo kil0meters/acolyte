@@ -8,13 +8,15 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+
+	"github.com/kil0meters/acolyte/pkg/authorization"
 )
 
 // Client struct for chat client
 type Client struct {
-	Username string
-	Conn     *websocket.Conn
-	Pool     *Pool
+	Account *authorization.Account
+	Conn    *websocket.Conn
+	Pool    *Pool
 }
 
 // Message struct for handling websocket messages
@@ -26,9 +28,10 @@ type Message struct {
 
 // MessageData a struct containing data for a message
 type MessageData struct {
-	Username string    `json:"username"`
-	ID       uuid.UUID `json:"id"`
-	Text     string    `json:"text"`
+	Username  string `json:"username"`
+	AccountID string
+	ID        uuid.UUID `json:"id"`
+	Text      string    `json:"text"`
 }
 
 // ReadMessage reads a message from websocket data
@@ -55,7 +58,7 @@ func (c *Client) Read() {
 		c.Conn.Close()
 	}()
 
-	if c.Username == "ANON" {
+	if c.Account.Username == "ANON" {
 		c.Conn.WriteMessage(websocket.TextMessage, []byte("UNAUTHORIZED"))
 	}
 
@@ -67,7 +70,8 @@ func (c *Client) Read() {
 		}
 
 		message := ReadMessage(messageType, body)
-		message.Data.Username = c.Username // force username to be forum username
+		message.Data.Username = c.Account.Username // force username to be forum username
+		message.Data.AccountID = c.Account.ID
 
 		c.Pool.Broadcast <- message
 		log.Printf("[chat] [%s] <%s> %s\n", c.Conn.RemoteAddr(), message.Data.Username, message.Data.Text)
