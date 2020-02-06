@@ -1,7 +1,6 @@
 package forum
 
 import (
-	"fmt"
 	"html"
 	"html/template"
 	"log"
@@ -28,13 +27,20 @@ type Data struct {
 func ServeForum(w http.ResponseWriter, r *http.Request) {
 	posts := []Post{}
 
-	err := database.DB.Select(&posts, "SELECT * FROM acolyte.posts")
+	err := database.DB.Select(&posts, "SELECT * FROM posts")
 	if err != nil {
 		log.Println(err)
 	}
 
+	account := authorization.GetSession(w, r)
+
+	if !account.Permissions.AtLeast(authorization.LoggedOut) {
+		http.Error(w, "Hey buddy banned users aren't allowed here :)", http.StatusUnauthorized)
+		return
+	}
+
 	isLoggedIn := false
-	if user := authorization.IsAuthorized(w, r, authorization.Banned); user != nil {
+	if account.Permissions.AtLeast(authorization.Standard) {
 		isLoggedIn = true
 	}
 
@@ -48,11 +54,17 @@ func ServeForum(w http.ResponseWriter, r *http.Request) {
 
 // ServePostEditor serves the post editor
 func ServePostEditor(w http.ResponseWriter, r *http.Request) {
-	user := authorization.IsAuthorized(w, r, authorization.Banned)
-	if user == nil {
-		http.Redirect(w, r, "/log-in?target=/forum/create-post", 200)
+	account := authorization.GetSession(w, r)
+
+	if !account.Permissions.AtLeast(authorization.LoggedOut) {
+		http.Error(w, "Banned users aren't allowed to post dummy :)", http.StatusUnauthorized)
 	}
-	postEditorTemplate.Execute(w, nil)
+
+	if account.Permissions.AtLeast(authorization.Standard) {
+		postEditorTemplate.Execute(w, nil)
+	} else {
+		http.Redirect(w, r, "/log-in?target=/forum/create-post", http.StatusTemporaryRedirect)
+	}
 }
 
 // CreatePostForm creates a new post
@@ -63,9 +75,9 @@ func CreatePostForm(w http.ResponseWriter, r *http.Request) {
 	body := html.EscapeString(strings.Trim(r.Form.Get("body"), " \n\t"))
 	link := html.EscapeString(strings.Trim(r.Form.Get("link"), " \n\t"))
 
-	account := authorization.IsAuthorized(w, r, authorization.Standard)
-	if account == nil {
-		return
+	account := authorization.GetSession(w, r)
+	if !account.Permissions.AtLeast(authorization.Standard) {
+		http.Redirect(w, r, "/forum/create-post?error=1", http.StatusSeeOther)
 	}
 
 	post, err := CreateNewPost(title, account, body, link)
@@ -74,7 +86,7 @@ func CreatePostForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/forum/posts/%s", post.ID), http.StatusSeeOther)
+	http.Redirect(w, r, "/forum/posts/"+post.ID, http.StatusSeeOther)
 }
 
 // ServePost serves a post

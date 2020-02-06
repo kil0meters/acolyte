@@ -14,7 +14,7 @@ func StalkUser(username string) []LogMessage {
 		return nil
 	}
 
-	rows, err := database.DB.Queryx("SELECT * FROM acolyte.chat_log WHERE account_id = $1 ORDER BY time DESC", account.ID)
+	rows, err := database.DB.Queryx("SELECT * FROM chat_log WHERE account_id = $1 ORDER BY time DESC", account.ID)
 	if err != nil {
 		log.Println(err)
 		return nil

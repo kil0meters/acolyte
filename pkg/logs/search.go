@@ -18,7 +18,7 @@ func SearchLogs(w http.ResponseWriter, r *http.Request) {
 	log.Println(search)
 	// username := params["from"]
 
-	rows, err := database.DB.Queryx("SELECT * FROM acolyte.chat_log WHERE SIMILARITY(message, $1) > 0 ORDER BY SIMILARITY(message, $1) DESC LIMIT 100", search)
+	rows, err := database.DB.Queryx("SELECT * FROM chat_log WHERE SIMILARITY(message, $1) > 0 ORDER BY SIMILARITY(message, $1) DESC LIMIT 100", search)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

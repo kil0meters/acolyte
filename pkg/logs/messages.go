@@ -9,7 +9,7 @@ import (
 
 // GetByDay returns all messages on a given day
 func GetByDay(timestamp time.Time) []LogMessage {
-	rows, err := database.DB.Queryx("SELECT * FROM acolyte.chat_log WHERE date_trunc('day', time) = $1 ORDER BY time DESC", timestamp)
+	rows, err := database.DB.Queryx("SELECT * FROM chat_log WHERE date_trunc('day', time) = $1 ORDER BY time DESC", timestamp)
 	if err != nil {
 		log.Panicln(err)
 	}

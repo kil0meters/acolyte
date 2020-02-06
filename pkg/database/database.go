@@ -23,7 +23,8 @@ func InitDatabase(connStr string) {
 		log.Panic(err)
 	}
 
-	DB.MustExec("CREATE SCHEMA IF NOT EXISTS acolyte")
+	// DB.MustExec("CREATE SCHEMA IF NOT EXISTS acolyte")
+	// DB.MustExec("SET search_path TO acolyte,public")
 
 	// this fails if the type doesn't exist initially..
 	// DB.MustExec(`CREATE TYPE permission_level AS ENUM ('AUTH_ADMIN',
@@ -31,7 +32,7 @@ func InitDatabase(connStr string) {
 	// 																'AUTH_STANDARD',
 	// 																'AUTH_BANNED')`)
 
-	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.posts (post_id text UNIQUE PRIMARY KEY,
+	DB.MustExec(`CREATE TABLE IF NOT EXISTS posts (post_id text UNIQUE PRIMARY KEY,
 														account_id text,
 														title text NOT NULL,
 														body text,
@@ -41,20 +42,18 @@ func InitDatabase(connStr string) {
 														upvotes integer DEFAULT 0,
 														downvotes integer DEFAULT 0)`)
 
-	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.accounts (account_id text UNIQUE PRIMARY KEY,
+	DB.MustExec(`CREATE TABLE IF NOT EXISTS accounts (account_id text UNIQUE PRIMARY KEY,
 															username text UNIQUE NOT NULL,
-															email text UNIQUE,
 															password_hash text NOT NULL,
 															created_at timestamp DEFAULT NOW(),
-															permissions permission_level DEFAULT 'AUTH_STANDARD',
-															sessions text[] DEFAULT '{}'::text[])`)
+															permissions permission_level DEFAULT 'AUTH_STANDARD')`)
 
-	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.bans (account_id text UNIQUE PRIMARY KEY,
+	DB.MustExec(`CREATE TABLE IF NOT EXISTS bans (account_id text UNIQUE PRIMARY KEY,
 														banned_until timestamp NOT NULL,
 														ban_reason text,
 														banned_by text NOT NULL)`)
 
-	DB.MustExec(`CREATE TABLE IF NOT EXISTS acolyte.chat_log (message_id uuid UNIQUE PRIMARY KEY,
+	DB.MustExec(`CREATE TABLE IF NOT EXISTS chat_log (message_id uuid UNIQUE PRIMARY KEY,
 															account_id text,
 															username text NOT NULL,
 															time timestamp DEFAULT NOW(),

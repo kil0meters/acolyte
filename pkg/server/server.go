@@ -32,6 +32,7 @@ func StartServer() {
 	homepage.CheckIfLiveJob()
 
 	database.InitDatabase(os.Getenv("DATABASE_URL"))
+	authorization.InitializeSessionManager()
 
 	r.HandleFunc("/", homepage.ServeHomepage)
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./acolyte-web/dist/"))))

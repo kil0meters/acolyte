@@ -22,10 +22,13 @@ var upgrader = websocket.Upgrader{
 func ServeWS(pool *Pool, w http.ResponseWriter, r *http.Request) {
 	log.Println("Starting WS session from address", r.RemoteAddr)
 
-	account := authorization.IsAuthorized(w, r, authorization.Banned)
-	if account == nil {
-		account = &authorization.Account{
-			Username: "ANON",
+	account := authorization.GetSession(w, r)
+
+	if !account.Permissions.AtLeast(authorization.Standard) {
+		if account == nil {
+			account = &authorization.Account{
+				Username: "ANON",
+			}
 		}
 	}
 

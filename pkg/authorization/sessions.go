@@ -1,50 +1,79 @@
 package authorization
 
 import (
-	"fmt"
-	"log"
+	"encoding/gob"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/kil0meters/acolyte/pkg/database"
+
+	"github.com/antonlindstrom/pgstore"
 )
 
-// IsAuthorized tests if a session token is valid
-func IsAuthorized(w http.ResponseWriter, r *http.Request, requiredPermission PermissionLevel) *Account {
-	sessionCookie, err := r.Cookie("session_token")
+var store *pgstore.PGStore
+
+// InitializeSessionManager initializes a session manager
+func InitializeSessionManager() {
+	store, _ = pgstore.NewPGStoreFromPool(database.DB.DB, []byte(os.Getenv("SECRET_KEY")))
+
+	gob.Register(&Account{})
+
+	store.Cleanup(time.Minute * 5)
+}
+
+// GetSession gets an http session
+func GetSession(w http.ResponseWriter, r *http.Request) *Account {
+	session, err := store.Get(r, "session")
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return nil
 	}
 
-	usernameCookie, err := r.Cookie("username")
+	account := &Account{}
+	accountInterface := session.Values["account"]
+	if accountInterface == nil {
+		account.Permissions = LoggedOut
+	} else {
+		account = accountInterface.(*Account)
+	}
+
+	return account
+}
+
+// CreateSession creates a new session cookie
+func CreateSession(w http.ResponseWriter, r *http.Request, account *Account) bool {
+	session, err := store.Get(r, "session")
 	if err != nil {
-		return nil
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return false
 	}
 
-	account := Account{}
+	session.Values["account"] = account
 
-	sessionToken := sessionCookie.Value
-	username := usernameCookie.Value
-
-	row := database.DB.QueryRowx("SELECT * FROM acolyte.accounts WHERE username = $1", username)
-
-	err = row.StructScan(&account)
+	err = session.Save(r, w)
 	if err != nil {
-		log.Println(err)
-		return nil
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return false
 	}
 
-	isValid := false
-	for i := 0; i < len(account.Sessions); i++ {
-		if VerifyHash(sessionToken, account.Sessions[i]) {
-			isValid = true
-		}
+	return true
+}
+
+// InvalidateSession invalidates a session cookie
+func InvalidateSession(w http.ResponseWriter, r *http.Request) {
+	session, err := store.Get(r, "session")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	if isValid {
-		return &account
+	session.Values["account"] = Account{}
+	session.Options.MaxAge = -1
+
+	err = session.Save(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-
-	http.Error(w, fmt.Sprintf("You are not authorized to view this page. Required permission: %s but you are %s", requiredPermission, account.Permissions), http.StatusUnauthorized)
-
-	return nil
 }

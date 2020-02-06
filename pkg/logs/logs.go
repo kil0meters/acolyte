@@ -32,7 +32,7 @@ type LogResult struct {
 
 // LogMessage
 // func LogMessage(message ) {
-// 	_, err = database.DB.Exec("INSERT INTO acolyte.chat_log (message_id, account_id, username, message) VALUES ($1, $2, $3, $4)", message.Data.ID, user.ID, user.Username, message.Data.Text)
+// 	_, err = database.DB.Exec("INSERT INTO chat_log (message_id, account_id, username, message) VALUES ($1, $2, $3, $4)", message.Data.ID, user.ID, user.Username, message.Data.Text)
 // }
 
 // ServeHomepage serves logs homepage

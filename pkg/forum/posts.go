@@ -72,7 +72,7 @@ func CreateNewPost(title string, account *authorization.Account, body string, li
 		return nil, ErrInvalidPostData
 	}
 
-	_, err := database.DB.NamedExec("INSERT INTO acolyte.posts (post_id, account_id, title, body, link) VALUES (:post_id, :account_id, :title, :body, :link)", post)
+	_, err := database.DB.NamedExec("INSERT INTO posts (post_id, account_id, title, body, link) VALUES (:post_id, :account_id, :title, :body, :link)", post)
 	if err != nil {
 		return &post, err
 	}
@@ -93,7 +93,7 @@ func ListPosts(w http.ResponseWriter, r *http.Request) {
 // PostFromID retrieves a post from an ID
 func PostFromID(id string) *Post {
 	post := Post{}
-	err := database.DB.QueryRowx("SELECT * FROM acolyte.posts WHERE post_id = $1", id).StructScan(&post)
+	err := database.DB.QueryRowx("SELECT * FROM posts WHERE post_id = $1", id).StructScan(&post)
 
 	if err != nil {
 		log.Println(err)
