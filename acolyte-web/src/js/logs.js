@@ -38,7 +38,12 @@ export class LogSearch {
             this.results.appendChild(logElement)
           }
           renderEmotesInElement(document.getElementById("logs-results"))
-          renderMathInElement(document.getElementById("logs-results"))
+          renderMathInElement(document.getElementById("logs-results"), {
+            delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false},
+            ]
+          })
 
           console.log(JSON.stringify(messages))
         })

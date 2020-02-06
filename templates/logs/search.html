@@ -21,7 +21,12 @@
       logSearchbar.initializeCallbacks()
 
       acolyte.renderEmotesInElement(document.getElementById("logs-results"))
-      acolyte.renderMathInElement(document.getElementById("logs-results"))
+      acolyte.renderMathInElement(document.getElementById("logs-results"), {
+        delimiters: [
+          {left: "$$", right: "$$", display: true},
+          {left: "$", right: "$", display: false},
+        ]
+      })
     })
   </script>
 </body>

@@ -24,7 +24,17 @@
   <script>
     window.addEventListener('load', function() {
       acolyte.renderEmotesInElement(document.getElementById("logs-results"))
-      acolyte.renderMathInElement(document.getElementById("logs-results"))
+
+      acolyte.renderMathInElement(document.getElementById("logs-results"), {
+        delimiters: [
+          {left: "$$", right: "$$", display: true},
+          {left: "$", right: "$", display: false},
+        ]
+      })
+
+      if(window.location.hash != '') {
+        window.scrollTo(window.scrollX, window.scrollY - 128)
+      }
     })
   </script>
 </body>

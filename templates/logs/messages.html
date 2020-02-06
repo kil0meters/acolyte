@@ -26,13 +26,20 @@
     <a class="authorize-form-button" style="grid-column: 2;" href='/logs/messages/{{ (.Date.AddDate 0 0 1).Format "2006-01-02" }}'>NEXT DAY ></a>
   </div>
   <script>
-    if(window.location.hash != '') {
-      window.scrollTo(window.scrollX, window.scrollY - 128)
-    }
+
     window.addEventListener('load', function() {
       acolyte.renderEmotesInElement(document.getElementById("logs-results"))
-      acolyte.renderMathInElement(document.getElementById("logs-results"))
+      acolyte.renderMathInElement(document.getElementById("logs-results"), {
+        delimiters: [
+          {left: "$$", right: "$$", display: true},
+          {left: "$", right: "$", display: false},
+        ]
+      })
       window.location.href=window.location.href
+
+      if(window.location.hash != '') {
+        window.scrollTo(window.scrollX, window.scrollY - 128)
+      }
     })
   </script>
 </body>
