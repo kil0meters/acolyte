@@ -127,7 +127,7 @@ func RemoveCommand(client *Client, tokens []string) string {
 
 // BanAccount bans an account
 func BanAccount(client *Client, tokens []string) string {
-	if len(tokens) >= 4 {
+	if len(tokens) < 4 {
 		return fmt.Sprintf("error: Expected at least 4 arguments, got %d instead", len(tokens))
 	}
 

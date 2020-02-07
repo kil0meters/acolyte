@@ -341,7 +341,8 @@ class Autocompletion {
           let completionText = text.toLowerCase()
 
           for (let suggestion of this.chatCommands) {
-            if (suggestion.name.toLowerCase().startsWith(completionText)) {
+            if (suggestion.name.toLowerCase().startsWith(completionText)
+            || (completionText.trim().toLowerCase().startsWith(suggestion.name.toLowerCase()))) {
               this.suggestions.push(suggestion)
             }
           }
