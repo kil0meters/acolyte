@@ -31,7 +31,7 @@ func (pool *Pool) BroadcastMessage(message Message) {
 		logs.RecordMessage(message.Data.ID, message.Data.AccountID, message.Data.Username, message.Data.Text)
 
 		for client := range pool.Clients {
-			client.Conn.WriteJSON(message.Data)
+			client.Write(message.Data)
 		}
 	}
 }

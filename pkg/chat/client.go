@@ -5,8 +5,10 @@ import (
 	"html"
 	"log"
 	"strings"
+	"sync"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/sessions"
 	"github.com/gorilla/websocket"
 
 	"github.com/kil0meters/acolyte/pkg/authorization"
@@ -15,8 +17,10 @@ import (
 // Client struct for chat client
 type Client struct {
 	Account *authorization.Account
+	Session *sessions.Session
 	Conn    *websocket.Conn
 	Pool    *Pool
+	mu      sync.Mutex
 }
 
 // Message struct for handling websocket messages
@@ -28,8 +32,8 @@ type Message struct {
 
 // MessageData a struct containing data for a message
 type MessageData struct {
-	Username  string `json:"username"`
-	AccountID string
+	Username  string    `json:"username"`
+	AccountID string    `json:"-"`
 	ID        uuid.UUID `json:"id"`
 	Text      string    `json:"text"`
 }
@@ -51,6 +55,25 @@ func ReadMessage(messageType int, body []byte) Message {
 	return message
 }
 
+// Write writes data to a client with a mutex
+func (c *Client) Write(data interface{}) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.Conn.WriteJSON(data)
+}
+
+// UpdateCommands resends command list
+func (c *Client) UpdateCommands() {
+	authorizedCommands := make([]*Command, 0)
+
+	for command := range Commands {
+		if c.Account.Permissions.AtLeast(command.RequiredPermission) {
+			authorizedCommands = append(authorizedCommands, command)
+		}
+	}
+	c.Write(authorizedCommands)
+}
+
 // Read Reads messages from a given client
 func (c *Client) Read() {
 	defer func() {
@@ -59,8 +82,10 @@ func (c *Client) Read() {
 	}()
 
 	if c.Account.Username == "ANON" {
-		c.Conn.WriteMessage(websocket.TextMessage, []byte("UNAUTHORIZED"))
+		c.Write([]byte("UNAUTHORIZED"))
 	}
+
+	c.UpdateCommands()
 
 	for {
 		messageType, body, err := c.Conn.ReadMessage()
@@ -73,7 +98,18 @@ func (c *Client) Read() {
 		message.Data.Username = c.Account.Username // force username to be forum username
 		message.Data.AccountID = c.Account.ID
 
-		c.Pool.Broadcast <- message
-		log.Printf("[chat] [%s] <%s> %s\n", c.Conn.RemoteAddr(), message.Data.Username, message.Data.Text)
+		if message.Data.Text[0] == '/' {
+			output := ParseCommand(c, message.Data.Text)
+
+			c.Write(MessageData{
+				Username: "->",
+				Text:     output,
+			})
+
+			log.Printf("[command] [%s] <%s> %s", c.Conn.RemoteAddr(), message.Data.Username, message.Data.Text)
+		} else {
+			c.Pool.Broadcast <- message
+			log.Printf("[chat] [%s] <%s> %s\n", c.Conn.RemoteAddr(), message.Data.Username, message.Data.Text)
+		}
 	}
 }

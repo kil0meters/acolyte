@@ -32,7 +32,7 @@ func ServeForum(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	account := authorization.GetSession(w, r)
+	account := authorization.GetAccount(w, r)
 
 	if !account.Permissions.AtLeast(authorization.LoggedOut) {
 		http.Error(w, "Hey buddy banned users aren't allowed here :)", http.StatusUnauthorized)
@@ -54,7 +54,7 @@ func ServeForum(w http.ResponseWriter, r *http.Request) {
 
 // ServePostEditor serves the post editor
 func ServePostEditor(w http.ResponseWriter, r *http.Request) {
-	account := authorization.GetSession(w, r)
+	account := authorization.GetAccount(w, r)
 
 	if !account.Permissions.AtLeast(authorization.LoggedOut) {
 		http.Error(w, "Banned users aren't allowed to post dummy :)", http.StatusUnauthorized)
@@ -75,7 +75,7 @@ func CreatePostForm(w http.ResponseWriter, r *http.Request) {
 	body := html.EscapeString(strings.Trim(r.Form.Get("body"), " \n\t"))
 	link := html.EscapeString(strings.Trim(r.Form.Get("link"), " \n\t"))
 
-	account := authorization.GetSession(w, r)
+	account := authorization.GetAccount(w, r)
 	if !account.Permissions.AtLeast(authorization.Standard) {
 		http.Redirect(w, r, "/forum/create-post?error=1", http.StatusSeeOther)
 	}

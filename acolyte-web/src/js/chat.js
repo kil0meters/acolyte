@@ -132,6 +132,8 @@ export class MBChat {
       this.wsProtocol = 'ws:'
     }
 
+    this.noEntry = noEntry == true
+
     this.maxHeight = maxHeight
     this.conn = new WebSocket(`${this.wsProtocol}//${window.location.host}/api/v1/chat`)
     this.username = "username"
@@ -141,14 +143,14 @@ export class MBChat {
 
     let emotePopup = document.getElementById('emote-popup')
     getEmotes().forEach((emote) => {
-      emotePopup.innerHTML += replaceTextWithEmotes(emote, `document.getElementById('entry-body').value += '${emote} '`)
+      emotePopup.innerHTML += replaceTextWithEmotes(emote.name, `document.getElementById('entry-body').value += '${emote.name} '`)
     })
 
     this.timeoutInterval = null
 
     this.messageList = new MessageList(document.getElementById('message-list'), this.maxHeight)
 
-    if (noEntry != true) { 
+    if (this.noEntry == false) { 
       this.initializeEntryBody()
       this.autocompletionHelper = new Autocompletion()
     }
@@ -162,7 +164,13 @@ export class MBChat {
       else {
         let data = JSON.parse(m.data)
 
-        this.messageList.push(data)
+        if (data.constructor == Array) { // this is probably a bad way to select the command list
+          if (this.noEntry == false) {
+            this.autocompletionHelper.setCommands(data)
+          }
+        } else {
+          this.messageList.push(data)
+        }
       }
     })
 
@@ -213,7 +221,7 @@ class Autocompletion {
     this.entry = document.getElementById('entry-body')
     this.popup = document.getElementById('autocompletion-popup')
 
-    this.chatCommands = ["/ban", "/mute", "/addcommand", "/toggle-dark-mode"]
+    this.chatCommands = []
     this.emotes = getEmotes()
 
     this.suggestions = []
@@ -226,6 +234,10 @@ class Autocompletion {
 
     this.registerEventListeners()
   }
+
+  setCommands(commands) {
+    this.chatCommands = commands
+  } 
 
   setPopupToSuggestions() {
     if (this.suggestions == []) {
@@ -241,9 +253,9 @@ class Autocompletion {
         let suggestionElement = document.createElement('p')
 
         if (this.emotes.includes(suggestion)) {
-          suggestionElement.innerHTML = replaceTextWithEmotes(suggestion) + ' ' + suggestion
-        } else {
-          suggestionElement.textContent = suggestion
+          suggestionElement.innerHTML = suggestion.description + suggestion.name
+        } else if (this.chatCommands.includes(suggestion)) {
+          suggestionElement.textContent = suggestion.name + ' ' + suggestion.description
         }
         
         this.popup.appendChild(suggestionElement)
@@ -279,7 +291,9 @@ class Autocompletion {
 
         if (this.suggestions.length != 0) {
           let words = this.entry.value.split(' ')
-          words[words.length-1] = this.suggestions[this.suggestions.length-this.tabIndex]
+
+          let highlighted = this.suggestions[this.suggestions.length-this.tabIndex]
+          words[words.length-1] = this.suggestions[this.suggestions.length-this.tabIndex].name
 
           this.entry.value = words.join(' ')
           this.setHighlightedSuggestion(this.suggestions.length-this.tabIndex)
@@ -327,7 +341,7 @@ class Autocompletion {
           let completionText = text.toLowerCase()
 
           for (let suggestion of this.chatCommands) {
-            if (suggestion.startsWith(completionText)) {
+            if (suggestion.name.toLowerCase().startsWith(completionText)) {
               this.suggestions.push(suggestion)
             }
           }
@@ -336,7 +350,7 @@ class Autocompletion {
             let words = completionText.split(' ')
             let word = words[words.length - 1]
             if (word != '') {
-              if (suggestion.toLowerCase().startsWith(words[words.length - 1])) {
+              if (suggestion.name.toLowerCase().startsWith(words[words.length - 1])) {
                 this.suggestions.push(suggestion)
               }
             }

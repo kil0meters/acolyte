@@ -36,6 +36,13 @@ func (account Account) IsValid() bool {
 	return true
 }
 
+// Ban bans a user for time.Duration
+func (account *Account) Ban(duration time.Duration) {
+	account.Permissions = Banned
+
+	database.DB.Exec("UPDATE accounts SET permissions = $1 WHERE account_id = $2", account.Permissions, account.ID)
+}
+
 // AccountFromID gets a account from an id
 func AccountFromID(id string) *Account {
 	account := Account{}

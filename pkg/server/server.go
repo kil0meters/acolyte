@@ -32,6 +32,7 @@ func StartServer() {
 	homepage.CheckIfLiveJob()
 
 	database.InitDatabase(os.Getenv("DATABASE_URL"))
+	chat.InitializeCommands()
 	authorization.InitializeSessionManager()
 
 	r.HandleFunc("/", homepage.ServeHomepage)

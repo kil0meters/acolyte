@@ -23,7 +23,12 @@ function regexEscape(str) {
 }
 
 export function getEmotes() {
-    return Object.keys(emotes)
+    return Object.keys(emotes).map((emote) => {
+        return {
+            "name": emote,
+            "description": replaceTextWithEmotes(emote)
+        }
+    })
 }
 
 export function replaceTextWithEmotes(text, onclick) {

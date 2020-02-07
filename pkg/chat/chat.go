@@ -22,7 +22,8 @@ var upgrader = websocket.Upgrader{
 func ServeWS(pool *Pool, w http.ResponseWriter, r *http.Request) {
 	log.Println("Starting WS session from address", r.RemoteAddr)
 
-	account := authorization.GetSession(w, r)
+	account := authorization.GetAccount(w, r)
+	session := authorization.GetSession(w, r)
 
 	if !account.Permissions.AtLeast(authorization.Standard) {
 		if account == nil {
@@ -40,6 +41,7 @@ func ServeWS(pool *Pool, w http.ResponseWriter, r *http.Request) {
 
 	client := &Client{
 		Account: account,
+		Session: session,
 		Conn:    conn,
 		Pool:    pool,
 	}

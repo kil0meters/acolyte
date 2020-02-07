@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gorilla/sessions"
 	"github.com/kil0meters/acolyte/pkg/database"
 
 	"github.com/antonlindstrom/pgstore"
@@ -22,11 +23,10 @@ func InitializeSessionManager() {
 	store.Cleanup(time.Minute * 5)
 }
 
-// GetSession gets an http session
-func GetSession(w http.ResponseWriter, r *http.Request) *Account {
-	session, err := store.Get(r, "session")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+// GetAccount gets an account object
+func GetAccount(w http.ResponseWriter, r *http.Request) *Account {
+	session := GetSession(w, r)
+	if session == nil {
 		return nil
 	}
 
@@ -36,9 +36,29 @@ func GetSession(w http.ResponseWriter, r *http.Request) *Account {
 		account.Permissions = LoggedOut
 	} else {
 		account = accountInterface.(*Account)
+
+		updatedAccount := AccountFromID(account.ID)
+		session.Values["account"] = updatedAccount
+
+		err := store.Save(r, w, session)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return nil
+		}
 	}
 
 	return account
+}
+
+// GetSession gets an http session
+func GetSession(w http.ResponseWriter, r *http.Request) *sessions.Session {
+	session, err := store.Get(r, "session")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return nil
+	}
+
+	return session
 }
 
 // CreateSession creates a new session cookie
