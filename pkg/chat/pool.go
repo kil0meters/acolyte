@@ -25,6 +25,16 @@ func NewPool() *Pool {
 	}
 }
 
+// KillAllConnections kills all connections of a user with a specific username
+func (pool *Pool) KillAllConnections(username string) {
+	for client := range pool.Clients {
+		if client.Account.Username == username {
+			client.Conn.Close()
+			pool.Unregister <- client
+		}
+	}
+}
+
 // BroadcastMessage broadcasts a message to a given pool
 func (pool *Pool) BroadcastMessage(message Message) {
 	if message.Data.Username != "ANON" {

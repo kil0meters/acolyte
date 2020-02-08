@@ -34,6 +34,12 @@ func InitializeCommands() {
 			},
 		}: 0,
 		&Command{
+			Name:               "/stalk",
+			Description:        "[username]",
+			RequiredPermission: authorization.Standard,
+			Function:           StalkCommand,
+		}: 0,
+		&Command{
 			Name:               "/addcommand",
 			Description:        "[name] [output...]",
 			RequiredPermission: authorization.Moderator,
@@ -49,19 +55,25 @@ func InitializeCommands() {
 			Name:               "/ban",
 			Description:        "[user] [duration] [reason...]",
 			RequiredPermission: authorization.Moderator,
-			Function:           BanAccount,
+			Function:           BanCommand,
+		}: 0,
+		&Command{
+			Name:               "/unban",
+			Description:        "[user] [reason...]",
+			RequiredPermission: authorization.Moderator,
+			Function:           UnbanCommand,
 		}: 0,
 		&Command{
 			Name:               "/mod",
 			Description:        "[user]",
 			RequiredPermission: authorization.Admin,
-			Function:           BanAccount,
+			Function:           ModCommand,
 		}: 0,
 		&Command{
 			Name:               "/unmod",
 			Description:        "[user]",
 			RequiredPermission: authorization.Admin,
-			Function:           BanAccount,
+			Function:           UnmodCommand,
 		}: 0,
 	}
 }
@@ -125,14 +137,24 @@ func RemoveCommand(client *Client, tokens []string) string {
 	return fmt.Sprintf("error: Command \"%s\" not found", tokens[1])
 }
 
-// BanAccount bans an account
-func BanAccount(client *Client, tokens []string) string {
+// StalkCommand returns the stalk log link
+func StalkCommand(client *Client, tokens []string) string {
+	if len(tokens) != 2 {
+		return fmt.Sprintf("error: Expected 2 arguments, got %d instead", len(tokens))
+	}
+
+	// TODO: should have hostname in an environment variable
+	return fmt.Sprintf("http://localhost:8080/logs/stalk?username=%s", tokens[1])
+}
+
+// BanCommand bans an account
+func BanCommand(client *Client, tokens []string) string {
 	if len(tokens) < 4 {
 		return fmt.Sprintf("error: Expected at least 4 arguments, got %d instead", len(tokens))
 	}
 
-	account := authorization.AccountFromUsername(tokens[1])
-	if account == nil {
+	accountToBan := authorization.AccountFromUsername(tokens[1])
+	if accountToBan == nil {
 		return "error: A user with that username does not exist"
 	}
 	duration, err := time.ParseDuration(tokens[2])
@@ -145,9 +167,52 @@ func BanAccount(client *Client, tokens []string) string {
 		Type: 1,
 		Data: MessageData{
 			Username: "Ban",
-			Text:     fmt.Sprintf("User \"%s\" has been banned for %s. \"%s\"", account.Username, duration, reason),
+			Text:     fmt.Sprintf("User \"%s\" has been banned by %s for %s. \"%s\"", accountToBan.Username, client.Account.Username, duration, reason),
 		},
 	}
 
+	err = accountToBan.Ban(client.Account, reason, duration)
+	if err != nil {
+		return fmt.Sprintf("error: %s", err.Error())
+	}
+
+	client.Pool.KillAllConnections(accountToBan.Username)
 	return "User successfully banned"
+}
+
+// UnbanCommand unbans a user
+func UnbanCommand(client *Client, tokens []string) string {
+	if len(tokens) < 3 {
+		return fmt.Sprintf("error: Expected at least 2 arguments, got %d instead", len(tokens))
+	}
+
+	accountToUnban := authorization.AccountFromUsername(tokens[1])
+	if accountToUnban == nil {
+		return "error: A user with that username does not exist"
+	}
+
+	reason := strings.Join(tokens[2:], " ")
+
+	accountToUnban.Ban(client.Account, "[UNBAN] "+reason, 0*time.Second)
+	accountToUnban.Unban()
+
+	client.Pool.Broadcast <- Message{
+		Type: 1,
+		Data: MessageData{
+			Username: "Ban",
+			Text:     fmt.Sprintf("User \"%s\" has been unbanned by %s. \"%s\"", accountToUnban.Username, client.Account.Username, reason),
+		},
+	}
+
+	return "User successfully unbanned"
+}
+
+// ModCommand mods a user
+func ModCommand(client *Client, tokens []string) string {
+	return ""
+}
+
+// UnmodCommand unmods a user
+func UnmodCommand(client *Client, tokens []string) string {
+	return ""
 }

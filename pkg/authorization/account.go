@@ -36,11 +36,24 @@ func (account Account) IsValid() bool {
 	return true
 }
 
-// Ban bans a user for time.Duration
-func (account *Account) Ban(duration time.Duration) {
-	account.Permissions = Banned
+// GetAccounts returns an array of all registered accounts
+func GetAccounts() []*Account {
+	rows, err := database.DB.Queryx("SELECT * FROM accounts")
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
 
-	database.DB.Exec("UPDATE accounts SET permissions = $1 WHERE account_id = $2", account.Permissions, account.ID)
+	accounts := make([]*Account, 0)
+
+	for rows.Next() {
+		account := Account{}
+		rows.StructScan(&account)
+
+		accounts = append(accounts, &account)
+	}
+
+	return accounts
 }
 
 // AccountFromID gets a account from an id

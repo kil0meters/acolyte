@@ -29,11 +29,12 @@ func StartServer() {
 	pool := chat.NewPool()
 	go pool.Start()
 
-	homepage.CheckIfLiveJob()
-
 	database.InitDatabase(os.Getenv("DATABASE_URL"))
 	chat.InitializeCommands()
 	authorization.InitializeSessionManager()
+
+	homepage.CheckIfLiveJob()
+	authorization.CheckBansJob()
 
 	r.HandleFunc("/", homepage.ServeHomepage)
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./acolyte-web/dist/"))))

@@ -33,6 +33,7 @@ func GetAccount(w http.ResponseWriter, r *http.Request) *Account {
 	account := &Account{}
 	accountInterface := session.Values["account"]
 	if accountInterface == nil {
+		account.Username = "ANON"
 		account.Permissions = LoggedOut
 	} else {
 		account = accountInterface.(*Account)

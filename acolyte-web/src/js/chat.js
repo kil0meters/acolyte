@@ -158,19 +158,15 @@ export class MBChat {
 
   initializeConnection() {
     this.conn.addEventListener("message", (m) => {
-      if (m.data == "UNAUTHORIZED") {
-        this.isUnauthorized = true
-      }
-      else {
-        let data = JSON.parse(m.data)
-
-        if (data.constructor == Array) { // this is probably a bad way to select the command list
-          if (this.noEntry == false) {
-            this.autocompletionHelper.setCommands(data)
-          }
-        } else {
-          this.messageList.push(data)
+      let data = JSON.parse(m.data)
+      if (data.constructor == Array) { // this is probably a bad way to select the command list
+        if (this.noEntry == false) {
+          this.autocompletionHelper.setCommands(data)
         }
+      } else if (data.text == "UNAUTHORIZED") {
+        this.isUnauthorized = true  
+      } else {
+        this.messageList.push(data)
       }
     })
 

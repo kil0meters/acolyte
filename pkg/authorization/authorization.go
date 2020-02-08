@@ -98,9 +98,13 @@ func SignupForm(w http.ResponseWriter, r *http.Request) {
 
 	account, err := CreateAccount(username, email, password)
 	if err != nil {
+		http.Redirect(w, r, "/sign-up?error=1", http.StatusSeeOther)
 		log.Println(err)
 		return
 	}
+
+	CreateSession(w, r, account)
+	http.Redirect(w, r, target, http.StatusSeeOther)
 
 	log.Println(account)
 }

@@ -82,7 +82,10 @@ func (c *Client) Read() {
 	}()
 
 	if c.Account.Username == "ANON" {
-		c.Write([]byte("UNAUTHORIZED"))
+		c.Write(MessageData{
+			Username: "Server",
+			Text:     "UNAUTHORIZED",
+		})
 	}
 
 	c.UpdateCommands()
@@ -97,6 +100,10 @@ func (c *Client) Read() {
 		message := ReadMessage(messageType, body)
 		message.Data.Username = c.Account.Username // force username to be forum username
 		message.Data.AccountID = c.Account.ID
+
+		if message.Data.Text == "" { // ignore zero length messages -- should be stopped in the client as well
+			continue
+		}
 
 		if message.Data.Text[0] == '/' {
 			output := ParseCommand(c, message.Data.Text)

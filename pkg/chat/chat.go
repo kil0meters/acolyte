@@ -1,10 +1,12 @@
 package chat
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"text/template"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 
 	"github.com/kil0meters/acolyte/pkg/authorization"
@@ -25,29 +27,41 @@ func ServeWS(pool *Pool, w http.ResponseWriter, r *http.Request) {
 	account := authorization.GetAccount(w, r)
 	session := authorization.GetSession(w, r)
 
-	if !account.Permissions.AtLeast(authorization.Standard) {
-		if account == nil {
-			account = &authorization.Account{
-				Username: "ANON",
-			}
-		}
-	}
-
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
 
-	client := &Client{
-		Account: account,
-		Session: session,
-		Conn:    conn,
-		Pool:    pool,
-	}
+	if !account.Permissions.AtLeast(authorization.LoggedOut) {
+		ban, err := account.GetBanInfo()
+		if err != nil {
+			log.Println(err)
+			conn.WriteJSON(MessageData{
+				Username: "System",
+				ID:       uuid.New(),
+				Text:     fmt.Sprintf("Error receiving unban information :("),
+			})
+		} else {
+			conn.WriteJSON(MessageData{
+				Username: "System",
+				ID:       uuid.New(),
+				Text:     fmt.Sprintf("You are banned until %s", ban.UnbanTime.Format("January 2, 2006")),
+			})
+		}
 
-	pool.Register <- client
-	client.Read()
+		conn.Close()
+	} else {
+		client := &Client{
+			Account: account,
+			Session: session,
+			Conn:    conn,
+			Pool:    pool,
+		}
+
+		pool.Register <- client
+		client.Read()
+	}
 }
 
 // ServeChat serves chat embed
