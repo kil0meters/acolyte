@@ -95,16 +95,23 @@ func ServePost(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(params["message_id"])
 
+	account := authorization.GetAccount(w, r)
+
+	if !account.Permissions.AtLeast(authorization.LoggedOut) {
+		http.Error(w, "why don't you not be banned before you try to look at memes :thinking:", http.StatusUnauthorized)
+		return
+	}
+
 	post := PostFromID(params["message_id"])
 	if post != nil {
 		log.Println(post.Body)
 
-		account := authorization.AccountFromID(post.AccountID)
+		posterAccount := authorization.AccountFromID(post.AccountID)
 
 		data := Data{
-			IsLoggedIn: false,
+			IsLoggedIn: account.Permissions.AtLeast(authorization.Standard),
 			Post:       post,
-			Account:    account,
+			Account:    posterAccount,
 		}
 
 		postTemplate.Execute(w, data)

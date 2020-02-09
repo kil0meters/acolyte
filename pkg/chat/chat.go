@@ -78,6 +78,11 @@ func ServeChat(w http.ResponseWriter, r *http.Request) {
 
 	account := authorization.GetAccount(w, r)
 
+	if !account.Permissions.AtLeast(authorization.LoggedOut) {
+		http.Error(w, "hey banned buckaroo try not being banned before you chat :)", http.StatusUnauthorized)
+		return
+	}
+
 	chatPage := chatPage{
 		Account:       account,
 		IsModerator:   account.Permissions.AtLeast(authorization.Moderator),

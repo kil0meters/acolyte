@@ -56,8 +56,16 @@ func GetAccount(w http.ResponseWriter, r *http.Request) *Account {
 func GetSession(w http.ResponseWriter, r *http.Request) *sessions.Session {
 	session, err := store.Get(r, "session")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return nil
+		session.Options.MaxAge = -1
+
+		err := store.Save(r, w, session)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return nil
+		}
+
+		store.Save(r, w, session)
+		return session
 	}
 
 	return session

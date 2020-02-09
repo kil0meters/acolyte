@@ -10,8 +10,13 @@
 }
 
 #logs-results p, #logs-results a {
+    color: var(--text-color-bold);
     margin: 0;
     text-decoration: none;
+}
+
+#logs-results a:hover {
+    color: var(--link-color);
 }
 
 #log-results p::before {
@@ -25,7 +30,7 @@
 
 :target {
     background-color: var(--link-color);
-    color: var(--background-color);
+    color: var(--background-color) !important;
     /* animation: target-fade 3s 1; */
 }
 
@@ -40,6 +45,7 @@
 }
 
 .log-date {
+    color: var(--text-color-bold);
     padding: 16px;
     display: inline-block;
     width: 100%;
