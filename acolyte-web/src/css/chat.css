@@ -131,6 +131,11 @@
     float: left;
 }
 
+#user-list-button {
+    float: right;
+    margin-right: 12px;
+}
+
 #settings-button {
     float: right;
 }
@@ -152,10 +157,27 @@
     }
 }
 
+@keyframes combo {
+    0% {
+        font-size: inherit;
+    }
+    30% {
+        font-size: 32px;
+    }
+    100% {
+        font-size: inherit;
+    }
+}
+
 .chat-message {
     animation: new-message 0.5s ease;
     line-height: 20px;
     margin-top: 4px;
+}
+
+.combo-message {
+    font-weight: bold;
+    animation: combo 0.3s ease;
 }
 
 .emote {

@@ -84,7 +84,7 @@ class MessageList {
     let recentMessage = this._list[this._list.length-1]
     var prevMessage = recentMessage
 
-    if (!this.emotes.includes(recentMessage.text)) {
+    if (!this.emotes.map((name) => name.name).includes(recentMessage.text)) {
       return
     }
 
@@ -100,6 +100,7 @@ class MessageList {
 
   replaceComboListWithElement() {
     if (this.currentCombo.length > 1) {
+      console.log("hey");
       for (let message of this.currentCombo) {
         let elementToRemove = document.getElementById(message.id)
 
@@ -109,7 +110,6 @@ class MessageList {
       }
 
       let currentComboElement = document.createElement('div')
-
 
       let mostRecentMessage = this.messageListElement.lastChild
 
