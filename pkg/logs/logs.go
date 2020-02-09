@@ -18,11 +18,11 @@ var messagesTemplate *template.Template = template.Must(template.ParseFiles("./t
 
 // LogMessage a struct representing a message log
 type LogMessage struct {
-	MessageID uuid.UUID `json:"message_id" db:"message_id"`
-	AccountID string    `json:"account_id" db:"account_id"`
-	Username  string    `json:"username"   db:"username"`
-	Timestamp time.Time `json:"time"       db:"time"`
-	Message   string    `json:"message"    db:"message"`
+	MessageID uuid.UUID     `json:"message_id" db:"message_id"`
+	AccountID string        `json:"account_id" db:"account_id"`
+	Username  string        `json:"username"   db:"username"`
+	Timestamp time.Time     `json:"time"       db:"time"`
+	Message   template.HTML `json:"message"    db:"message"`
 }
 
 // LogResult contains result for a log request

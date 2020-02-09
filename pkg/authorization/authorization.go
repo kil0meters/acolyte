@@ -25,6 +25,11 @@ const (
 	Banned PermissionLevel = "AUTH_BANNED"
 )
 
+type authPage struct {
+	Error bool
+	Target string
+}
+
 // AtLeast tests if a PermissionLevel is at least another PermissionLevel
 func (permissions PermissionLevel) AtLeast(minimumPermission PermissionLevel) bool {
 	if minimumPermission == Admin {
@@ -42,12 +47,18 @@ func (permissions PermissionLevel) AtLeast(minimumPermission PermissionLevel) bo
 // ServeLogin shows login screen
 func ServeLogin(w http.ResponseWriter, r *http.Request) {
 	target := r.URL.Query().Get("target")
+	err := r.URL.Query().Get("error") == "1"
 
 	if target == "" {
 		target = "/?login_success=1"
 	}
 
-	loginTemplate.Execute(w, target)
+	data := authPage{
+		Target: target,
+		Error: err,
+	}
+
+	loginTemplate.Execute(w, data)
 }
 
 // LoginForm wow
@@ -75,12 +86,18 @@ func LoginForm(w http.ResponseWriter, r *http.Request) {
 // ServeSignup shows signin screen
 func ServeSignup(w http.ResponseWriter, r *http.Request) {
 	target := r.URL.Query().Get("target")
+	err := r.URL.Query().Get("error") == "1"
 
 	if target == "" {
 		target = "/?login_success=1"
 	}
 
-	signupTemplate.Execute(w, target)
+	data := authPage{
+		Target: target,
+		Error: err,
+	}
+
+	signupTemplate.Execute(w, data)
 }
 
 // SignupForm wow

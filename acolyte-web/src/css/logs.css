@@ -6,6 +6,7 @@
 
 #logs-results {
     font-family: 'Courier', monospace;
+    word-wrap: break-word;
 }
 
 #logs-results p, #logs-results a {

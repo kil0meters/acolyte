@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/kil0meters/acolyte/pkg/authorization"
 )
 
@@ -25,14 +26,6 @@ var Commands map[*Command]int = make(map[*Command]int)
 // InitializeCommands initializes commands
 func InitializeCommands() {
 	Commands = map[*Command]int{
-		&Command{
-			Name:               "/ping",
-			Description:        "tests ping",
-			RequiredPermission: authorization.Standard,
-			Function: func(*Client, []string) string {
-				return "pong"
-			},
-		}: 0,
 		&Command{
 			Name:               "/stalk",
 			Description:        "[username]",
@@ -62,6 +55,12 @@ func InitializeCommands() {
 			Description:        "[user] [reason...]",
 			RequiredPermission: authorization.Moderator,
 			Function:           UnbanCommand,
+		}: 0,
+		&Command{
+			Name:               "/remove",
+			Description:        "[message_id]",
+			RequiredPermission: authorization.Moderator,
+			Function:           RemoveMessageCommand,
 		}: 0,
 		&Command{
 			Name:               "/mod",
@@ -147,6 +146,28 @@ func StalkCommand(client *Client, tokens []string) string {
 	return fmt.Sprintf("http://localhost:8080/logs/stalk?username=%s", tokens[1])
 }
 
+// RemoveMessageCommand removes a message
+func RemoveMessageCommand(client *Client, tokens []string) string {
+	if len(tokens) != 2 {
+		return fmt.Sprintf("error: Expected 2 arguments, got %d instead", len(tokens))
+	}
+
+	_, err := uuid.Parse(tokens[1])
+	if err != nil {
+		return fmt.Sprintf("error: Invalid UUID")
+	}
+
+	client.Pool.Broadcast <- Message{
+		Type: 1,
+		Data: MessageData{
+			Username: "delete",
+			Text:     tokens[1],
+		},
+	}
+
+	return "successfully removed message"
+}
+
 // BanCommand bans an account
 func BanCommand(client *Client, tokens []string) string {
 	if len(tokens) < 4 {
@@ -176,7 +197,12 @@ func BanCommand(client *Client, tokens []string) string {
 		return fmt.Sprintf("error: %s", err.Error())
 	}
 
-	client.Pool.KillAllConnections(accountToBan.Username)
+	// Don't execute right away because it allows a user to reconnect before the session updates
+	go func() {
+		time.Sleep(5 * time.Second)
+		client.Pool.KillAllConnections(accountToBan.Username)
+	}()
+
 	return "User successfully banned"
 }
 

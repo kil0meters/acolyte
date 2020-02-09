@@ -1,18 +1,20 @@
 // import katex from 'katex'
 import renderMathInElement from 'katex/dist/contrib/auto-render'
-import { replaceTextWithEmotes, getEmotes } from './emotes.js'
+import { replaceTextWithEmotes, getEmotes, renderEmotesInElement } from './emotes.js'
 
 class MessageList {
-  constructor(messageListElement, maxHeight) {
+  constructor(messageListElement, maxHeight, moderatorPerms) {
     this._list = []
     this.messageListElement = messageListElement
     this.emotes = getEmotes()
     this.maxHeight = maxHeight
 
+    this.moderatorPerms = moderatorPerms
+
     this.currentCombo = []
   }
 
-  static buildMessage(message) {
+  static buildMessage(message, moderatorPerms, conn) {
     let messageElement = document.createElement("div")
     messageElement.id = message.id
     messageElement.classList.add("chat-message")
@@ -23,26 +25,44 @@ class MessageList {
     usernameElement.classList.add("message-username")
 
     let textElement = document.createElement("span")
-    textElement.innerHTML = replaceTextWithEmotes(message.text)
+    textElement.innerHTML = message.text
+
+    renderMathInElement(textElement,{delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false}
+    ]})
+    renderEmotesInElement(textElement)
+
     textElement.classList.add("message-text")
 
     messageElement.appendChild(usernameElement)
     messageElement.appendChild(textElement)
-    // messageElement.appendChild(messageElement)
+
+    console.log(moderatorPerms);
+    if (moderatorPerms && message.id != "00000000-0000-0000-0000-000000000000") {
+      let removeMessageElement = document.createElement("button") 
+      removeMessageElement.textContent = "Remove"
+      removeMessageElement.classList.add("remove-message-button")
+      removeMessageElement.onclick = function() {
+        liveChat.sendMessage(`/remove ${message.id}`)
+      }
+
+      messageElement.appendChild(removeMessageElement)
+    }
 
     return messageElement
   }
 
   push(message) {
+    if (message.username == "delete") {
+      this.removeByID(message.text)
+      return
+    }
+
     this._list.push(message)
 
-    let messageElement = MessageList.buildMessage(message)
+    let messageElement = MessageList.buildMessage(message, this.moderatorPerms)
     this.messageListElement.appendChild(messageElement)
-
-    renderMathInElement(messageElement,{delimiters: [
-      {left: "$$", right: "$$", display: true},
-      {left: "$", right: "$", display: false}
-    ]})
 
     this.checkForCombos()
     this.replaceComboListWithElement()
@@ -125,7 +145,7 @@ class MessageList {
 }
 
 export class MBChat {
-  constructor(maxHeight, noEntry) { 
+  constructor(maxHeight, noEntry, moderatorPerms) { 
     if (location.protocol == 'https:') {
       this.wsProtocol = 'wss:'  
     } else {
@@ -133,24 +153,26 @@ export class MBChat {
     }
 
     this.noEntry = noEntry == true
+    this.moderatorPerms = moderatorPerms == true
 
     this.maxHeight = maxHeight
     this.conn = new WebSocket(`${this.wsProtocol}//${window.location.host}/api/v1/chat`)
     this.username = "username"
     this.isUnauthorized = false 
 
-    this.entryBody = document.getElementById('entry-body')
-
-    let emotePopup = document.getElementById('emote-popup')
-    getEmotes().forEach((emote) => {
-      emotePopup.innerHTML += replaceTextWithEmotes(emote.name, `document.getElementById('entry-body').value += '${emote.name} '`)
-    })
-
     this.timeoutInterval = null
 
-    this.messageList = new MessageList(document.getElementById('message-list'), this.maxHeight)
 
-    if (this.noEntry == false) { 
+    this.messageList = new MessageList(document.getElementById('message-list'), this.maxHeight, this.moderatorPerms)
+
+    if (this.noEntry == false) {
+      this.entryBody = document.getElementById('entry-body')
+      let emotePopup = document.getElementById('emote-popup')
+  
+      getEmotes().forEach((emote) => {
+        emotePopup.innerHTML += replaceTextWithEmotes(emote.name, `document.getElementById('entry-body').value += '${emote.name} '`)
+      })
+
       this.initializeEntryBody()
       this.autocompletionHelper = new Autocompletion()
     }
@@ -190,6 +212,13 @@ export class MBChat {
     })
   }
 
+  sendMessage(message) {
+    this.conn.send(JSON.stringify({
+      "username": this.username,
+      "text": message,
+    }))
+  }
+
   initializeEntryBody() {
     document.getElementById('entry-body').addEventListener("keydown", (event) => {
       if (event.key == "Enter" && !event.shiftKey) {
@@ -200,11 +229,8 @@ export class MBChat {
         } else {
           this.autocompletionHelper.sentMessage(document.getElementById('entry-body').value)
 
-          this.conn.send(JSON.stringify({
-            "username": this.username,
-            "text": document.getElementById('entry-body').value,
-          }))
-          
+          this.sendMessage(document.getElementById('entry-body').value)
+
           document.getElementById('entry-body').value = ""
         }
       }

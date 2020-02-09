@@ -29,7 +29,7 @@ export class LogSearch {
                           ("00" + date.getMinutes()).slice(-2) + ":" +
                           ("00" + date.getSeconds()).slice(-2)
 
-            logLink.textContent = `${dateStr} [${message.username}] ${message.message}`
+            logLink.innerHTML = `${dateStr} [${message.username}] ${message.message}`
             logLink.href = `/logs/messages/${dateStr.split(' ')[0]}#${message.message_id}`
 
             logElement.appendChild(logLink)
@@ -56,7 +56,7 @@ export class LogSearch {
     this.searchbar.value = this.urlParams.get('search')
     this.updateSearch()
 
-    this.searchbar.addEventListener('keydown', () => {
+    this.searchbar.addEventListener('keyup', () => {
       this.updateSearch()
     })
   }

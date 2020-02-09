@@ -6,7 +6,7 @@
   <script defer src="/static/bundle.min.js"></script>
   <link rel="stylesheet" href="/static/bundle.min.css">
   
-  <title>meters.sh - Chat</title>
+  <title>Chat</title>
 </head>
 
 <body id="live-chat">
@@ -29,10 +29,13 @@
     </div>
   </div>
   <div id="message-list"></div>
-  {{ if . }}
+  {{ if .IsStreamEmbed }}
   <script>
-    liveChat = new acolyte.MBChat(window.innerHeight, true)
-    liveChat.initializeConnection()
+    window.addEventListener('load', function() {
+      acolyte.toggleDarkMode()
+      liveChat = new acolyte.MBChat(window.innerHeight, true, {{ .IsModerator }})
+      liveChat.initializeConnection()
+    })
   </script>
   {{ else }}
   <div id="message-entry">
@@ -44,7 +47,7 @@
   </div>
   <script>
     window.addEventListener('load', function() {
-      liveChat = new acolyte.MBChat(window.innerHeight*3)
+      liveChat = new acolyte.MBChat(window.innerHeight*3, false, {{ .IsModerator }})
       liveChat.initializeConnection()
     })
   </script>

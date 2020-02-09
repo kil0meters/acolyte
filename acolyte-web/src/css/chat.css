@@ -1,7 +1,7 @@
 #live-chat {
     margin: 0;
-    font-family: 'Courier', monospace;
-    font-size: 16px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
 }
 
 #message-entry {
@@ -155,11 +155,13 @@
 .chat-message {
     animation: new-message 0.5s ease;
     line-height: 20px;
+    margin-top: 4px;
 }
 
 .emote {
-    height: 32px;
+    height: 28px;
     vertical-align: middle;
+    margin: -4px 0;
 }
 
 .message-username {
@@ -171,6 +173,34 @@
 .message-text {
     color: var(--text-color-subtle);
     overflow-wrap: break-word;
+}
+
+.remove-message-button {
+    background: none;
+    transition: 0.3s ease;
+    color: red;
+    font-family: 'Open Sans';
+    font-style: bold;
+    float: right;
+    cursor: pointer;
+
+    border: 2px solid red;
+    border-radius: 3px;
+
+    transform: translateX(10px);
+    visibility: hidden;
+    opacity: 0;
+}
+
+.chat-message:hover .remove-message-button {
+    transform: translateX(0px);
+    visibility: visible;
+    opacity: 1;
+}
+
+.remove-message-button:hover {
+    background-color: red;
+    color: white;
 }
 
 #autocompletion-popup {

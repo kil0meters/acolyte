@@ -101,7 +101,7 @@ func (account *Account) Unban() error {
 
 // GetBanInfo returns information about the most recent ban of a user
 func (account *Account) GetBanInfo() (*Ban, error) {
-	rows, err := database.DB.Queryx("SELECT * FROM bans WHERE account_id = $1 ORDER BY unban_time DESC", account.ID)
+	rows, err := database.DB.Queryx("SELECT * FROM bans WHERE account_id = $1 ORDER BY ban_time DESC", account.ID)
 	if err != nil {
 		return nil, err
 	}

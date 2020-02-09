@@ -42,11 +42,13 @@ func InitDatabase(connStr string) {
 														upvotes integer DEFAULT 0,
 														downvotes integer DEFAULT 0)`)
 
+	// Uses extension citext
 	DB.MustExec(`CREATE TABLE IF NOT EXISTS accounts (account_id text UNIQUE PRIMARY KEY,
-															username text UNIQUE NOT NULL,
+															username citext UNIQUE NOT NULL,
 															password_hash text NOT NULL,
 															created_at timestamp DEFAULT NOW(),
 															permissions permission_level DEFAULT 'AUTH_STANDARD')`)
+
 
 	DB.MustExec(`CREATE TABLE IF NOT EXISTS bans (account_id text NOT NULL,
 														unban_time timestamp NOT NULL,

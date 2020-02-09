@@ -20,6 +20,12 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true }, // TODO: this is not safe
 }
 
+type chatPage struct {
+	Account       *authorization.Account
+	IsModerator   bool
+	IsStreamEmbed bool
+}
+
 // ServeWS allows a account to join the live chat room
 func ServeWS(pool *Pool, w http.ResponseWriter, r *http.Request) {
 	log.Println("Starting WS session from address", r.RemoteAddr)
@@ -70,7 +76,15 @@ func ServeChat(w http.ResponseWriter, r *http.Request) {
 
 	isStreamEmbed := r.Form.Get("stream_embed") == "1"
 
+	account := authorization.GetAccount(w, r)
+
+	chatPage := chatPage{
+		Account:       account,
+		IsModerator:   account.Permissions.AtLeast(authorization.Moderator),
+		IsStreamEmbed: r.Form.Get("stream_embed") == "1",
+	}
+
 	log.Println(isStreamEmbed)
 
-	chatTemplate.Execute(w, isStreamEmbed)
+	chatTemplate.Execute(w, chatPage)
 }

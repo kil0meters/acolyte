@@ -8,19 +8,19 @@
 </head>
 
 <body id="fullscreen-viewer">
-  <div class="split" id="video" style="width: calc(70% - 5px);">
+  <div class="split" id="video" style="width: calc(75% + 5px);">
     <div id="livestream-header">
       <a class="logo" href="/">Miles Benton</a>
       <a class="subscribe-button" href="https://youtube.com/channel/{{.ChannelID}}?sub_confirmation=1">SUBSCRIBE (it's free)</a>
     </div>
     <iframe id="stream-embed" src="https://www.youtube-nocookie.com/embed/live_stream?channel={{.ChannelID}}&modestbranding=1" frameborder="0" allowfullscreen></iframe>
   </div>
-  <iframe class="split" id="chat" src="/chat" frameborder="0" style="width: calc(30% - 5px);"></iframe>
+  <iframe class="split" id="chat" src="/chat" frameborder="0" style="width: calc(25% - 5px);"></iframe>
 </body>
 <script>
   window.addEventListener('load', function() {
     acolyte.Split(['#video', '#chat'], {
-      sizes: [70, 30],
+      sizes: [75, 25],
       gutterSize: 10,
       minSize: 200,
     })
