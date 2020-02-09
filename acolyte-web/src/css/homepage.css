@@ -6,11 +6,12 @@ html {
 }
 
 a {
-    color: var(--text-color-bold);
+    color: var(--link-color);
+    text-decoration: none;
 }
 
 a:hover {
-    color: var(--link-color);
+    text-decoration: underline;
 }
 
 body {

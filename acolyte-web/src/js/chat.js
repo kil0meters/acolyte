@@ -1,6 +1,7 @@
 // import katex from 'katex'
 import renderMathInElement from 'katex/dist/contrib/auto-render'
 import { replaceTextWithEmotes, getEmotes, renderEmotesInElement } from './emotes.js'
+import linkifyElement from 'linkifyjs/element'
 
 class MessageList {
   constructor(messageListElement, maxHeight, moderatorPerms) {
@@ -31,6 +32,7 @@ class MessageList {
       {left: "$$", right: "$$", display: true},
       {left: "$", right: "$", display: false}
     ]})
+    linkifyElement(textElement)
     renderEmotesInElement(textElement)
 
     textElement.classList.add("message-text")
@@ -116,7 +118,6 @@ class MessageList {
           currentComboElement = mostRecentMessage;
         }
       }
-      replaceTextWithEmotes
 
       currentComboElement.classList.add('chat-message', 'combo-message')
       currentComboElement.innerHTML = `${replaceTextWithEmotes(this.currentCombo[0].text)} ${this.currentCombo.length}x`

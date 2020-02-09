@@ -39,8 +39,9 @@ func GetAccount(w http.ResponseWriter, r *http.Request) *Account {
 		account = accountInterface.(*Account)
 
 		updatedAccount := AccountFromID(account.ID)
-		session.Values["account"] = updatedAccount
+		account = updatedAccount
 
+		session.Values["account"] = updatedAccount
 		err := store.Save(r, w, session)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

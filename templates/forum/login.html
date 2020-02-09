@@ -20,9 +20,9 @@
     </div>
     {{ end }}
     <form action="/log-in?target={{.Target}}" method="POST">
-      <span class="authorize-form-label">Username</span>
+      <label for="username" class="authorize-form-label">Username</label>
       <input name="username" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1" maxlength="16">
-      <span class="authorize-form-label">Password</span>
+      <label for="password" class="authorize-form-label">Password</label>
       <input name="password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8" maxlength="256" type="password">
 
       <button class="authorize-form-button" type="submit">LOG IN</button>

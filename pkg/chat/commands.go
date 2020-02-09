@@ -197,11 +197,7 @@ func BanCommand(client *Client, tokens []string) string {
 		return fmt.Sprintf("error: %s", err.Error())
 	}
 
-	// Don't execute right away because it allows a user to reconnect before the session updates
-	go func() {
-		time.Sleep(5 * time.Second)
-		client.Pool.KillAllConnections(accountToBan.Username)
-	}()
+	client.Pool.KillAllConnections(accountToBan.Username)
 
 	return "User successfully banned"
 }

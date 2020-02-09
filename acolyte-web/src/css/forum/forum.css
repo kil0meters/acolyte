@@ -117,6 +117,7 @@ forum-post {
 
 .authorize-form-input {
     display: block;
+    box-shadow: none;
 
     font-family: 'Courier', monospace;
     font-size: 16px;
@@ -140,7 +141,6 @@ forum-post {
 
 .authorize-form-input:invalid {
     border-color: red;
-    box-shadow: none;
 }
 
 .authorize-form-label {
