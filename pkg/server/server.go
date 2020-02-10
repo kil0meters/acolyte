@@ -61,10 +61,6 @@ func StartServer() {
 	api.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
 		chat.ServeWS(pool, w, r)
 	})
-	api.HandleFunc("/list-posts", forum.ListPosts).Queries(
-		"sorting-type", "{sorting-type:(?:hot|top|controversial|new)}",
-		"amount", "{amount:(?:0?[1-9]|[12][0-9]|3[012])}",
-		"start", "{start:[0-9]+}")
 
 	api.HandleFunc("/search-logs", logs.SearchLogs).Queries(
 		"search", "{search}")

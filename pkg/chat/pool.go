@@ -27,21 +27,18 @@ func NewPool() *Pool {
 // KillAllConnections kills all connections of a user with a specific username
 func (pool *Pool) KillAllConnections(username string) {
 	pool.mu.Lock()
-	defer pool.mu.Unlock()
-
 	for client := range pool.Clients {
 		if client.Account.Username == username {
 			_ = client.Conn.Close()
 			pool.Unregister <- client
 		}
 	}
+	pool.mu.Unlock()
 }
 
 // BroadcastMessage broadcasts a message to a given pool
 func (pool *Pool) BroadcastMessage(message Message) {
 	pool.mu.Lock()
-	defer pool.mu.Unlock()
-
 	if message.Data.Username != "ANON" {
 		logs.RecordMessage(message.Data.ID, message.Data.AccountID, message.Data.Username, message.Data.Text.(string))
 
@@ -49,19 +46,19 @@ func (pool *Pool) BroadcastMessage(message Message) {
 			_ = client.Write(message.Data)
 		}
 	}
+	pool.mu.Unlock()
 }
 
 // GetUserList returns an array of usernames
 func (pool *Pool) GetUserList() []string {
 	pool.mu.Lock()
-	defer pool.mu.Unlock()
-
 	usernames := make([]string, 0)
 
 	for client := range pool.Clients {
 		usernames = append(usernames, client.Account.Username)
 	}
 
+	pool.mu.Unlock()
 	return usernames
 }
 
@@ -70,6 +67,7 @@ func (pool *Pool) Start() {
 	for {
 		select {
 		case client := <-pool.Register:
+			pool.mu.Lock()
 			pool.Clients[client] = true
 
 			hasAnotherSession := false
@@ -80,17 +78,24 @@ func (pool *Pool) Start() {
 			}
 
 			if hasAnotherSession == false && client.Account.Username != "ANON" {
+
 				messageData := MessageData{
 					Username: "user-add",
 					Text:     client.Account.Username,
 				}
 
+				pool.mu.Unlock()
 				pool.BroadcastMessage(Message{
 					Type: 1,
 					Data: messageData,
 				})
+				pool.mu.Lock()
+
 			}
+			pool.mu.Unlock()
+
 		case client := <-pool.Unregister:
+			pool.mu.Lock()
 			delete(pool.Clients, client)
 
 			hasAnotherSession := false
@@ -106,11 +111,14 @@ func (pool *Pool) Start() {
 					Text:     client.Account.Username,
 				}
 
+				pool.mu.Unlock()
 				pool.BroadcastMessage(Message{
 					Type: 1,
 					Data: messageData,
 				})
+				pool.mu.Lock()
 			}
+			pool.mu.Unlock()
 		case message := <-pool.Broadcast:
 			pool.BroadcastMessage(message)
 		}
