@@ -4,21 +4,28 @@ import { replaceTextWithEmotes, getEmotes, renderEmotesInElement } from './emote
 import linkifyElement from 'linkifyjs/element'
 
 class MessageList {
-  constructor(messageListElement, maxHeight, moderatorPerms) {
+  constructor(messageListElement, maxHeight, username, moderatorPerms) {
     this._list = []
     this.messageListElement = messageListElement
     this.emotes = getEmotes()
     this.maxHeight = maxHeight
 
+    this.username = username
     this.moderatorPerms = moderatorPerms
 
     this.currentCombo = []
   }
 
-  static buildMessage(message, moderatorPerms, conn) {
+  buildMessage(message) {
     let messageElement = document.createElement("div")
     messageElement.id = message.id
     messageElement.classList.add("chat-message")
+    if (message.text.includes(this.username) && message.username != this.username) {
+      messageElement.classList.add("mentioned")
+    } else if (message.username == this.username) {
+      messageElement.classList.add("self")
+    }
+
 
     let usernameElement = document.createElement("a")
     usernameElement.href = '#' + message.username
@@ -38,10 +45,8 @@ class MessageList {
     textElement.classList.add("message-text")
 
     messageElement.appendChild(usernameElement)
-    messageElement.appendChild(textElement)
 
-    console.log(moderatorPerms);
-    if (moderatorPerms && message.id !== "00000000-0000-0000-0000-000000000000") {
+    if (this.moderatorPerms && message.id !== "00000000-0000-0000-0000-000000000000") {
       let removeMessageElement = document.createElement("button") 
       removeMessageElement.textContent = "Remove"
       removeMessageElement.classList.add("remove-message-button")
@@ -52,6 +57,8 @@ class MessageList {
       messageElement.appendChild(removeMessageElement)
     }
 
+    messageElement.appendChild(textElement)
+
     return messageElement
   }
 
@@ -61,7 +68,7 @@ class MessageList {
     } else {
       this._list.push(message)
 
-      let messageElement = MessageList.buildMessage(message, this.moderatorPerms)
+      let messageElement = this.buildMessage(message)
       this.messageListElement.appendChild(messageElement)
 
       this.checkForCombos()
@@ -99,12 +106,11 @@ class MessageList {
 
   replaceComboListWithElement() {
     if (this.currentCombo.length > 1) {
-      console.log("hey");
       for (let message of this.currentCombo) {
         let elementToRemove = document.getElementById(message.id)
 
-        if (elementToRemove !== undefined) {
-          this.messageListElement.removeChild(document.getElementById(message.id))
+        if (elementToRemove != undefined) { // needs to be !=
+          this.messageListElement.removeChild(elementToRemove)
         }
       }
 
@@ -122,8 +128,6 @@ class MessageList {
       currentComboElement.innerHTML = `${replaceTextWithEmotes(this.currentCombo[0].text)} ${this.currentCombo.length}x`
 
       this.messageListElement.appendChild(currentComboElement)
-      // if (currentComboElement.classList)
-      console.log(currentComboElement);
     }
   }
 
@@ -179,8 +183,6 @@ class UserList {
     let overlay = document.getElementById("user-list-list")
     overlay.innerHTML = ""
 
-    console.log(this.userList);
-
     this.userList.forEach((username) => {
       overlay.appendChild(UserList.buildListElement(username))
     })
@@ -188,7 +190,7 @@ class UserList {
 }
 
 export class MBChat {
-  constructor(maxHeight, noEntry, moderatorPerms) { 
+  constructor(maxHeight, noEntry, username, moderatorPerms) { 
     if (location.protocol === 'https:') {
       this.wsProtocol = 'wss:'  
     } else {
@@ -200,13 +202,13 @@ export class MBChat {
 
     this.maxHeight = maxHeight
     this.conn = new WebSocket(`${this.wsProtocol}//${window.location.host}/api/v1/chat`)
-    this.username = "username"
+    this.username = username
     this.isUnauthorized = false 
 
     this.timeoutInterval = null
 
     this.userList = new UserList()
-    this.messageList = new MessageList(document.getElementById('message-list'), this.maxHeight, this.moderatorPerms)
+    this.messageList = new MessageList(document.getElementById('message-list'), this.maxHeight, this.username, this.moderatorPerms)
 
     if (this.noEntry === false) {
       this.entryBody = document.getElementById('entry-body')
@@ -326,7 +328,7 @@ class Autocompletion {
     
     this.users = users.map((username) => {
       return {
-        "name": '@' + username,
+        "name": username,
         "description": "",
       }
     })

@@ -19,8 +19,7 @@
 
 /* messages */
 #message-list {
-    padding: 12px;
-    margin-bottom: 104px;
+    margin-bottom: 112px;
 }
 
 .fullscreen-overlay {
@@ -169,10 +168,38 @@
     }
 }
 
+.message-username {
+    font-weight: bold;
+    color: inherit;
+    padding-right: 12px;
+}
+
+.message-text {
+    color: var(--text-color-subtle);
+    overflow-wrap: break-word;
+}
+
+.mentioned > .message-text {
+    color: inherit;
+}
+
+.mentioned a, .mentioned a:hover {
+    color: var(--background-color) !important;
+}
+
 .chat-message {
     animation: new-message 0.5s ease;
+    padding: 2px 16px;
     line-height: 20px;
-    margin-top: 4px;
+}
+
+.mentioned {
+    background-color: var(--link-color);
+    color: var(--background-color);
+}
+
+.self {
+    background-color: var(--accent-color);
 }
 
 .combo-message {
@@ -186,23 +213,12 @@
     margin: -4px 0;
 }
 
-.message-username {
-    font-weight: bold;
-    color: var(--text-color-bold);
-    padding-right: 12px;
-}
-
-.message-text {
-    color: var(--text-color-subtle);
-    overflow-wrap: break-word;
-}
-
 .remove-message-button {
     background: none;
     transition: 0.3s ease;
     color: red;
     font-family: 'Open Sans';
-    font-style: bold;
+    font-weight: bold;
     float: right;
     cursor: pointer;
 

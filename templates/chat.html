@@ -59,7 +59,7 @@
   </div>
   <script>
     window.addEventListener('load', function() {
-      liveChat = new acolyte.MBChat(window.innerHeight*3, false, {{ .IsModerator }})
+      liveChat = new acolyte.MBChat(window.innerHeight*3, false, "{{ .Account.Username }}", {{ .IsModerator }})
       liveChat.initializeConnection()
     })
   </script>
