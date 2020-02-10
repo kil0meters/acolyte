@@ -1,9 +1,6 @@
 package chat
 
 import (
-	"fmt"
-
-	"github.com/google/uuid"
 	"github.com/kil0meters/acolyte/pkg/logs"
 )
 
@@ -38,12 +35,23 @@ func (pool *Pool) KillAllConnections(username string) {
 // BroadcastMessage broadcasts a message to a given pool
 func (pool *Pool) BroadcastMessage(message Message) {
 	if message.Data.Username != "ANON" {
-		logs.RecordMessage(message.Data.ID, message.Data.AccountID, message.Data.Username, message.Data.Text)
+		logs.RecordMessage(message.Data.ID, message.Data.AccountID, message.Data.Username, message.Data.Text.(string))
 
 		for client := range pool.Clients {
 			client.Write(message.Data)
 		}
 	}
+}
+
+// GetUserList returns an array of usernames
+func (pool *Pool) GetUserList() []string {
+	usernames := make([]string, 0)
+
+	for client := range pool.Clients {
+		usernames = append(usernames, client.Account.Username)
+	}
+
+	return usernames
 }
 
 // Start starts a pool
@@ -62,9 +70,8 @@ func (pool *Pool) Start() {
 
 			if hasAnotherSession == false && client.Account.Username != "ANON" {
 				messageData := MessageData{
-					Username: "Server",
-					ID:       uuid.Must(uuid.NewRandom()),
-					Text:     fmt.Sprintf("%s joined", client.Account.Username),
+					Username: "user-add",
+					Text:     client.Account.Username,
 				}
 
 				pool.BroadcastMessage(Message{
@@ -84,9 +91,8 @@ func (pool *Pool) Start() {
 
 			if hasAnotherSession == false && client.Account.Username != "ANON" {
 				messageData := MessageData{
-					Username: "Server",
-					ID:       uuid.Must(uuid.NewRandom()),
-					Text:     fmt.Sprintf("%s left", client.Account.Username),
+					Username: "user-remove",
+					Text:     client.Account.Username,
 				}
 
 				pool.BroadcastMessage(Message{

@@ -160,7 +160,7 @@ func RemoveMessageCommand(client *Client, tokens []string) string {
 	client.Pool.Broadcast <- Message{
 		Type: 1,
 		Data: MessageData{
-			Username: "delete",
+			Username: "delete-message",
 			Text:     tokens[1],
 		},
 	}

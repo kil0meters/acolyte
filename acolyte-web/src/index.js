@@ -1,4 +1,4 @@
-import { MBChat, toggleLoginPrompt, toggleSettings, toggleEmotePopup } from './js/chat.js'
+import { MBChat, toggleLoginPrompt, toggleSettings, toggleUserList, toggleEmotePopup } from './js/chat.js'
 import { TransientHeader } from './js/forum.js'
 import { toggleDarkMode } from './js/toggle-darkmode.js'
 import { renderEmotesInElement } from './js/emotes.js'
@@ -23,6 +23,7 @@ import '../node_modules/katex/dist/katex.css'
 export {
     MBChat,
     toggleLoginPrompt,
+    toggleUserList,
     toggleSettings,
     toggleEmotePopup,
 

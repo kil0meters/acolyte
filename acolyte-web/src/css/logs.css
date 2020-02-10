@@ -44,7 +44,7 @@
     grid-gap: 16px;
 }
 
-.log-date {
+.list-card {
     color: var(--text-color-bold);
     padding: 16px;
     display: inline-block;
@@ -53,7 +53,7 @@
     border-bottom: 1px solid var(--accent-color);
 }
 
-.log-date:last-child {
+.list-card:last-child {
     border: none;
 }
 

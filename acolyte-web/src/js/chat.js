@@ -41,7 +41,7 @@ class MessageList {
     messageElement.appendChild(textElement)
 
     console.log(moderatorPerms);
-    if (moderatorPerms && message.id != "00000000-0000-0000-0000-000000000000") {
+    if (moderatorPerms && message.id !== "00000000-0000-0000-0000-000000000000") {
       let removeMessageElement = document.createElement("button") 
       removeMessageElement.textContent = "Remove"
       removeMessageElement.classList.add("remove-message-button")
@@ -56,24 +56,23 @@ class MessageList {
   }
 
   push(message) {
-    if (message.username == "delete") {
+    if (message.username === "delete-message") {
       this.removeByID(message.text)
-      return
-    }
+    } else {
+      this._list.push(message)
 
-    this._list.push(message)
+      let messageElement = MessageList.buildMessage(message, this.moderatorPerms)
+      this.messageListElement.appendChild(messageElement)
 
-    let messageElement = MessageList.buildMessage(message, this.moderatorPerms)
-    this.messageListElement.appendChild(messageElement)
+      this.checkForCombos()
+      this.replaceComboListWithElement()
 
-    this.checkForCombos()
-    this.replaceComboListWithElement()
+      if ((window.innerHeight + window.scrollY + 64) >= (document.body.offsetHeight - messageElement.offsetHeight)) {
+        window.scrollTo(0,document.body.scrollHeight)
 
-    if ((window.innerHeight + window.scrollY + 64) >= (document.body.offsetHeight - messageElement.offsetHeight)) {
-      window.scrollTo(0,document.body.scrollHeight)
-
-      while ((this.messageListElement.offsetHeight + 24) > this.maxHeight) { // offset for padding
-        this.removeByIndex(0)
+        while ((this.messageListElement.offsetHeight + 24) > this.maxHeight) { // offset for padding
+          this.removeByIndex(0)
+        }
       }
     }
   }
@@ -93,7 +92,7 @@ class MessageList {
       prevMessage = this._list[this._list.length-i]
     }
 
-    if (this.currentCombo[this.currentCombo.length-1].text != recentMessage.text) {
+    if (this.currentCombo[this.currentCombo.length-1].text !== recentMessage.text) {
       this.currentCombo.pop() // combo broken
     }
   }
@@ -104,7 +103,7 @@ class MessageList {
       for (let message of this.currentCombo) {
         let elementToRemove = document.getElementById(message.id)
 
-        if (elementToRemove != undefined) {
+        if (elementToRemove !== undefined) {
           this.messageListElement.removeChild(document.getElementById(message.id))
         }
       }
@@ -113,8 +112,8 @@ class MessageList {
 
       let mostRecentMessage = this.messageListElement.lastChild
 
-      if (mostRecentMessage != null) {
-        if (Array.from(mostRecentMessage.classList).includes('combo-message') && mostRecentMessage.firstChild.getAttribute('alt') == this.currentCombo[0].text) {
+      if (mostRecentMessage !== null) {
+        if (Array.from(mostRecentMessage.classList).includes('combo-message') && mostRecentMessage.firstChild.getAttribute('alt') === this.currentCombo[0].text) {
           currentComboElement = mostRecentMessage;
         }
       }
@@ -135,7 +134,7 @@ class MessageList {
 
   removeByID(id) {
     let i = this._list.indexOf(id)
-    if (i != -1) this._list.splice(i, 1)
+    if (i !== -1) this._list.splice(i, 1)
 
     this.messageListElement.removeChild(document.getElementById(id))
   }
@@ -145,16 +144,59 @@ class MessageList {
   }
 }
 
+class UserList {
+  constructor() {
+    this.userList = [] 
+  }
+
+  add(username) {
+    let index = this.userList.indexOf(username)
+    if (index === -1) this.userList.push(username)
+    this.updateList()
+  }
+
+  remove(username) {
+    let index = this.userList.indexOf(username)
+    if (index !== -1) this.userList.splice(index, 1);
+    this.updateList()
+  }
+
+  get list() {
+    return this.userList
+  }
+
+  static buildListElement(username) {
+    let listElement = document.createElement("span")
+    listElement.classList.add("list-card")
+
+    console.log("username: " + username);
+    listElement.textContent = username
+
+    return listElement
+  }
+
+  updateList() {
+    let overlay = document.getElementById("user-list-list")
+    overlay.innerHTML = ""
+
+    console.log(this.userList);
+
+    this.userList.forEach((username) => {
+      overlay.appendChild(UserList.buildListElement(username))
+    })
+  }
+}
+
 export class MBChat {
   constructor(maxHeight, noEntry, moderatorPerms) { 
-    if (location.protocol == 'https:') {
+    if (location.protocol === 'https:') {
       this.wsProtocol = 'wss:'  
     } else {
       this.wsProtocol = 'ws:'
     }
 
-    this.noEntry = noEntry == true
-    this.moderatorPerms = moderatorPerms == true
+    this.noEntry = noEntry === true
+    this.moderatorPerms = moderatorPerms === true
 
     this.maxHeight = maxHeight
     this.conn = new WebSocket(`${this.wsProtocol}//${window.location.host}/api/v1/chat`)
@@ -163,10 +205,10 @@ export class MBChat {
 
     this.timeoutInterval = null
 
-
+    this.userList = new UserList()
     this.messageList = new MessageList(document.getElementById('message-list'), this.maxHeight, this.moderatorPerms)
 
-    if (this.noEntry == false) {
+    if (this.noEntry === false) {
       this.entryBody = document.getElementById('entry-body')
       let emotePopup = document.getElementById('emote-popup')
   
@@ -181,15 +223,31 @@ export class MBChat {
 
   initializeConnection() {
     this.conn.addEventListener("message", (m) => {
-      let data = JSON.parse(m.data)
-      if (data.constructor == Array) { // this is probably a bad way to select the command list
-        if (this.noEntry == false) {
-          this.autocompletionHelper.setCommands(data)
-        }
-      } else if (data.text == "UNAUTHORIZED") {
+      let message = JSON.parse(m.data)
+      if (message.text === "UNAUTHORIZED") {
         this.isUnauthorized = true  
-      } else {
-        this.messageList.push(data)
+      }
+      else if (message.username === "user-add") {
+        console.log("user joined: " + message.text);
+        this.userList.add(message.text)
+        this.autocompletionHelper.setUsers(this.userList.list)
+      }
+      else if (message.username === "user-remove") {
+        console.log("user left: " + message.text);
+        this.userList.remove(message.text)
+        this.autocompletionHelper.setUsers(this.userList.list)
+      }
+      else if (message.username === "command-list" && this.noEntry === false) {
+        this.autocompletionHelper.setCommands(message.text)
+      }
+      else if (message.username === "user-list") {
+        message.text.forEach((username) => {
+          this.userList.add(username)
+        })
+        this.autocompletionHelper.setUsers(this.userList.userList)
+      }
+      else {
+        this.messageList.push(message)
       }
     })
 
@@ -202,7 +260,7 @@ export class MBChat {
         this.conn = new WebSocket(`${this.wsProtocol}//${window.location.host}/api/v1/chat`)
 
         setTimeout(() => {
-          if (this.conn.readyState == this.conn.OPEN) {
+          if (this.conn.readyState === this.conn.OPEN) {
             this.messageList.push({ "username": "Client", "text": "Reconnected."})
             this.initializeConnection(this.conn)
             console.log("Reconnected")
@@ -222,7 +280,7 @@ export class MBChat {
 
   initializeEntryBody() {
     document.getElementById('entry-body').addEventListener("keydown", (event) => {
-      if (event.key == "Enter" && !event.shiftKey) {
+      if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault()
 
         if (this.isUnauthorized) {
@@ -246,6 +304,7 @@ class Autocompletion {
 
     this.chatCommands = []
     this.emotes = getEmotes()
+    this.users = []
 
     this.suggestions = []
     this.tabIndex = 1
@@ -260,10 +319,22 @@ class Autocompletion {
 
   setCommands(commands) {
     this.chatCommands = commands
-  } 
+  }
+
+  setUsers(users) {
+    console.log(users);
+    
+    this.users = users.map((username) => {
+      return {
+        "name": '@' + username,
+        "description": "",
+      }
+    })
+    console.log(this.users);
+  }
 
   setPopupToSuggestions() {
-    if (this.suggestions == []) {
+    if (this.suggestions === []) {
       this.popup.classList.add('hidden') 
     } else {
       while (this.popup.firstChild) {
@@ -277,7 +348,7 @@ class Autocompletion {
 
         if (this.emotes.includes(suggestion)) {
           suggestionElement.innerHTML = suggestion.description + suggestion.name
-        } else if (this.chatCommands.includes(suggestion)) {
+        } else {
           suggestionElement.textContent = suggestion.name + ' ' + suggestion.description
         }
         
@@ -295,7 +366,7 @@ class Autocompletion {
   }
 
   sentMessage(message) {
-    if (this.previousMessages[this.previousMessages.length-1] != message) {
+    if (this.previousMessages[this.previousMessages.length-1] !== message) {
       this.previousMessages.push(message)
     }
     this.messageIndex = 0
@@ -303,7 +374,7 @@ class Autocompletion {
 
   registerEventListeners() {
     this.entry.addEventListener("keydown", (event) => {
-      if (event.key == "Tab") {
+      if (event.key === "Tab") {
         event.preventDefault()
 
         if (!event.shiftKey) {
@@ -312,7 +383,7 @@ class Autocompletion {
           this.tabIndex = Math.max(1, this.tabIndex-1)
         }
 
-        if (this.suggestions.length != 0) {
+        if (this.suggestions.length !== 0) {
           let words = this.entry.value.split(' ')
 
           let highlighted = this.suggestions[this.suggestions.length-this.tabIndex]
@@ -323,16 +394,16 @@ class Autocompletion {
         }
       }
 
-      else if (event.key == "ArrowDown") {
+      else if (event.key === "ArrowDown") {
         event.preventDefault()
         this.messageIndex = Math.max(this.messageIndex-1, 0)
-        if (this.messageIndex == 0 ) {
+        if (this.messageIndex === 0 ) {
           this.entry.value = this.currentValue
         } else {
           this.entry.value = this.previousMessages[this.previousMessages.length - this.messageIndex]
         }
       }
-      else if (event.key == "ArrowUp") {
+      else if (event.key === "ArrowUp") {
         event.preventDefault()
         this.messageIndex = Math.min(this.messageIndex+1, this.previousMessages.length)
         this.entry.value = this.previousMessages[this.previousMessages.length - this.messageIndex]
@@ -340,28 +411,38 @@ class Autocompletion {
     })
 
     this.entry.addEventListener("keyup", (event) => {
-      if (event.key != "ArrowUp" &&
-          event.key != "ArrowDown" &&
-          event.key != "Tab" &&
-          // event.key != "Enter" &&
-          event.key != "Shift" &&
-          event.key != "Control" &&
-          event.key != "Meta" &&
-          event.key != "Alt") {
+      if (event.key !== "ArrowUp" &&
+          event.key !== "ArrowDown" &&
+          event.key !== "Tab" &&
+          // event.key !== "Enter" &&
+          event.key !== "Shift" &&
+          event.key !== "Control" &&
+          event.key !== "Meta" &&
+          event.key !== "Alt") {
 
         let text = this.entry.value
       
-        if (this.messageIndex == 0) {
+        if (this.messageIndex === 0) {
           this.currentValue = text
         }
 
         this.tabIndex = 0
         this.suggestions = []
-        if (text == "") {
+        if (text === "") {
           this.messageIndex = 0
           this.setPopupToSuggestions()
         } else {
           let completionText = text.toLowerCase()
+
+          for (let suggestion of this.users) {
+            let words = completionText.split(' ')
+            let word = words[words.length - 1]
+            if (word !== '') {
+              if (suggestion.name.toLowerCase().startsWith(words[words.length - 1])) {
+                this.suggestions.push(suggestion)
+              }
+            }
+          }
 
           for (let suggestion of this.chatCommands) {
             if (suggestion.name.toLowerCase().startsWith(completionText)
@@ -373,7 +454,7 @@ class Autocompletion {
           for (let suggestion of this.emotes) {
             let words = completionText.split(' ')
             let word = words[words.length - 1]
-            if (word != '') {
+            if (word !== '') {
               if (suggestion.name.toLowerCase().startsWith(words[words.length - 1])) {
                 this.suggestions.push(suggestion)
               }
@@ -389,6 +470,7 @@ class Autocompletion {
 
 var loginPromptShown = false
 var settingsShown = false
+var userListShown = false
 var emotePopupShown = false
 
 export function toggleLoginPrompt() {
@@ -398,6 +480,15 @@ export function toggleLoginPrompt() {
     document.getElementById("login-prompt").classList.remove('hidden')
   }
   loginPromptShown = !loginPromptShown
+}
+
+export function toggleUserList() {
+  if (userListShown) {
+    document.getElementById("user-list-overlay").classList.add('hidden')
+  } else {
+    document.getElementById("user-list-overlay").classList.remove('hidden')
+  }
+  userListShown = !userListShown
 }
 
 export function toggleSettings() {

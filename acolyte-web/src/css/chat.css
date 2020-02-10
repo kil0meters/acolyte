@@ -23,7 +23,7 @@
     margin-bottom: 104px;
 }
 
-#settings-overlay {
+.fullscreen-overlay {
     position: fixed;
     z-index: 100;
     left: 0;
@@ -31,7 +31,7 @@
     top: 0;
     bottom: 0;
 
-    padding: 0 32px;
+    padding: 0 16px;
 
     font-family: 'Open Sans', sans-serif;
 
@@ -230,9 +230,12 @@
 
     box-shadow: 0px 0px 47px 2px var(--shadow-color);
 
+    overflow-y: auto;
+    max-height: calc(100% - 148px);
+
     position: fixed;
 
-    bottom: 120px;
+    bottom: 124px;
     right: 16px;
     left: 16px;
 }

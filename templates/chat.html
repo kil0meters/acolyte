@@ -10,13 +10,6 @@
 </head>
 
 <body id="live-chat">
-  <div id="settings-overlay" class="hidden">
-    <svg class="overlay-close-button" onclick="acolyte.toggleSettings()"  viewBox="0 0 24 24">
-      <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-    </svg>
-    <h1>Settings</h1>
-    <input id="settings-username-input" type="text" placeholder="username"></input>
-  </div>
   <div id="login-prompt" class="hidden">
     <svg class="overlay-close-button" onclick="acolyte.toggleLoginPrompt()"  viewBox="0 0 24 24">
       <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
@@ -38,6 +31,24 @@
     })
   </script>
   {{ else }}
+
+  <div id="settings-overlay" class="hidden fullscreen-overlay">
+    <svg class="overlay-close-button" onclick="acolyte.toggleSettings()"  viewBox="0 0 24 24">
+      <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+    </svg>
+    <h2>Settings</h2>
+    <input id="settings-username-input" type="text" placeholder="username"></input>
+  </div>
+
+  <div id="user-list-overlay" class="hidden fullscreen-overlay">
+    <svg class="overlay-close-button" onclick="acolyte.toggleUserList()"  viewBox="0 0 24 24">
+      <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+    </svg>
+    <h2>Users</h2>
+    <div id="user-list-list" class="wrapper" style="margin-top: 0;">
+    </div>
+  </div>
+
   <div id="message-entry">
     <div id="autocompletion-popup"></div>
     <div id="emote-popup" class="hidden"></div>

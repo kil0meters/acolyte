@@ -32,17 +32,17 @@ type Message struct {
 
 // MessageData a struct containing data for a message
 type MessageData struct {
-	Username  string    `json:"username"`
-	AccountID string    `json:"-"`
-	ID        uuid.UUID `json:"id"`
-	Text      string    `json:"text"`
+	Username  string      `json:"username"`
+	AccountID string      `json:"-"`
+	ID        uuid.UUID   `json:"id"`
+	Text      interface{} `json:"text"`
 }
 
 // ReadMessage reads a message from websocket data
 func ReadMessage(messageType int, body []byte) Message {
 	messageData := MessageData{}
 	json.Unmarshal(body, &messageData)
-	messageData.Text = strings.TrimSpace(messageData.Text)
+	messageData.Text = strings.TrimSpace(messageData.Text.(string))
 	messageData.ID = uuid.Must(uuid.NewRandom())
 
 	message := Message{
@@ -50,7 +50,7 @@ func ReadMessage(messageType int, body []byte) Message {
 		Data: messageData,
 	}
 
-	message.Data.Text = html.EscapeString(message.Data.Text)
+	message.Data.Text = html.EscapeString(message.Data.Text.(string))
 
 	return message
 }
@@ -71,7 +71,10 @@ func (c *Client) UpdateCommands() {
 			authorizedCommands = append(authorizedCommands, command)
 		}
 	}
-	c.Write(authorizedCommands)
+	c.Write(MessageData{
+		Username: "command-list",
+		Text:     authorizedCommands,
+	})
 }
 
 // Read Reads messages from a given client
@@ -89,6 +92,10 @@ func (c *Client) Read() {
 	}
 
 	c.UpdateCommands()
+	c.Write(MessageData{
+		Username: "user-list",
+		Text:     c.Pool.GetUserList(),
+	})
 
 	for {
 		messageType, body, err := c.Conn.ReadMessage()
@@ -105,8 +112,8 @@ func (c *Client) Read() {
 			continue
 		}
 
-		if message.Data.Text[0] == '/' {
-			output := ParseCommand(c, message.Data.Text)
+		if message.Data.Text.(string)[0] == '/' {
+			output := ParseCommand(c, message.Data.Text.(string))
 
 			c.Write(MessageData{
 				Username: "->",

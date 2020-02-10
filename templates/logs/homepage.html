@@ -23,13 +23,13 @@
     </form>
     <h2>Moderation</h2>
     <div class="wrapper" style="margin: 0;">
-      <a class="log-date" href="/logs/moderation/bans">Bans</a>
-      <a class="log-date" href="/logs/moderation/mutes">Mutes</a>
+      <a class="list-card" href="/logs/moderation/bans">Bans</a>
+      <a class="list-card" href="/logs/moderation/mutes">Mutes</a>
     </div>
     <h2>Messages By Day</h2>
     <div class="wrapper" style="margin: 0;">
       {{ range . }}
-      <a class="log-date" href='/logs/messages/{{ .Format "2006-01-02" }}'>{{ .Format "January 2, 2006" }}</a>
+      <a class="list-card" href='/logs/messages/{{ .Format "2006-01-02" }}'>{{ .Format "January 2, 2006" }}</a>
       {{ end }}
     </div>
   </article>
