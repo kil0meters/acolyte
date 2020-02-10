@@ -1,34 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>Sign up - milesbenton.com</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <link rel="stylesheet" href="/static/bundle.min.css">
-  <script defer src="/static/bundle.min.js"></script>
+    <title>Sign up - milesbenton.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/static/bundle.min.css">
+    <script defer src="/static/bundle.min.js"></script>
 </head>
 
 <body>
-  <header class="static-header">
+<header class="static-header">
     <a class="logo" href="/">Log In</a>
-  </header>
+</header>
 
-  <div class="content-wrapper">
+<div class="content-wrapper">
     {{ if .Error }}
-    <div class="auth-error">
-      error: Invalid username or password
-    </div>
+        <div class="auth-error">
+            error: Invalid username or password
+        </div>
     {{ end }}
     <form action="/log-in?target={{.Target}}" method="POST">
-      <label for="username" class="authorize-form-label">Username</label>
-      <input name="username" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1" maxlength="16">
-      <label for="password" class="authorize-form-label">Password</label>
-      <input name="password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8" maxlength="256" type="password">
+        <label for="username" class="authorize-form-label">Username</label>
+        <input name="username" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1" maxlength="16">
+        <label for="password" class="authorize-form-label">Password</label>
+        <input name="password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8"
+               maxlength="256" type="password">
 
-      <button class="authorize-form-button" type="submit">LOG IN</button>
+        <button class="authorize-form-button" type="submit">LOG IN</button>
     </form>
 
-  </div>
+</div>
 </body>
 
 </html>

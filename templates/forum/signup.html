@@ -1,48 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>Sign up - milesbenton.com</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <link rel="stylesheet" href="/static/bundle.min.css">
-  <script defer src="/static/bundle.min.js"></script>
+    <title>Sign up - milesbenton.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/static/bundle.min.css">
+    <script defer src="/static/bundle.min.js"></script>
 
 </head>
 
 <body>
-  <header class="static-header">
+<header class="static-header">
     <a class="logo" href="/">Sign Up</a>
-  </header>
+</header>
 
-  <div class="content-wrapper">
+<div class="content-wrapper">
     <form name="signup-form" action="/sign-up?target={{.Target}}" method="POST">
-      {{ if .Error }}
-      <div class="auth-error">
-        error: That username is taken
-      </div>
-      {{ end }}
-      <label for="username" class="authorize-form-label">Username</label>
-      <input name="username" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1" maxlength="16">
-      <label for="password" class="authorize-form-label">Password</label>
-      <input name="password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8" maxlength="256" type="password">
-      <label for="verify_password" class="authorize-form-label">Verify Password</label>
-      <input name="verify_password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8" maxlength="256" oninput="checkVerifyPassword()" type="password">
-      <button class="authorize-form-button" type="submit">SIGN UP</button>
+        {{ if .Error }}
+            <div class="auth-error">
+                error: That username is taken
+            </div>
+        {{ end }}
+        <label for="username" class="authorize-form-label">Username</label>
+        <input name="username" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1" maxlength="16">
+        <label for="password" class="authorize-form-label">Password</label>
+        <input name="password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8"
+               maxlength="256" type="password">
+        <label for="verify_password" class="authorize-form-label">Verify Password</label>
+        <input name="verify_password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8"
+               maxlength="256" oninput="checkVerifyPassword()" type="password">
+        <button class="authorize-form-button" type="submit">SIGN UP</button>
     </form>
-  </div>
-  <script>
+</div>
+<script>
     function checkVerifyPassword() {
-      let form = document.forms["signup-form"]
+        let form = document.forms["signup-form"];
 
-      if (form.password.value != form.verify_password.value) {
-        form.verify_password.setCustomValidity("Password fields do not match.")
-        form.verify_password.valid = false
-      } else {
-        form.verify_password.setCustomValidity("")
-        form.verify_password.valid = true
-      }
+        if (form.password.value !== form.verify_password.value) {
+            form.verify_password.setCustomValidity("Password fields do not match.");
+            form.verify_password.valid = false
+        } else {
+            form.verify_password.setCustomValidity("");
+            form.verify_password.valid = true
+        }
     }
-  </script>
+</script>
 </body>
 
 </html>

@@ -13,6 +13,8 @@ var DB *sqlx.DB
 
 // InitDatabase initializes database
 func InitDatabase(connStr string) {
+	log.Println("Connecting to database:", connStr)
+
 	var err error
 	DB, err = sqlx.Open("postgres", connStr)
 	if err != nil {
@@ -48,7 +50,6 @@ func InitDatabase(connStr string) {
 															password_hash text NOT NULL,
 															created_at timestamp DEFAULT NOW(),
 															permissions permission_level DEFAULT 'AUTH_STANDARD')`)
-
 
 	DB.MustExec(`CREATE TABLE IF NOT EXISTS bans (account_id text NOT NULL,
 														unban_time timestamp NOT NULL,

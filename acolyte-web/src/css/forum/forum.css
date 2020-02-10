@@ -15,7 +15,7 @@
     transition: all 0.2s ease-in-out;
     line-height: 64px;
 
-    box-shadow: 0 16px 32px 0px var(--shadow-color);
+    box-shadow: 0 16px 32px 0 var(--shadow-color);
 }
 
 .logo {
@@ -82,7 +82,7 @@ forum-post {
 }
 
 .post-body p:first-child {
-    margin-top: 0px;
+    margin-top: 0;
 }
 
 .post-title {

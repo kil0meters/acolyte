@@ -1,57 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>Forum - milesbenton.com</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <link rel="stylesheet" href="/static/bundle.min.css">
-  <script defer src="/static/bundle.min.js"></script>
+    <title>Forum - milesbenton.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/static/bundle.min.css">
+    <script defer src="/static/bundle.min.js"></script>
 </head>
 
 <body>
-  <header id="forum-header">
+<header id="forum-header">
     <a class="logo" href="/">Miles Benton Forum</a>
     <ul class="header-links">
-      {{ if .IsLoggedIn }}
-      <li class="header-link"><a href="/forum/create-post">Create Post</a></li>
-      <li class="header-link"><a href="/forum/preferences">Preferences</a></li>
-      {{ else }}
-      <li class="header-link"><a href="/sign-up">Sign Up</a></li>
-      <li class="header-link"><a href="/log-in">Log In</a></li>
-      {{ end }}
+        {{ if .IsLoggedIn }}
+            <li class="header-link"><a href="/forum/create-post">Create Post</a></li>
+            <li class="header-link"><a href="/forum/preferences">Preferences</a></li>
+        {{ else }}
+            <li class="header-link"><a href="/sign-up">Sign Up</a></li>
+            <li class="header-link"><a href="/log-in">Log In</a></li>
+        {{ end }}
     </ul>
     <ul class="header-hamburger-menu-container">
-      <input type="checkbox" class="header-hamburger-menu">
-      <span></span>
-      <span></span>
-      <span></span>
-      <div class="header-hamburger-links">
-        {{ if .IsLoggedIn }}
-        <li class="header-link"><a href="/forum/create-post">Create Post</a></li>
-        <li class="header-link"><a href="/forum/preferences">Preferences</a></li>
-        {{ else }}
-        <li class="header-link"><a href="/sign-up">Sign Up</a></li>
-        <li class="header-link"><a href="/log-in">Log In</a></li>
-        {{ end }}
-      </div>
+        <input type="checkbox" class="header-hamburger-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+        <div class="header-hamburger-links">
+            {{ if .IsLoggedIn }}
+                <li class="header-link"><a href="/forum/create-post">Create Post</a></li>
+                <li class="header-link"><a href="/forum/preferences">Preferences</a></li>
+            {{ else }}
+                <li class="header-link"><a href="/sign-up">Sign Up</a></li>
+                <li class="header-link"><a href="/log-in">Log In</a></li>
+            {{ end }}
+        </div>
     </ul>
-  </header>
-  <div class="wrapper">
+</header>
+<div class="wrapper">
     <div class="post-meta">
-      <span class="post-title">{{.Post.Title}}</span>
-      <span class="post-byline">posted by <a href="/user/{{.Account.Username}}">{{.Account.Username}}</a> on {{.Post.CreatedAt.Format "2006-01-02"}}</span>
-      <a href="{{.Post.Link}}">{{.Post.Link}}</a>
+        <span class="post-title">{{.Post.Title}}</span>
+        <span class="post-byline">posted by <a
+                    href="/user/{{.Account.Username}}">{{.Account.Username}}</a> on {{.Post.CreatedAt.Format "2006-01-02"}}</span>
+        <a href="{{.Post.Link}}">{{.Post.Link}}</a>
     </div>
     <div id="post-body" class="post-body">{{.Post.Body}}</div>
-  </div>
-  <script>
-    window.addEventListener('load', function() {
-      new acolyte.TransientHeader("forum-header")
-      acolyte.renderMarkdownInElement(document.getElementById("post-body"))
-      acolyte.renderEmotesInElement(document.getElementById("post-body"))
-      acolyte.renderMathInElement(document.getElementById("post-body"))
+</div>
+<script>
+    window.addEventListener('load', function () {
+        new acolyte.TransientHeader("forum-header");
+        acolyte.renderMarkdownInElement(document.getElementById("post-body"));
+        acolyte.renderEmotesInElement(document.getElementById("post-body"));
+        acolyte.renderMathInElement(document.getElementById("post-body"))
     })
-  </script>
+</script>
 </body>
 
 </html>

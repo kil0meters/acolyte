@@ -7,7 +7,7 @@ import (
 	"github.com/kil0meters/acolyte/pkg/homepage"
 )
 
-var livestreamTemplate *template.Template = template.Must(template.ParseFiles("./templates/livestream.html"))
+var livestreamTemplate = template.Must(template.ParseFiles("./templates/livestream.html"))
 
 // Data data for livestream page
 type Data struct {
@@ -15,10 +15,10 @@ type Data struct {
 }
 
 // ServeLivestream serves livestream page
-func ServeLivestream(w http.ResponseWriter, r *http.Request) {
+func ServeLivestream(w http.ResponseWriter, _ *http.Request) {
 	data := Data{
 		ChannelID: homepage.YoutubeChannelID,
 	}
 
-	livestreamTemplate.Execute(w, data)
+	_ = livestreamTemplate.Execute(w, data)
 }

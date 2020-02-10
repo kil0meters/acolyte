@@ -6,8 +6,8 @@ import (
 	"text/template"
 )
 
-var loginTemplate *template.Template = template.Must(template.ParseFiles("./templates/forum/login.html"))
-var signupTemplate *template.Template = template.Must(template.ParseFiles("./templates/forum/signup.html"))
+var loginTemplate = template.Must(template.ParseFiles("./templates/forum/login.html"))
+var signupTemplate = template.Must(template.ParseFiles("./templates/forum/signup.html"))
 
 // PermissionLevel enum for different forum permissions
 type PermissionLevel string
@@ -26,7 +26,7 @@ const (
 )
 
 type authPage struct {
-	Error bool
+	Error  bool
 	Target string
 }
 
@@ -55,15 +55,15 @@ func ServeLogin(w http.ResponseWriter, r *http.Request) {
 
 	data := authPage{
 		Target: target,
-		Error: err,
+		Error:  err,
 	}
 
-	loginTemplate.Execute(w, data)
+	_ = loginTemplate.Execute(w, data)
 }
 
 // LoginForm wow
 func LoginForm(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+	_ = r.ParseForm()
 
 	username := r.Form.Get("username")
 	password := r.Form.Get("password")
@@ -94,15 +94,15 @@ func ServeSignup(w http.ResponseWriter, r *http.Request) {
 
 	data := authPage{
 		Target: target,
-		Error: err,
+		Error:  err,
 	}
 
-	signupTemplate.Execute(w, data)
+	_ = signupTemplate.Execute(w, data)
 }
 
 // SignupForm wow
 func SignupForm(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+	_ = r.ParseForm()
 
 	username := r.Form.Get("username")
 	email := r.Form.Get("email")

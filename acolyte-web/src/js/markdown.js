@@ -1,5 +1,5 @@
-import highlightjs from 'highlight.js'
-import marked, { Renderer } from 'marked'
+import highlightjs from 'highlight.js';
+import marked, {Renderer} from 'marked';
 
 const escapeMap = {
   "&": "&amp;",
@@ -24,9 +24,9 @@ renderer.code = (code, language) => {
   return `<pre><code class="hljs ${language}">${highlighted}</code></pre>`;
 };
 
-marked.setOptions({ renderer })
+marked.setOptions({renderer});
 
 export function renderMarkdownInElement(element) {
   console.log(element.innerHTML);
-  element.innerHTML = marked(element.innerHTML)
+  element.innerHTML = marked(element.innerHTML);
 }

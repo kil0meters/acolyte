@@ -2,6 +2,7 @@ package chat
 
 import (
 	"github.com/kil0meters/acolyte/pkg/logs"
+	"sync"
 )
 
 // Pool an echo pool of websocket connections
@@ -10,6 +11,7 @@ type Pool struct {
 	Unregister chan *Client
 	Clients    map[*Client]bool
 	Broadcast  chan Message
+	mu         sync.Mutex
 }
 
 // NewPool creates a new pool object
@@ -24,9 +26,12 @@ func NewPool() *Pool {
 
 // KillAllConnections kills all connections of a user with a specific username
 func (pool *Pool) KillAllConnections(username string) {
+	pool.mu.Lock()
+	defer pool.mu.Unlock()
+
 	for client := range pool.Clients {
 		if client.Account.Username == username {
-			client.Conn.Close()
+			_ = client.Conn.Close()
 			pool.Unregister <- client
 		}
 	}
@@ -34,17 +39,23 @@ func (pool *Pool) KillAllConnections(username string) {
 
 // BroadcastMessage broadcasts a message to a given pool
 func (pool *Pool) BroadcastMessage(message Message) {
+	pool.mu.Lock()
+	defer pool.mu.Unlock()
+
 	if message.Data.Username != "ANON" {
 		logs.RecordMessage(message.Data.ID, message.Data.AccountID, message.Data.Username, message.Data.Text.(string))
 
 		for client := range pool.Clients {
-			client.Write(message.Data)
+			_ = client.Write(message.Data)
 		}
 	}
 }
 
 // GetUserList returns an array of usernames
 func (pool *Pool) GetUserList() []string {
+	pool.mu.Lock()
+	defer pool.mu.Unlock()
+
 	usernames := make([]string, 0)
 
 	for client := range pool.Clients {

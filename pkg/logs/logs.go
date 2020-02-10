@@ -11,10 +11,10 @@ import (
 	"github.com/kil0meters/acolyte/pkg/database"
 )
 
-var homepageTemplate *template.Template = template.Must(template.ParseFiles("./templates/logs/homepage.html"))
-var searchTemplate *template.Template = template.Must(template.ParseFiles("./templates/logs/search.html"))
-var stalkTemplate *template.Template = template.Must(template.ParseFiles("./templates/logs/stalk.html"))
-var messagesTemplate *template.Template = template.Must(template.ParseFiles("./templates/logs/messages.html"))
+var homepageTemplate = template.Must(template.ParseFiles("./templates/logs/homepage.html"))
+var searchTemplate = template.Must(template.ParseFiles("./templates/logs/search.html"))
+var stalkTemplate = template.Must(template.ParseFiles("./templates/logs/stalk.html"))
+var messagesTemplate = template.Must(template.ParseFiles("./templates/logs/messages.html"))
 
 // LogMessage a struct representing a message log
 type LogMessage struct {
@@ -45,7 +45,7 @@ func RecordMessage(messageID uuid.UUID, accountID string, username string, messa
 }
 
 // ServeHomepage serves logs homepage
-func ServeHomepage(w http.ResponseWriter, r *http.Request) {
+func ServeHomepage(w http.ResponseWriter, _ *http.Request) {
 	t1, _ := time.Parse("2006-01-02", "2020-01-01")
 	t2 := time.Now()
 
@@ -58,12 +58,12 @@ func ServeHomepage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dates = dates[:len(dates)-2]
-	homepageTemplate.Execute(w, dates)
+	_ = homepageTemplate.Execute(w, dates)
 }
 
 // ServeSearch serves logs search page
-func ServeSearch(w http.ResponseWriter, r *http.Request) {
-	searchTemplate.Execute(w, nil)
+func ServeSearch(w http.ResponseWriter, _ *http.Request) {
+	_ = searchTemplate.Execute(w, nil)
 }
 
 // ServeStalk serves stalk page
@@ -71,7 +71,7 @@ func ServeStalk(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	messages := StalkUser(params["username"])
 
-	stalkTemplate.Execute(w, messages)
+	_ = stalkTemplate.Execute(w, messages)
 }
 
 // ServeMessagesByDate serves messages on a specific day
@@ -86,5 +86,5 @@ func ServeMessagesByDate(w http.ResponseWriter, r *http.Request) {
 		Results: GetByDay(date),
 	}
 
-	messagesTemplate.Execute(w, result)
+	_ = messagesTemplate.Execute(w, result)
 }

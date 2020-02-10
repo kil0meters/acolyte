@@ -1,16 +1,16 @@
 export class TransientHeader {
     constructor(id) {
-        this.oldWindowScrollY = 0
-        this.id = id
+        this.oldWindowScrollY = 0;
+        this.id = id;
 
 
         window.addEventListener("scroll", () => {
             if (window.scrollY > this.oldWindowScrollY && window.scrollY > 64) {
-                document.getElementById(this.id).classList.add('header-hidden')
+                document.getElementById(this.id).classList.add('header-hidden');
             } else {
-                document.getElementById(this.id).classList.remove('header-hidden')
+                document.getElementById(this.id).classList.remove('header-hidden');
             }
-            this.oldWindowScrollY = window.scrollY
+            this.oldWindowScrollY = window.scrollY;
         })
     }
 }
@@ -21,8 +21,8 @@ class ForumPost extends HTMLElement {
     }
 
     connectedCallback() {
-        let title = this.getAttribute('title')
-        let postID = this.getAttribute('post-id')
+        let title = this.getAttribute('title');
+        let postID = this.getAttribute('post-id');
 
         this.innerHTML = `
             <div class="post-thumbnail"></div>
@@ -37,4 +37,4 @@ class ForumPost extends HTMLElement {
 
 }
 
-customElements.define('forum-post', ForumPost)
+customElements.define('forum-post', ForumPost);

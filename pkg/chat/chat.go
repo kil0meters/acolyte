@@ -12,7 +12,7 @@ import (
 	"github.com/kil0meters/acolyte/pkg/authorization"
 )
 
-var chatTemplate *template.Template = template.Must(template.ParseFiles("./templates/chat.html"))
+var chatTemplate = template.Must(template.ParseFiles("./templates/chat.html"))
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -43,20 +43,20 @@ func ServeWS(pool *Pool, w http.ResponseWriter, r *http.Request) {
 		ban, err := account.GetBanInfo()
 		if err != nil {
 			log.Println(err)
-			conn.WriteJSON(MessageData{
+			_ = conn.WriteJSON(MessageData{
 				Username: "System",
 				ID:       uuid.New(),
 				Text:     fmt.Sprintf("Error receiving unban information :("),
 			})
 		} else {
-			conn.WriteJSON(MessageData{
+			_ = conn.WriteJSON(MessageData{
 				Username: "System",
 				ID:       uuid.New(),
 				Text:     fmt.Sprintf("You are banned until %s", ban.UnbanTime.Format("January 2, 2006")),
 			})
 		}
 
-		conn.Close()
+		_ = conn.Close()
 	} else {
 		client := &Client{
 			Account: account,
@@ -72,7 +72,7 @@ func ServeWS(pool *Pool, w http.ResponseWriter, r *http.Request) {
 
 // ServeChat serves chat embed
 func ServeChat(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+	_ = r.ParseForm()
 
 	isStreamEmbed := r.Form.Get("stream_embed") == "1"
 
@@ -91,5 +91,5 @@ func ServeChat(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(isStreamEmbed)
 
-	chatTemplate.Execute(w, chatPage)
+	_ = chatTemplate.Execute(w, chatPage)
 }

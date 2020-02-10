@@ -14,7 +14,7 @@
     bottom: 0;
 
     padding: 12px;
-    box-shadow: 16px 0px 47px 2px var(--shadow-color);
+    box-shadow: 16px 0 47px 2px var(--shadow-color);
 }
 
 /* messages */
@@ -44,10 +44,10 @@
     right: 0;
     top: 0;
     bottom: 0;
-    
+
     font-family: 'Open Sans', sans-serif;
 
-    background-color: rgba(1,1,1,0.3);
+    background-color: rgba(1, 1, 1, 0.3);
 }
 
 .login-prompt-container {
@@ -100,7 +100,6 @@
     right: 24px;
     top: 24px;
     height: 32px;
-    height: 32px;
     cursor: pointer;
 }
 
@@ -117,7 +116,7 @@
     opacity: 1;
     transition: all 0.5s ease;
 
-    box-shadow: 0px 0px 47px 2px var(--shadow-color);
+    box-shadow: 0 0 47px 2px var(--shadow-color);
 }
 
 #emote-popup .emote {
@@ -217,7 +216,7 @@
     background: none;
     transition: 0.3s ease;
     color: red;
-    font-family: 'Open Sans';
+    font-family: 'Open Sans', sans-serif;
     font-weight: bold;
     float: right;
     cursor: pointer;
@@ -244,7 +243,7 @@
 #autocompletion-popup {
     background-color: var(--background-color);
 
-    box-shadow: 0px 0px 47px 2px var(--shadow-color);
+    box-shadow: 0 0 47px 2px var(--shadow-color);
 
     overflow-y: auto;
     max-height: calc(100% - 148px);

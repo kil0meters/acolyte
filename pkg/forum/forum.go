@@ -12,8 +12,8 @@ import (
 	"github.com/kil0meters/acolyte/pkg/database"
 )
 
-var frontpageTemplate *template.Template = template.Must(template.ParseFiles("./templates/forum/frontpage.html"))
-var postEditorTemplate *template.Template = template.Must(template.ParseFiles("./templates/forum/post-editor.html"))
+var frontpageTemplate = template.Must(template.ParseFiles("./templates/forum/frontpage.html"))
+var postEditorTemplate = template.Must(template.ParseFiles("./templates/forum/post-editor.html"))
 
 // Data contains data for the forum pages wow
 type Data struct {
@@ -49,7 +49,7 @@ func ServeForum(w http.ResponseWriter, r *http.Request) {
 		Posts:      posts,
 	}
 
-	frontpageTemplate.Execute(w, data)
+	_ = frontpageTemplate.Execute(w, data)
 }
 
 // ServePostEditor serves the post editor
@@ -61,7 +61,7 @@ func ServePostEditor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if account.Permissions.AtLeast(authorization.Standard) {
-		postEditorTemplate.Execute(w, nil)
+		_ = postEditorTemplate.Execute(w, nil)
 	} else {
 		http.Redirect(w, r, "/log-in?target=/forum/create-post", http.StatusTemporaryRedirect)
 	}
@@ -69,7 +69,11 @@ func ServePostEditor(w http.ResponseWriter, r *http.Request) {
 
 // CreatePostForm creates a new post
 func CreatePostForm(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	title := html.EscapeString(strings.Trim(r.Form.Get("title"), " \n\t"))
 	body := html.EscapeString(strings.Trim(r.Form.Get("body"), " \n\t"))
@@ -114,6 +118,6 @@ func ServePost(w http.ResponseWriter, r *http.Request) {
 			Account:    posterAccount,
 		}
 
-		postTemplate.Execute(w, data)
+		_ = postTemplate.Execute(w, data)
 	}
 }

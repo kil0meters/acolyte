@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"net/http"
 	"text/template"
 	"time"
 
@@ -14,7 +13,7 @@ import (
 	"github.com/kil0meters/acolyte/pkg/database"
 )
 
-var postTemplate *template.Template = template.Must(template.ParseFiles("./templates/forum/post.html"))
+var postTemplate = template.Must(template.ParseFiles("./templates/forum/post.html"))
 
 // ErrInvalidPostData shows invalid post data
 var ErrInvalidPostData = errors.New("Received invalid post data")
@@ -78,16 +77,6 @@ func CreateNewPost(title string, account *authorization.Account, body string, li
 	}
 
 	return &post, nil
-}
-
-// FetchPosts fetches n posts from
-func FetchPosts(sortingType SortingType, n int, offsetIndex int) {
-
-}
-
-// ListPosts lists posts
-func ListPosts(w http.ResponseWriter, r *http.Request) {
-
 }
 
 // PostFromID retrieves a post from an ID

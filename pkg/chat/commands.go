@@ -21,7 +21,7 @@ type Command struct {
 }
 
 // Commands array storing commands
-var Commands map[*Command]int = make(map[*Command]int)
+var Commands = make(map[*Command]int)
 
 // InitializeCommands initializes commands
 func InitializeCommands() {
@@ -137,7 +137,7 @@ func RemoveCommand(client *Client, tokens []string) string {
 }
 
 // StalkCommand returns the stalk log link
-func StalkCommand(client *Client, tokens []string) string {
+func StalkCommand(_ *Client, tokens []string) string {
 	if len(tokens) != 2 {
 		return fmt.Sprintf("error: Expected 2 arguments, got %d instead", len(tokens))
 	}
@@ -215,8 +215,14 @@ func UnbanCommand(client *Client, tokens []string) string {
 
 	reason := strings.Join(tokens[2:], " ")
 
-	accountToUnban.Ban(client.Account, "[UNBAN] "+reason, 0*time.Second)
-	accountToUnban.Unban()
+	err := accountToUnban.Ban(client.Account, "[UNBAN] "+reason, 0*time.Second)
+	if err != nil {
+		return "error: Unable to unban"
+	}
+	err = accountToUnban.Unban()
+	if err != nil {
+		return "error: Unable to unban"
+	}
 
 	client.Pool.Broadcast <- Message{
 		Type: 1,
@@ -230,11 +236,11 @@ func UnbanCommand(client *Client, tokens []string) string {
 }
 
 // ModCommand mods a user
-func ModCommand(client *Client, tokens []string) string {
+func ModCommand(_ *Client, _ []string) string {
 	return ""
 }
 
 // UnmodCommand unmods a user
-func UnmodCommand(client *Client, tokens []string) string {
+func UnmodCommand(_ *Client, _ []string) string {
 	return ""
 }

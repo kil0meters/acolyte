@@ -1,29 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>Sign up - milesbenton.com</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <link rel="stylesheet" href="/static/bundle.min.css">
-  <script defer src="/static/bundle.min.js"></script>
+    <title>Sign up - milesbenton.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/static/bundle.min.css">
+    <script defer src="/static/bundle.min.js"></script>
 </head>
 
 <body>
-  <header id="forum-header">
+<header id="forum-header">
     <a class="logo" href="/">Post Editor</a>
-  </header>
+</header>
 
-  <div class="wrapper padded">
+<div class="wrapper padded">
     <form action="/forum/create-post" method="POST" style="margin: 0;">
-      <input name="title" type="text" class="authorize-form-input" placeholder="Title">
-      <input name="link" type="url" class="authorize-form-input" placeholder="Link/Image">
-      <textarea name="body" class="authorize-form-input" id="markdown-editor" placeholder="Body" rows="30"></textarea>
-      <div class="authorize-form-grid">
-        <a class="authorize-form-button" style="grid-column: 1;">PREVIEW</a>
-        <button class="authorize-form-button" style="grid-column: 2;">POST</button>
-      </div>
+        <input name="title" type="text" class="authorize-form-input" placeholder="Title">
+        <input name="link" type="url" class="authorize-form-input" placeholder="Link/Image">
+        <textarea name="body" class="authorize-form-input" id="markdown-editor" placeholder="Body" rows="30"></textarea>
+        <div class="authorize-form-grid">
+            <a class="authorize-form-button" style="grid-column: 1;">PREVIEW</a>
+            <button class="authorize-form-button" style="grid-column: 2;">POST</button>
+        </div>
     </form>
-  </div>
+</div>
 </body>
 
 </html>
