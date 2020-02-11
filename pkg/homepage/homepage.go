@@ -1,7 +1,6 @@
 package homepage
 
 import (
-	"net/http"
 	"sync"
 	"text/template"
 	"time"
@@ -9,7 +8,7 @@ import (
 
 const YoutubeChannelID = "UCSJ4gkVC6NrvII8umztf0Ow"
 
-var homepageTemplate = template.Must(template.ParseFiles("./templates/homepage.html"))
+var homepageTemplate = template.Must(template.ParseFiles("./templates/home.gohtml"))
 
 type ChannelData struct {
 	FeaturedVideo YoutubeVideo
@@ -27,7 +26,7 @@ type HeaderListElement struct {
 
 // my channel - UCdXFe8CHwhS2nUT8JB5K2kQ
 // chill beats - UCSJ4gkVC6NrvII8umztf0Ow
-var data = &ChannelData{
+var Data = &ChannelData{
 	FeaturedVideo: YoutubeVideo{
 		Title:     "This is a test video",
 		ID:        "g15-lvmIrcg",
@@ -48,9 +47,9 @@ var data = &ChannelData{
 func checkIfLive() {
 	_isLive := CheckIfChannelIsLive(YoutubeChannelID)
 
-	data.mu.Lock()
-	data.LiveStatus = _isLive
-	data.mu.Unlock()
+	Data.mu.Lock()
+	Data.LiveStatus = _isLive
+	Data.mu.Unlock()
 }
 
 // CheckIfLiveJob Checks if livestreaming every 5 minutes
@@ -65,9 +64,4 @@ func CheckIfLiveJob() {
 			}
 		}
 	}(ticker)
-}
-
-// ServeHomepage serves the homepage
-func ServeHomepage(w http.ResponseWriter, _ *http.Request) {
-	_ = homepageTemplate.Execute(w, data)
 }

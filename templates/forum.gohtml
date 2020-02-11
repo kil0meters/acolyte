@@ -1,0 +1,102 @@
+{{ define "forum-frontpage" }}
+
+    <!DOCTYPE html>
+    <html lang="en">
+
+    {{ template "head" "Forum" }}
+
+    <body>
+
+    {{ template "transient-forum-header" .LoginStatus}}
+
+    <div class="wrapper padded">
+        <div id="post-list"></div>
+        {{ range .Posts }}
+            <forum-post title="{{ .Title }}" post-id="{{ .ID }}"></forum-post>
+        {{ end }}
+    </div>
+
+    <script>
+        window.addEventListener('load', function () {
+            new acolyte.TransientHeader("forum-header")
+        })
+    </script>
+    </body>
+
+    </html>
+
+{{ end }}
+
+{{ define "forum-post"}}
+    <!DOCTYPE html>
+    <html lang="en">
+
+    {{ template "head" "Forum" }}
+
+    <body>
+    {{ template "transient-forum-header" .LoginStatus }}
+    <div class="wrapper">
+        <div class="post-meta">
+            <span class="post-title">{{.Post.Title}}</span>
+            <span class="post-byline">posted by <a
+                        href="/user/{{.PosterAccount.Username}}">{{.PosterAccount.Username}}</a> on {{.Post.CreatedAt.Format "2006-01-02"}}</span>
+            <a href="{{.Post.Link}}">{{.Post.Link}}</a>
+        </div>
+        <div id="post-body" class="post-body">{{.Post.Body}}</div>
+    </div>
+    <div class="content-wrapper comment-entry">
+        <span>Comment as <a href="/user/{{.Account.Username}}">{{ .Account.Username }}</a></span>
+        <form action="/forum/{{.Post.ID}}/comment">
+            <textarea name="" class="authorize-form-input" id="comment-entry" cols="30" rows="10"
+                      placeholder="make a nice comment please"></textarea>
+            <button class="authorize-form-button">COMMENT</button>
+        </form>
+    </div>
+
+    <script>
+        window.addEventListener('load', function () {
+            new acolyte.TransientHeader("forum-header");
+            acolyte.renderMarkdownInElement(document.getElementById("post-body"));
+            acolyte.renderEmotesInElement(document.getElementById("post-body"));
+            acolyte.renderMathInElement(document.getElementById("post-body"))
+        })
+    </script>
+    </body>
+
+    </html>
+{{ end }}
+
+{{ define "post-editor" }}
+
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <title>Sign up - milesbenton.com</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <link rel="stylesheet" href="/static/bundle.min.css">
+        <script defer src="/static/bundle.min.js"></script>
+    </head>
+
+    <body>
+    <header id="forum-header">
+        <a class="logo" href="/">Post Editor</a>
+    </header>
+
+    <div class="wrapper padded">
+        <form action="/forum/create-post" method="POST" style="margin: 0;">
+            <input name="title" type="text" class="authorize-form-input" placeholder="Title">
+            <input name="link" type="url" class="authorize-form-input" placeholder="Link/Image">
+            <textarea name="body" class="authorize-form-input" id="markdown-editor" placeholder="Body"
+                      rows="30"></textarea>
+            <div class="authorize-form-grid">
+                <a class="authorize-form-button" style="grid-column: 1;">PREVIEW</a>
+                <button class="authorize-form-button" style="grid-column: 2;">POST</button>
+            </div>
+        </form>
+    </div>
+    </body>
+
+    </html>
+
+{{ end }}

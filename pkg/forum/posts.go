@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"text/template"
 	"time"
 
 	"github.com/asaskevich/govalidator"
@@ -12,8 +11,6 @@ import (
 	"github.com/kil0meters/acolyte/pkg/authorization"
 	"github.com/kil0meters/acolyte/pkg/database"
 )
-
-var postTemplate = template.Must(template.ParseFiles("./templates/forum/post.html"))
 
 // ErrInvalidPostData shows invalid post data
 var ErrInvalidPostData = errors.New("Received invalid post data")

@@ -7,7 +7,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-// YoutubeVideo a struct containing data for a youtube video
+// YoutubeVideo a struct containing Data for a youtube video
 type YoutubeVideo struct {
 	Title     string
 	ID        string

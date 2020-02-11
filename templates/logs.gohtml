@@ -1,0 +1,164 @@
+{{ define "logs-frontpage" }}
+    <!DOCTYPE html>
+    <html lang="en">
+
+    {{ template "head" "Logs"}}
+
+    <body>
+    <header class="static-header">
+        <a class="logo" href="/">Logs</a>
+    </header>
+    <article class="content-wrapper">
+        <form action="/logs/stalk" method="GET">
+            <span class="authorize-form-label">Stalk</span>
+            <input name="username" type="text" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1"
+                   maxlength="16" placeholder="stalk someone">
+        </form>
+        <form action="/logs/search" method="GET">
+            <span class="authorize-form-label">Search</span>
+            <input name="search" type="text" class="authorize-form-input" placeholder="search for a meme">
+        </form>
+        <h2>Moderation</h2>
+        <div class="wrapper" style="margin: 0;">
+            <a class="list-card" href="/logs/moderation/bans">Bans</a>
+            <a class="list-card" href="/logs/moderation/mutes">Mutes</a>
+        </div>
+        <h2>Messages By Day</h2>
+        <div class="wrapper" style="margin: 0;">
+            {{ range . }}
+                <a class="list-card"
+                   href='/logs/messages/{{ .Format "2006-01-02" }}'>{{ .Format "January 2, 2006" }}</a>
+            {{ end }}
+        </div>
+    </article>
+    <script>
+    </script>
+    </body>
+
+    </html>
+{{ end }}
+
+{{ define "logs-stalk" }}
+    <!DOCTYPE html>
+    <html lang="en">
+
+    {{ template "head" "Logs"}}
+
+    <body>
+    <header id="forum-header">
+        <a href="/logs" class="logo">Logs</a>
+    </header>
+    <div id="logs-results" class="wrapper padded">
+        {{ if not . }}
+            Yikes that person hasn't said anything
+        {{ else }}
+            {{ range . }}
+                <p>
+                    <a href='/logs/messages/{{ .Timestamp.Format "2006-01-02" }}#{{ .MessageID }}'>{{ .Timestamp.Format "2006-01-02 15:04:05" }}
+                        [{{ .Username }}] {{ .Message }}</a></p>
+            {{ end }}
+        {{ end }}
+    </div>
+    <script>
+        window.addEventListener('load', function () {
+            new acolyte.TransientHeader("forum-header");
+            acolyte.renderMathInElement(document.getElementById("logs-results"), {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false},
+                ]
+            });
+            acolyte.renderEmotesInElement(document.getElementById("logs-results"));
+
+            if (window.location.hash !== '') {
+                window.location.href = window.location.href; // this is simply to reset the :target
+                window.scrollTo(window.scrollX, window.scrollY - 128)
+            }
+        })
+    </script>
+    </body>
+
+    </html>
+{{ end }}
+
+{{ define "logs-search" }}
+    <!DOCTYPE html>
+    <html lang="en">
+
+    {{ template "head" "Logs - Search"}}
+
+    <body>
+    <header id="forum-header">
+        <input type="text" id="logs-search-bar" class="authorize-form-input" placeholder="Search">
+    </header>
+
+    <div id="logs-results" class="wrapper padded">
+    </div>
+    <script>
+        window.addEventListener('load', function () {
+            new acolyte.TransientHeader("forum-header");
+            let logSearchbar = new acolyte.LogSearch();
+            logSearchbar.initializeCallbacks();
+
+            acolyte.renderEmotesInElement(document.getElementById("logs-results"));
+            acolyte.renderMathInElement(document.getElementById("logs-results"), {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false},
+                ]
+            })
+        })
+    </script>
+    </body>
+
+    </html>
+{{ end }}
+
+{{ define "logs-messages" }}
+    <!DOCTYPE html>
+    <html lang="en">
+
+    {{ template "head" "Logs"}}
+
+    <body>
+    <header id="forum-header">
+        <a href="/logs" class="logo">{{ .Title }}</a>
+    </header>
+    <div id="logs-results" class="wrapper padded">
+        {{ if not .Results }}
+            Nothing has been said on that day :(
+        {{ else }}
+            {{ range .Results }}
+                <p id="{{ .MessageID }}">{{ .Timestamp.Format "2006-01-02 15:04:05" }} [{{ .Username }}
+                    ] {{ .Message }}</p>
+            {{ end }}
+        {{ end }}
+    </div>
+    <div class="paginator">
+        <a class="authorize-form-button" style="grid-column: 1;"
+           href='/logs/messages/{{ (.Date.AddDate 0 0 -1).Format "2006-01-02" }}'>< PREVIOUS DAY</a>
+        <a class="authorize-form-button" style="grid-column: 2;"
+           href='/logs/messages/{{ (.Date.AddDate 0 0 1).Format "2006-01-02" }}'>NEXT DAY ></a>
+    </div>
+    <script>
+
+        window.addEventListener('load', function () {
+            new acolyte.TransientHeader("forum-header");
+            acolyte.renderMathInElement(document.getElementById("logs-results"), {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false},
+                ]
+            });
+            acolyte.renderEmotesInElement(document.getElementById("logs-results"));
+
+            if (window.location.hash !== '') {
+                window.location.href = window.location.href;
+                window.scrollTo(window.scrollX, window.scrollY - 128)
+            }
+        })
+    </script>
+    </body>
+
+    </html>
+{{ end }}

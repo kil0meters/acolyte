@@ -3,18 +3,16 @@ package logs
 import (
 	"html/template"
 	"log"
-	"net/http"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	"github.com/kil0meters/acolyte/pkg/database"
 )
 
-var homepageTemplate = template.Must(template.ParseFiles("./templates/logs/homepage.html"))
-var searchTemplate = template.Must(template.ParseFiles("./templates/logs/search.html"))
-var stalkTemplate = template.Must(template.ParseFiles("./templates/logs/stalk.html"))
-var messagesTemplate = template.Must(template.ParseFiles("./templates/logs/messages.html"))
+// var homepageTemplate = template.Must(template.ParseFiles("./templates/logs/home.gohtml"))
+// var searchTemplate = template.Must(template.ParseFiles("./templates/logs/search.html"))
+// var stalkTemplate = template.Must(template.ParseFiles("./templates/logs/stalk.html"))
+// var messagesTemplate = template.Must(template.ParseFiles("./templates/logs/messages.html"))
 
 // LogMessage a struct representing a message log
 type LogMessage struct {
@@ -42,49 +40,4 @@ func RecordMessage(messageID uuid.UUID, accountID string, username string, messa
 	if err != nil {
 		log.Println("error logging message:", err.Error())
 	}
-}
-
-// ServeHomepage serves logs homepage
-func ServeHomepage(w http.ResponseWriter, _ *http.Request) {
-	t1, _ := time.Parse("2006-01-02", "2020-01-01")
-	t2 := time.Now()
-
-	dates := make([]time.Time, 0)
-	dates = append(dates, t1)
-
-	for t1.Before(t2) {
-		t1 = t1.AddDate(0, 0, 1)
-		dates = append(dates, t1)
-	}
-
-	dates = dates[:len(dates)-2]
-	_ = homepageTemplate.Execute(w, dates)
-}
-
-// ServeSearch serves logs search page
-func ServeSearch(w http.ResponseWriter, _ *http.Request) {
-	_ = searchTemplate.Execute(w, nil)
-}
-
-// ServeStalk serves stalk page
-func ServeStalk(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	messages := StalkUser(params["username"])
-
-	_ = stalkTemplate.Execute(w, messages)
-}
-
-// ServeMessagesByDate serves messages on a specific day
-func ServeMessagesByDate(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-
-	date, _ := time.Parse("2006-01-02", params["date"])
-
-	result := LogResult{
-		Title:   "Messages on " + date.Format("2006-01-02"),
-		Date:    date,
-		Results: GetByDay(date),
-	}
-
-	_ = messagesTemplate.Execute(w, result)
 }

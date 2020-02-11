@@ -2,7 +2,6 @@ package logs
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -13,9 +12,7 @@ import (
 func SearchLogs(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
-	log.Println(r.URL)
 	search := params["search"]
-	log.Println(search)
 	// username := params["from"]
 
 	rows, err := database.DB.Queryx("SELECT * FROM chat_log WHERE SIMILARITY(message, $1) > 0 ORDER BY SIMILARITY(message, $1) DESC LIMIT 100", search)
@@ -30,8 +27,6 @@ func SearchLogs(w http.ResponseWriter, r *http.Request) {
 		rows.StructScan(&row)
 		resultRows = append(resultRows, row)
 	}
-
-	log.Println(resultRows)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resultRows)
