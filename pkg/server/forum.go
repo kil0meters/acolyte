@@ -87,6 +87,31 @@ func CreatePostForm(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/forum/posts/"+post.ID, http.StatusSeeOther)
 }
 
+func CreateCommentForm(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	parentID := params["parent_id"]
+	body := html.EscapeString(strings.Trim(r.Form.Get("body"), " \n\t"))
+
+	account := authorization.GetAccount(w, r)
+	if !account.Permissions.AtLeast(authorization.Standard) {
+		http.Error(w, "hey buddy you're not allowed to comment", http.StatusUnauthorized)
+		return
+	}
+
+	err = forum.CreateComment(account, parentID, body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, r.RequestURI, http.StatusSeeOther)
+}
+
 // ServePost serves a post
 func ServePost(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -98,11 +123,13 @@ func ServePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post := forum.PostFromID(params["message_id"])
+	post := forum.PostFromID(params["post_id"])
 	if post == nil {
 		http.Error(w, "404 not found", http.StatusNotFound)
 		return
 	}
+
+	post.Replies = forum.GetCommentChildren(post.ID, 5)
 
 	posterAccount := authorization.AccountFromID(post.AccountID)
 

@@ -37,4 +37,43 @@ class ForumPost extends HTMLElement {
 
 }
 
+class CommentEditor extends HTMLElement {
+    constructor() {
+        super();
+    }
+
+    connectedCallback() {
+        let username = this.getAttribute('username');
+        let parentID = this.getAttribute('parent-id');
+
+        this.innerHTML = `
+        <div class="comment-editor">
+            <span>Comment as <a href="/user/${username}">${username}</a></span>
+            <form action="/forum/posts/${parentID}" method="POST">
+                <textarea name="body" class="authorize-form-input" id="comment-entry" cols="30" rows="10"
+                          placeholder="make a nice comment please"></textarea>
+                <button class="authorize-form-button">COMMENT</button>
+            </form>
+        </div>`
+    }
+
+}
+
+export function toggleReplyEditorVisibility(id, username) {
+    let editor = document.querySelector(`#${id} .comment-container comment-editor`);
+    let commentContainer = document.querySelector(`#${id} .comment-container`);
+
+    if (editor === undefined || editor === null) {
+
+        editor = document.createElement('comment-editor');
+        editor.setAttribute('username', username);
+        editor.setAttribute('parent-id', id);
+
+        commentContainer.appendChild(editor)
+    } else {
+        editor.remove()
+    }
+}
+
 customElements.define('forum-post', ForumPost);
+customElements.define('comment-editor', CommentEditor);

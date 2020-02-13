@@ -15,7 +15,7 @@ type ChannelData struct {
 	ChannelID     string
 	Header        []HeaderListElement
 	LiveStatus    bool
-	mu            sync.Mutex
+	Mu            sync.Mutex
 }
 
 // HeaderListElement a single list item in the header
@@ -47,9 +47,9 @@ var Data = &ChannelData{
 func checkIfLive() {
 	_isLive := CheckIfChannelIsLive(YoutubeChannelID)
 
-	Data.mu.Lock()
+	Data.Mu.Lock()
 	Data.LiveStatus = _isLive
-	Data.mu.Unlock()
+	Data.Mu.Unlock()
 }
 
 // CheckIfLiveJob Checks if livestreaming every 5 minutes

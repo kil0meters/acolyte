@@ -192,3 +192,90 @@ forum-post {
 #markdown-editor {
     resize: vertical;
 }
+
+/* comment memes (this is the so hacky wow) */
+
+.comment {
+    display: grid;
+    grid-template-columns: 12px 100fr;
+}
+
+.comment:not(:first-child) {
+    margin-top: 16px;
+}
+
+.comment-container {
+    grid-row: 1;
+    grid-column: 2;
+
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border: 1px solid var(--accent-color);
+    border-left: none;
+
+    transition: 0.2s ease;
+
+    padding: 12px;
+}
+
+.comment-collapse-toggle {
+    grid-column: 1;
+    grid-row: 1;
+
+    width: 12px;
+    margin: 0;
+    opacity: 0;
+    height: 100%;
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+    cursor: pointer;
+}
+
+.comment-collapse-toggle-visible {
+    grid-column: 1;
+    grid-row: 1;
+
+    background-color: var(--accent-color);
+    height: 100%;
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+    width: 12px;
+
+    transition: 0.2s ease;
+}
+
+.comment-collapse-toggle:hover ~ .comment-collapse-toggle-visible {
+    background-color: var(--link-color);
+}
+
+.comment-collapse-toggle:hover ~ .comment-container {
+    border-color: var(--link-color);
+}
+
+.comment-collapse-toggle:checked ~ .comment-container .comment,
+.comment-collapse-toggle:checked ~ .comment-container .comment-body,
+.comment-collapse-toggle:checked ~ .comment-container .comment-actions,
+.comment-collapse-toggle:checked ~ .comment-container comment-editor {
+    display: none;
+}
+
+.comment-collapse-toggle:checked ~ .comment-container .comment-byline {
+    color: var(--text-color-subtle);
+    font-style: italic;
+}
+
+.comment-actions {
+    padding: 0;
+    margin: 0;
+}
+
+.comment-actions li {
+    display: inline;
+    list-style: none;
+    margin-right: 12px;
+    font-family: 'Courier', monospace;
+}
+
+.comment-actions li a {
+    color: var(--text-color-bold);
+}

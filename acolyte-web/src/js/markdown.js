@@ -27,6 +27,5 @@ renderer.code = (code, language) => {
 marked.setOptions({renderer});
 
 export function renderMarkdownInElement(element) {
-  console.log(element.innerHTML);
-  element.innerHTML = marked(element.innerHTML);
+  element.innerHTML = marked(element.innerHTML.trim());
 }

@@ -45,12 +45,13 @@
         <div id="post-body" class="post-body">{{.Post.Body}}</div>
     </div>
     <div class="content-wrapper comment-entry">
-        <span>Comment as <a href="/user/{{.Account.Username}}">{{ .Account.Username }}</a></span>
-        <form action="/forum/{{.Post.ID}}/comment">
-            <textarea name="" class="authorize-form-input" id="comment-entry" cols="30" rows="10"
-                      placeholder="make a nice comment please"></textarea>
-            <button class="authorize-form-button">COMMENT</button>
-        </form>
+        <comment-editor username="{{.Account.Username}}" parent-id="{{ .Post.ID }}"></comment-editor>
+    </div>
+    <div class="content-wrapper replies">
+        <h2>Replies</h2>
+        {{ range .Post.Replies }}
+            {{ template "forum-comment" . }}
+        {{ end }}
     </div>
 
     <script>
@@ -58,7 +59,13 @@
             new acolyte.TransientHeader("forum-header");
             acolyte.renderMarkdownInElement(document.getElementById("post-body"));
             acolyte.renderEmotesInElement(document.getElementById("post-body"));
-            acolyte.renderMathInElement(document.getElementById("post-body"))
+            acolyte.renderMathInElement(document.getElementById("post-body"));
+
+            document.querySelectorAll(".comment-body").forEach((comment) => {
+                acolyte.renderMarkdownInElement(comment);
+                acolyte.renderEmotesInElement(comment);
+                acolyte.renderMathInElement(comment);
+            })
         })
     </script>
     </body>
@@ -99,4 +106,24 @@
 
     </html>
 
+{{ end }}
+
+{{ define "forum-comment" }}
+    <div id="{{.ID}}" class="comment">
+        <input name="{{.ID}}" type="checkbox" autocomplete="on" class="comment-collapse-toggle">
+        <span class="comment-collapse-toggle-visible"></span>
+        <div class="comment-container">
+            <span class="comment-byline">{{ .Username }}</span>
+            <div class="comment-body">
+                {{ .Body }}
+            </div>
+            <ul class="comment-actions">
+                <li><a onclick="acolyte.toggleReplyEditorVisibility('{{.ID}}', '{{.Username}}')">Reply</a></li>
+                <li><a>Report</a></li>
+            </ul>
+            {{ range .Replies }}
+                {{ template "forum-comment" . }}
+            {{ end }}
+        </div>
+    </div>
 {{ end }}

@@ -5,10 +5,11 @@ import (
 	"time"
 )
 
-const idChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+// NOTABLE EXCEPTIONS: a, c, p for Accounts, Comments, and Posts, respectively
+const idChars = "bdefghijklmnoqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 // GenerateID creates an id with n characters
-func GenerateID(length int) string {
+func GenerateID(prefix string, length int) string {
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	idBytes := make([]byte, length)
@@ -16,5 +17,5 @@ func GenerateID(length int) string {
 		idBytes[i] = idChars[rand.Intn(len(idChars))]
 	}
 
-	return string(idBytes)
+	return prefix + string(idBytes)
 }

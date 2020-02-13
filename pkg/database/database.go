@@ -59,8 +59,17 @@ func InitDatabase(connStr string) {
 
 	DB.MustExec(`CREATE TABLE IF NOT EXISTS chat_log (message_id uuid UNIQUE PRIMARY KEY,
 															account_id text,
-															username text NOT NULL,
+															username citext NOT NULL,
 															time timestamp DEFAULT NOW(),
 															message text NOT NULL)`)
 
+	DB.MustExec(`CREATE TABLE IF NOT EXISTS comments (comment_id text UNIQUE PRIMARY KEY,
+	                                                         parent_id text NOT NULL, 
+	                                                         account_id text NOT NULL,
+	                                                         username citext NOT NULL,
+	                                                         created_at timestamp DEFAULT NOW(),
+	                                                         body text NOT NULL,
+	                                                         removed boolean DEFAULT false,
+	                                                         upvotes integer DEFAULT 0,
+	                                                         downvotes integer DEFAULT 0)`)
 }

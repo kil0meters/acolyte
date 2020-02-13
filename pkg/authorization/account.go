@@ -109,7 +109,7 @@ func CreateAccount(username string, email string, password string) (*Account, er
 	}
 
 	account := Account{
-		ID:       GenerateID(6),
+		ID:       GenerateID("a", 6),
 		Username: username,
 		Hash:     hash,
 	}
