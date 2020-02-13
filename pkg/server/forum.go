@@ -95,6 +95,7 @@ func CreateCommentForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	parentID := params["parent_id"]
+	postID := html.EscapeString(strings.Trim(r.Form.Get("post-id"), " \n\t"))
 	body := html.EscapeString(strings.Trim(r.Form.Get("body"), " \n\t"))
 
 	account := authorization.GetAccount(w, r)
@@ -103,13 +104,13 @@ func CreateCommentForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = forum.CreateComment(account, parentID, body)
+	commentID, err := forum.CreateComment(account, parentID, postID, body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	http.Redirect(w, r, r.RequestURI, http.StatusSeeOther)
+	http.Redirect(w, r, "/forum/posts/"+postID+"#"+commentID, http.StatusSeeOther)
 }
 
 // ServePost serves a post

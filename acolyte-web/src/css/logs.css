@@ -28,7 +28,7 @@
     pointer-events: none;
 }
 
-:target {
+.log-result:target {
     background-color: var(--link-color);
     color: var(--background-color) !important;
     /* animation: target-fade 3s 1; */

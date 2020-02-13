@@ -45,7 +45,8 @@
         <div id="post-body" class="post-body">{{.Post.Body}}</div>
     </div>
     <div class="content-wrapper comment-entry">
-        <comment-editor username="{{.Account.Username}}" parent-id="{{ .Post.ID }}"></comment-editor>
+        <comment-editor username="{{.Account.Username}}" parent-id="{{.Post.ID}}"
+                        post-id="{{.Post.ID}}"></comment-editor>
     </div>
     <div class="content-wrapper replies">
         <h2>Replies</h2>
@@ -118,7 +119,9 @@
                 {{ .Body }}
             </div>
             <ul class="comment-actions">
-                <li><a onclick="acolyte.toggleReplyEditorVisibility('{{.ID}}', '{{.Username}}')">Reply</a></li>
+                <li>
+                    <a onclick="acolyte.toggleReplyEditorVisibility('{{.ID}}', '{{.PostID}}', '{{.Username}}')">Reply</a>
+                </li>
                 <li><a>Report</a></li>
             </ul>
             {{ range .Replies }}

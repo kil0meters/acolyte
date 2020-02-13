@@ -13,6 +13,7 @@ type Comment struct {
 	AccountID string                 `db:"account_id" valid:"-"`
 	Username  string                 `db:"username"   valid:"-"`
 	ParentID  string                 `db:"parent_id"  valid:"-"`
+	PostID    string                 `db:"post_id"    valid:"_"`
 	Body      string                 `db:"body"       valid:"type(string),optional"`
 	CreatedAt time.Time              `db:"created_at" valid:"-"`
 	Removed   bool                   `db:"removed"    valid:"-"`
@@ -21,15 +22,15 @@ type Comment struct {
 	Replies   []*Comment             `db:"-"          valid:"-"`
 }
 
-func CreateComment(account *authorization.Account, parentID string, body string) error {
+func CreateComment(account *authorization.Account, parentID string, postID string, body string) (string, error) {
 	commentID := authorization.GenerateID("c", 6)
 
-	_, err := database.DB.Exec("INSERT INTO comments (comment_id, parent_id, account_id, username, body) VALUES ($1, $2, $3, $4, $5)", commentID, parentID, account.ID, account.Username, body)
+	_, err := database.DB.Exec("INSERT INTO comments (comment_id, parent_id, post_id, account_id, username, body) VALUES ($1, $2, $3, $4, $5, $6)", commentID, parentID, postID, account.ID, account.Username, body)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return commentID, nil
 }
 
 func GetComment(commentID string, depth int) *Comment {

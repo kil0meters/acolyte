@@ -244,11 +244,13 @@ forum-post {
     transition: 0.2s ease;
 }
 
-.comment-collapse-toggle:hover ~ .comment-collapse-toggle-visible {
+.comment-collapse-toggle:hover ~ .comment-collapse-toggle-visible,
+.comment:target .comment-collapse-toggle-visible {
     background-color: var(--link-color);
 }
 
-.comment-collapse-toggle:hover ~ .comment-container {
+.comment-collapse-toggle:hover ~ .comment-container,
+.comment:target .comment-container {
     border-color: var(--link-color);
 }
 

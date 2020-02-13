@@ -45,21 +45,22 @@ class CommentEditor extends HTMLElement {
     connectedCallback() {
         let username = this.getAttribute('username');
         let parentID = this.getAttribute('parent-id');
+        let postID = this.getAttribute('post-id');
 
         this.innerHTML = `
         <div class="comment-editor">
             <span>Comment as <a href="/user/${username}">${username}</a></span>
             <form action="/forum/posts/${parentID}" method="POST">
+                <input type="hidden" name="post-id" value="${postID}">
                 <textarea name="body" class="authorize-form-input" id="comment-entry" cols="30" rows="10"
                           placeholder="make a nice comment please"></textarea>
                 <button class="authorize-form-button">COMMENT</button>
             </form>
         </div>`
     }
-
 }
 
-export function toggleReplyEditorVisibility(id, username) {
+export function toggleReplyEditorVisibility(id, postID, username) {
     let editor = document.querySelector(`#${id} .comment-container comment-editor`);
     let commentContainer = document.querySelector(`#${id} .comment-container`);
 
@@ -68,6 +69,7 @@ export function toggleReplyEditorVisibility(id, username) {
         editor = document.createElement('comment-editor');
         editor.setAttribute('username', username);
         editor.setAttribute('parent-id', id);
+        editor.setAttribute('post-id', postID);
 
         commentContainer.appendChild(editor)
     } else {

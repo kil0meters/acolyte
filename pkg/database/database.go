@@ -65,6 +65,7 @@ func InitDatabase(connStr string) {
 
 	DB.MustExec(`CREATE TABLE IF NOT EXISTS comments (comment_id text UNIQUE PRIMARY KEY,
 	                                                         parent_id text NOT NULL, 
+	                                                         post_id text NOT NULL, 
 	                                                         account_id text NOT NULL,
 	                                                         username citext NOT NULL,
 	                                                         created_at timestamp DEFAULT NOW(),
