@@ -34,13 +34,15 @@ func InitDatabase(connStr string) {
 	// 																'AUTH_STANDARD',
 	// 																'AUTH_BANNED')`)
 
+	// We have to use (now() at time zone 'utc') because pq assumes all timezones are in that format
+
 	DB.MustExec(`CREATE TABLE IF NOT EXISTS posts (post_id text UNIQUE PRIMARY KEY,
 														account_id text,
 														title text NOT NULL,
 														body text,
 														link text,
 														removed boolean DEFAULT FALSE,
-														created_at timestamp DEFAULT NOW(),
+														created_at timestamp DEFAULT (now() at time zone 'utc'),
 														upvotes integer DEFAULT 0,
 														downvotes integer DEFAULT 0)`)
 
@@ -48,19 +50,19 @@ func InitDatabase(connStr string) {
 	DB.MustExec(`CREATE TABLE IF NOT EXISTS accounts (account_id text UNIQUE PRIMARY KEY,
 															username citext UNIQUE NOT NULL,
 															password_hash text NOT NULL,
-															created_at timestamp DEFAULT NOW(),
+															created_at timestamp DEFAULT (now() at time zone 'utc'),
 															permissions permission_level DEFAULT 'AUTH_STANDARD')`)
 
 	DB.MustExec(`CREATE TABLE IF NOT EXISTS bans (account_id text NOT NULL,
 														unban_time timestamp NOT NULL,
-														ban_time timestamp DEFAULT NOW(),
+														ban_time timestamp DEFAULT (now() at time zone 'utc'),
 														ban_reason text,
 														banned_by text NOT NULL)`)
 
 	DB.MustExec(`CREATE TABLE IF NOT EXISTS chat_log (message_id uuid UNIQUE PRIMARY KEY,
 															account_id text,
 															username citext NOT NULL,
-															time timestamp DEFAULT NOW(),
+															time timestamp DEFAULT (now() at time zone 'utc'),
 															message text NOT NULL)`)
 
 	DB.MustExec(`CREATE TABLE IF NOT EXISTS comments (comment_id text UNIQUE PRIMARY KEY,
@@ -68,7 +70,7 @@ func InitDatabase(connStr string) {
 	                                                         post_id text NOT NULL, 
 	                                                         account_id text NOT NULL,
 	                                                         username citext NOT NULL,
-	                                                         created_at timestamp DEFAULT NOW(),
+	                                                         created_at timestamp DEFAULT (now() at time zone 'utc'),
 	                                                         body text NOT NULL,
 	                                                         removed boolean DEFAULT false,
 	                                                         upvotes integer DEFAULT 0,

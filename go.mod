@@ -6,6 +6,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.0
 	github.com/antonlindstrom/pgstore v0.0.0-20170604072116-a407030ba6d0
 	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496
+	github.com/dustin/go-humanize v1.0.0
 	github.com/gomarkdown/markdown v0.0.0-20200127000047-1813ea067497
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/handlers v1.4.2

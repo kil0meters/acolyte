@@ -1,6 +1,8 @@
 package server
 
 import (
+	"errors"
+	"github.com/dustin/go-humanize"
 	"github.com/kil0meters/acolyte/pkg/authorization"
 	"github.com/kil0meters/acolyte/pkg/chat"
 	"github.com/kil0meters/acolyte/pkg/homepage"
@@ -8,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"text/template"
+	"time"
 
 	"log"
 
@@ -17,12 +20,25 @@ import (
 	"github.com/urfave/negroni"
 )
 
-var webTemplate = template.Must(template.ParseFiles("./templates/headers.gohtml",
-	"./templates/forum.gohtml",
-	"./templates/home.gohtml",
-	"./templates/livestream.gohtml",
-	"./templates/logs.gohtml",
-	"./templates/auth.gohtml"))
+var webTemplate = template.Must(template.New("").Funcs(template.FuncMap{
+	"dict": func(values ...interface{}) (map[string]interface{}, error) {
+		if len(values)%2 != 0 {
+			return nil, errors.New("invalid dict call")
+		}
+		dict := make(map[string]interface{}, len(values)/2)
+		for i := 0; i < len(values); i += 2 {
+			key, ok := values[i].(string)
+			if !ok {
+				return nil, errors.New("dict keys must be strings")
+			}
+			dict[key] = values[i+1]
+		}
+		return dict, nil
+	},
+	"humanize": func(timestamp time.Time) string {
+		return humanize.Time(timestamp)
+	},
+}).ParseGlob("templates/*.gohtml"))
 
 // StartServer starts the server
 func StartServer() {
@@ -48,8 +64,9 @@ func StartServer() {
 	forumRouter.HandleFunc("", ServeForum)
 	forumRouter.HandleFunc("/create-post", ServePostEditor).Methods("GET")
 	forumRouter.HandleFunc("/create-post", CreatePostForm).Methods("POST")
-	forumRouter.HandleFunc("/posts/{post_id:[a-zA-Z]{7}}", ServePost).Methods("GET")
-	forumRouter.HandleFunc("/posts/{parent_id:[a-zA-Z]{7}}", CreateCommentForm).Methods("POST")
+
+	forumRouter.HandleFunc("/posts/{post_id:p[a-zA-Z]{6}}", ServePost).Methods("GET")
+	forumRouter.HandleFunc("/posts/{parent_id:[pc][a-zA-Z]{6}}", CreateCommentForm).Methods("POST")
 
 	r.HandleFunc("/chat", ServeChat)
 	r.HandleFunc("/live", ServeLivestream)

@@ -51,7 +51,7 @@
     <div class="content-wrapper replies">
         <h2>Replies</h2>
         {{ range .Post.Replies }}
-            {{ template "forum-comment" . }}
+            {{ template "forum-comment" dict "Comment" . "Account" $.Account}}
         {{ end }}
     </div>
 
@@ -59,13 +59,23 @@
         window.addEventListener('load', function () {
             new acolyte.TransientHeader("forum-header");
             acolyte.renderMarkdownInElement(document.getElementById("post-body"));
+            acolyte.renderMathInElement(document.getElementById("post-body"), {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false},
+                ]
+            });
             acolyte.renderEmotesInElement(document.getElementById("post-body"));
-            acolyte.renderMathInElement(document.getElementById("post-body"));
 
             document.querySelectorAll(".comment-body").forEach((comment) => {
                 acolyte.renderMarkdownInElement(comment);
+                acolyte.renderMathInElement(comment, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false},
+                    ]
+                });
                 acolyte.renderEmotesInElement(comment);
-                acolyte.renderMathInElement(comment);
             })
         })
     </script>
@@ -110,22 +120,29 @@
 {{ end }}
 
 {{ define "forum-comment" }}
-    <div id="{{.ID}}" class="comment">
-        <input name="{{.ID}}" type="checkbox" autocomplete="on" class="comment-collapse-toggle">
+    <div id="{{.Comment.ID}}" class="comment">
+        <input name="{{.Comment.ID}}" type="checkbox" autocomplete="on" class="comment-collapse-toggle">
         <span class="comment-collapse-toggle-visible"></span>
         <div class="comment-container">
-            <span class="comment-byline">{{ .Username }}</span>
-            <div class="comment-body">
-                {{ .Body }}
+            <div class="comment-byline">
+                <a class="comment-username" href="/forum/users/{{.Comment.Username}}">{{ .Comment.Username }}</a>
+                <span class="comment-date"> {{humanize .Comment.CreatedAt}}</span>
             </div>
-            <ul class="comment-actions">
-                <li>
-                    <a onclick="acolyte.toggleReplyEditorVisibility('{{.ID}}', '{{.PostID}}', '{{.Username}}')">Reply</a>
-                </li>
-                <li><a>Report</a></li>
-            </ul>
-            {{ range .Replies }}
-                {{ template "forum-comment" . }}
+            <div class="comment-body">
+                {{ .Comment.Body }}
+            </div>
+            {{ if not .Comment.HasMoreChildren }}
+                <ul class="comment-actions">
+                    <li>
+                        <a onclick="acolyte.toggleReplyEditorVisibility('{{.Comment.ID}}', '{{.Comment.PostID}}', '{{.Account.Username}}')">Reply</a>
+                    </li>
+                    <li><a>Report</a></li>
+                </ul>
+            {{ else }}
+                <a href="/forum/posts/{{.Comment.PostID}}?comment={{.Comment.ID}}">CONTINIUE --></a>
+            {{ end }}
+            {{ range .Comment.Replies }}
+                {{ template "forum-comment" dict "Comment" . "Account" $.Account}}
             {{ end }}
         </div>
     </div>

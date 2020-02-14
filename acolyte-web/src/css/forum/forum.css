@@ -79,6 +79,7 @@ forum-post {
 
 .post-body {
     padding: 16px;
+    font-size: 14px;
 }
 
 .post-body p:first-child {
@@ -189,7 +190,7 @@ forum-post {
 
 /* post editing */
 
-#markdown-editor {
+#markdown-editor, #comment-entry {
     resize: vertical;
 }
 
@@ -198,6 +199,19 @@ forum-post {
 .comment {
     display: grid;
     grid-template-columns: 12px 100fr;
+}
+
+.comment-body {
+    font-size: 14px;
+}
+
+.comment-date {
+    color: var(--text-color-subtle);
+}
+
+.comment-username {
+    font-weight: bold;
+    color: var(--text-color-bold) !important;
 }
 
 .comment:not(:first-child) {
@@ -262,7 +276,7 @@ forum-post {
 }
 
 .comment-collapse-toggle:checked ~ .comment-container .comment-byline {
-    color: var(--text-color-subtle);
+    color: var(--text-color-subtle) !important;
     font-style: italic;
 }
 

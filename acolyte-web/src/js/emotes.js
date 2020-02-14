@@ -35,7 +35,7 @@ export function replaceTextWithEmotes(text, onclick) {
     Object.keys(emotes).forEach((emoteName) => {
         let regex = new RegExp(`(${regexEscape(emoteName)})(\\s|$|[,.<>?/!'"])`, 'g');
 
-        text = text.replace(regex, `<img class="emote" alt="$1" onclick="${onclick}" src="/static/${emotes[emoteName]}">$2`);
+        text = text.replace(regex, `<img class="emote" alt="$1" title="$1" onclick="${onclick}" src="/static/${emotes[emoteName]}">$2`);
     });
     return text;
 }

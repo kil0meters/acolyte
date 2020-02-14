@@ -8,6 +8,7 @@ import (
 	"golang.org/x/net/html"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -130,7 +131,31 @@ func ServePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post.Replies = forum.GetCommentChildren(post.ID, 5)
+	// showingComment := false
+
+	contextCommentID := r.URL.Query().Get("comment")
+	contextDepthStr := r.URL.Query().Get("context")
+
+	contextDepth := 3
+	if len(contextDepthStr) != 0 {
+		var err error = nil
+		contextDepth, err = strconv.Atoi(contextDepthStr)
+		if err != nil {
+			http.Error(w, "Invalid context length", http.StatusNotAcceptable)
+			return
+		}
+	}
+
+	log.Println(contextDepth)
+
+	if len(contextCommentID) == 0 {
+		post.Replies = forum.GetCommentChildren(post.ID, 5)
+	} else {
+		post.Replies = []*forum.Comment{
+			forum.GetComment(contextCommentID, 5),
+		}
+		// showingComment := true
+	}
 
 	posterAccount := authorization.AccountFromID(post.AccountID)
 
