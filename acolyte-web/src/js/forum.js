@@ -26,15 +26,49 @@ class ForumPost extends HTMLElement {
 
         this.innerHTML = `
             <div class="post-thumbnail"></div>
-            <a class="post-title" href="forum/posts/${postID}">${title}</a>
-            <ul class="post-options">
-                <li class="post-option expander">+</li>
-                <li class="post-option">Comments</li>
-                <li class="post-option">Report</li>
-            </ul>
+            <div class="post-content">
+                <a class="post-title" href="forum/posts/${postID}">${title}</a>
+                <ul class="post-options">
+                    <li class="post-option expander">+</li>
+                    <li class="post-option">Comments</li>
+                    <li class="post-option">Report</li>
+                </ul>
+            </div>
         `;
     }
+}
 
+class LinkPreview extends HTMLElement {
+    constructor() {
+        super();
+    }
+
+    connectedCallback() {
+        let title = this.getAttribute('title');
+        let publishedDate = this.getAttribute('published-date');
+        let link = this.getAttribute('link');
+        let content = this.getAttribute('content');
+
+        if (title === "") {
+            this.innerHTML = `
+                <div class="link-preview-container">
+                    <a class="link-preview-link" href="${link}">${link}</a>
+                </div>
+            `
+        } else {
+            this.innerHTML = `
+            <div class="link-preview-container">
+                <div>
+                    <a class="article-title" href="${link}">${title}</a>
+                    <span class="article-date"> ${publishedDate}</span>
+                </div>
+                <div class="article-description">
+                    ${content}
+                </div>
+            </div>
+            `
+        }
+    }
 }
 
 class CommentEditor extends HTMLElement {
@@ -79,3 +113,4 @@ export function toggleReplyEditorVisibility(id, postID, username) {
 
 customElements.define('forum-post', ForumPost);
 customElements.define('comment-editor', CommentEditor);
+customElements.define('link-preview', LinkPreview);

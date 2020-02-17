@@ -75,4 +75,10 @@ func InitDatabase(connStr string) {
 	                                                         removed boolean DEFAULT false,
 	                                                         upvotes integer DEFAULT 0,
 	                                                         downvotes integer DEFAULT 0)`)
+
+	DB.MustExec(`CREATE TABLE IF NOT EXISTS link_cache (link text UNIQUE PRIMARY KEY,
+	                                                           title text,
+	                                                           icon text,
+	                                                           content text,
+	                                                           created_at timestamp DEFAULT (now() at time zone 'utc'))`)
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/kil0meters/acolyte/pkg/authorization"
 	"github.com/kil0meters/acolyte/pkg/database"
 	"github.com/kil0meters/acolyte/pkg/forum"
+	"github.com/kil0meters/acolyte/pkg/links"
 	"golang.org/x/net/html"
 	"log"
 	"net/http"
@@ -130,6 +131,8 @@ func ServePost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 not found", http.StatusNotFound)
 		return
 	}
+
+	post.Link = links.GetArticleInfo(post.LinkStr)
 
 	// showingComment := false
 

@@ -2,6 +2,7 @@ package forum
 
 import (
 	"errors"
+	"github.com/kil0meters/acolyte/pkg/links"
 	"log"
 	"time"
 
@@ -30,16 +31,17 @@ const (
 
 // Post struct containing data for a post
 type Post struct {
-	ID        string     `db:"post_id"    valid:"printableascii,required"`
-	AccountID string     `db:"account_id" valid:"printableascii,required"`
-	Title     string     `db:"title"      valid:"type(string),required"`
-	Link      string     `db:"link"       valid:"printableascii,optional"`
-	Body      string     `db:"body"       valid:"type(string),optional"`
-	Removed   bool       `db:"removed"    valid:"-"`
-	CreatedAt time.Time  `db:"created_at" valid:"-"`
-	Upvotes   int        `db:"upvotes"    valid:"-"`
-	Downvotes int        `db:"downvotes"  valid:"-"`
-	Replies   []*Comment `db:"-"          valid:"-"`
+	ID        string        `db:"post_id"    valid:"printableascii,required"`
+	AccountID string        `db:"account_id" valid:"printableascii,required"`
+	Title     string        `db:"title"      valid:"type(string),required"`
+	LinkStr   string        `db:"link"       valid:"printableascii,optional"`
+	Link      links.Article `db:"-"          valid:"-"`
+	Body      string        `db:"body"       valid:"type(string),optional"`
+	Removed   bool          `db:"removed"    valid:"-"`
+	CreatedAt time.Time     `db:"created_at" valid:"-"`
+	Upvotes   int           `db:"upvotes"    valid:"-"`
+	Downvotes int           `db:"downvotes"  valid:"-"`
+	Replies   []*Comment    `db:"-"          valid:"-"`
 }
 
 // IsValid tests if a post contains valid data
@@ -60,11 +62,11 @@ func CreateNewPost(title string, account *authorization.Account, body string, li
 		ID:        authorization.GenerateID("p", 6),
 		AccountID: account.ID,
 		Title:     title,
-		Link:      link,
+		LinkStr:   link,
 		Body:      body,
 	}
 
-	if !post.IsValid() { // TODO: post.Link still needs to be validated
+	if !post.IsValid() { // TODO: post.LinkStr still needs to be validated
 		return nil, ErrInvalidPostData
 	}
 

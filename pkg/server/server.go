@@ -75,6 +75,7 @@ func StartServer() {
 	r.HandleFunc("/log-in", LoginForm).Methods("POST")
 	r.HandleFunc("/sign-up", ServeSignup).Methods("GET")
 	r.HandleFunc("/sign-up", SignupForm).Methods("POST")
+	r.HandleFunc("/log-out", authorization.InvalidateSession)
 
 	logsRouter.HandleFunc("", ServeLogsFrontpage)
 	logsRouter.HandleFunc("/search", ServeLogsSearch)
