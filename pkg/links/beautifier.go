@@ -1,7 +1,10 @@
 package links
 
 import (
+	"encoding/json"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/gorilla/mux"
+	"github.com/kil0meters/acolyte/pkg/authorization"
 	"github.com/kil0meters/acolyte/pkg/database"
 	"log"
 	"net/http"
@@ -10,26 +13,32 @@ import (
 )
 
 type Article struct {
-	Title   string    `db:"title"`
-	Link    string    `db:"link"`
-	Icon    string    `db:"icon"`
-	Content string    `db:"content"`
-	Date    time.Time `db:"created_at"`
+	Title   string    `db:"title" json:"title"`
+	Link    string    `db:"link" json:"link"`
+	Icon    string    `db:"icon" json:"icon"`
+	Content string    `db:"content" json:"content"`
+	Date    time.Time `db:"created_at" json:"published_date"`
 }
 
 func GetArticleInfo(linkStr string) Article {
-	linkFull, _ := url.Parse(linkStr)
+	linkFull, err := url.Parse(linkStr)
+	if err != nil || linkFull.Scheme == "" {
+		return Article{}
+	}
+
+	log.Println(linkFull)
 
 	article := Article{
 		Icon: linkFull.Scheme + "://" + linkFull.Host + "/icon.ico",
 		Link: linkFull.Scheme + "://" + linkFull.Host + linkFull.Path,
 	}
 
-	err := database.DB.QueryRowx("SELECT * FROM link_cache WHERE link = $1", article.Link).StructScan(&article)
+	err = database.DB.QueryRowx("SELECT * FROM link_cache WHERE link = $1", article.Link).StructScan(&article)
 	if err != nil { // if it's not in the database, fetch it
-		res, err := http.Get(linkStr)
+		res, err := http.Get(linkFull.String())
 		if err != nil {
-			log.Println("Error fetching article")
+			log.Printf("Error fetching article \"%s\"\n", linkFull)
+			return Article{}
 		}
 
 		defer res.Body.Close()
@@ -74,4 +83,16 @@ func GetArticleInfo(linkStr string) Article {
 	}
 
 	return article
+}
+
+func LinkSearch(w http.ResponseWriter, r *http.Request) {
+	account := authorization.GetAccount(w, r)
+
+	if account.Permissions.AtLeast(authorization.LoggedOut) {
+		params := mux.Vars(r)
+
+		json.NewEncoder(w).Encode(GetArticleInfo(params["link"]))
+	} else {
+		w.Write([]byte("{\"error\":\"unauthorized\"}"))
+	}
 }

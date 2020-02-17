@@ -1,7 +1,7 @@
 // import katex from 'katex'
 import {getEmotes, replaceTextWithEmotes} from './emotes.js';
-import {MessageList} from "./messageList";
-import {UserList} from "./userList";
+import {MessageList} from "./messageList.js";
+import {UserList} from "./userList.js";
 
 export class MBChat {
     constructor(maxHeight, noEntry, username, moderatorPerms) {

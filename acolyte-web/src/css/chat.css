@@ -182,7 +182,7 @@
     color: inherit;
 }
 
-.mentioned a, .mentioned a:hover {
+.mentioned .chat-link, .mentioned > .chat-link:hover {
     color: var(--background-color) !important;
 }
 
@@ -190,6 +190,10 @@
     animation: new-message 0.5s ease;
     padding: 2px 16px;
     line-height: 20px;
+}
+
+.chat-message:not(.self) .link-preview-container {
+    background-color: var(--accent-color);
 }
 
 .mentioned {

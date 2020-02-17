@@ -6,6 +6,7 @@ import (
 	"github.com/kil0meters/acolyte/pkg/authorization"
 	"github.com/kil0meters/acolyte/pkg/chat"
 	"github.com/kil0meters/acolyte/pkg/homepage"
+	"github.com/kil0meters/acolyte/pkg/links"
 	"github.com/kil0meters/acolyte/pkg/logs"
 	"net/http"
 	"os"
@@ -82,9 +83,13 @@ func StartServer() {
 	logsRouter.HandleFunc("/stalk", ServeStalk).Queries("username", "{username}")
 	logsRouter.HandleFunc("/messages/{date:(?:[12]\\d{3}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01]))}", ServeMessagesByDate)
 
+	api.NotFoundHandler = APINotFoundHandler()
+
 	api.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
 		chat.ServeWS(pool, w, r)
 	})
+
+	api.HandleFunc("/link-data", links.LinkSearch).Queries("link", "{link}")
 
 	api.HandleFunc("/search-logs", logs.SearchLogs).Queries(
 		"search", "{search}")
@@ -101,4 +106,10 @@ func StartServer() {
 	log.Println("Starting server at http://localhost:" + port)
 
 	http.ListenAndServe(":"+port, n)
+}
+
+func APINotFoundHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("{\"error\":\"not found\"}"))
+	})
 }

@@ -15,6 +15,21 @@ export class TransientHeader {
     }
 }
 
+function formatDate(date) {
+    let monthNames = [
+        "January", "February", "March",
+        "April", "May", "June", "July",
+        "August", "September", "October",
+        "November", "December"
+    ];
+
+    let day = date.getDate();
+    let monthIndex = date.getMonth();
+    let year = date.getFullYear();
+
+    return day + ' ' + monthNames[monthIndex] + ', ' + year;
+}
+
 class ForumPost extends HTMLElement {
     constructor() {
         super();
@@ -48,6 +63,8 @@ class LinkPreview extends HTMLElement {
         let publishedDate = this.getAttribute('published-date');
         let link = this.getAttribute('link');
         let content = this.getAttribute('content');
+
+        publishedDate = formatDate(new Date(publishedDate));
 
         if (title === "") {
             this.innerHTML = `

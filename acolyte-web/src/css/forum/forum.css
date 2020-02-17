@@ -98,7 +98,6 @@ forum-post {
 .post-byline {
     display: block;
     color: var(--text-color-subtle);
-    margin-bottom: 16px;
 }
 
 .post-options {
@@ -298,6 +297,7 @@ forum-post {
 /* TEMPLATES */
 
 .link-preview-container {
+    margin-top: 12px;
     padding: 12px;
     border-radius: 3px;
     background-color: var(--background-color);
