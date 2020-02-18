@@ -9,11 +9,18 @@
 
     {{ template "transient-forum-header" .LoginStatus}}
 
-    <div class="wrapper padded card">
-        <div id="post-list"></div>
-        {{ range .Posts }}
-            <forum-post title="{{ .Title }}" post-id="{{ .ID }}"></forum-post>
-        {{ end }}
+    <div class="forum-grid">
+        <div class="forum-content content-wrapper padded card">
+            <div id="post-list"></div>
+            {{ range .Posts }}
+                <forum-post title="{{ .Title }}" post-id="{{ .ID }}"></forum-post>
+            {{ end }}
+        </div>
+        <div class="chat-sidebar">
+            <div class="content-wrapper" style="height: 100%">
+                <iframe id="chat" class="card" src="/chat"></iframe>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -35,31 +42,42 @@
 
     <body>
     {{ template "transient-forum-header" .LoginStatus }}
-    <div class="wrapper card">
-        <div class="post-meta">
-            <span class="post-title">{{.Post.Title}}</span>
-            <span class="post-byline">posted by <a
-                        href="/user/{{.PosterAccount.Username}}">{{.PosterAccount.Username}}</a> {{humanize .Post.CreatedAt}}</span>
-            {{ if .Post.Link.Link }}
-                <link-preview title="{{.Post.Link.Title}}"
-                              published-date="{{.Post.Link.Date.Format "2006-01-02T15:04:05Z07:00"}}"
-                              content="{{.Post.Link.Content}}" link="{{.Post.Link.Link}}"></link-preview>
-            {{ end }}
-            <noscript><a class="link-preview-link" href="{{.Post.Link.Link}}">{{.Post.Link.Title}}</a></noscript>
+
+    <div class="forum-grid">
+        <div class="forum-content">
+            <div class="content-wrapper card">
+                <div class="post-meta">
+                    <span class="post-title">{{.Post.Title}}</span>
+                    <span class="post-byline">posted by <a
+                                href="/user/{{.PosterAccount.Username}}">{{.PosterAccount.Username}}</a> {{humanize .Post.CreatedAt}}</span>
+                    {{ if .Post.Link.Link }}
+                        <link-preview title="{{.Post.Link.Title}}"
+                                      published-date="{{.Post.Link.Date.Format "2006-01-02T15:04:05Z07:00"}}"
+                                      content="{{.Post.Link.Content}}" link="{{.Post.Link.Link}}"></link-preview>
+                    {{ end }}
+                    <noscript><a class="link-preview-link" href="{{.Post.Link.Link}}">{{.Post.Link.Title}}</a>
+                    </noscript>
+                </div>
+                {{ if .Post.Body }}
+                    <div id="post-body" class="post-body">{{.Post.Body}}</div>
+                {{ end }}
+            </div>
+            <div class="content-wrapper comment-entry">
+                <comment-editor username="{{.Account.Username}}" parent-id="{{.Post.ID}}"
+                                post-id="{{.Post.ID}}"></comment-editor>
+            </div>
+            <div class="content-wrapper replies">
+                <h2>Replies</h2>
+                {{ range .Post.Replies }}
+                    {{ template "forum-comment" dict "Comment" . "Account" $.Account}}
+                {{ end }}
+            </div>
         </div>
-        {{ if .Post.Body }}
-            <div id="post-body" class="post-body">{{.Post.Body}}</div>
-        {{ end }}
-    </div>
-    <div class="content-wrapper comment-entry">
-        <comment-editor username="{{.Account.Username}}" parent-id="{{.Post.ID}}"
-                        post-id="{{.Post.ID}}"></comment-editor>
-    </div>
-    <div class="content-wrapper replies">
-        <h2>Replies</h2>
-        {{ range .Post.Replies }}
-            {{ template "forum-comment" dict "Comment" . "Account" $.Account}}
-        {{ end }}
+        <div class="chat-sidebar">
+            <div class="content-wrapper" style="height: 100%">
+                <iframe id="chat" class="card" src="/chat"></iframe>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -132,7 +150,7 @@
         <span class="comment-collapse-toggle-visible"></span>
         <div class="comment-container">
             <div class="comment-byline">
-                <a class="comment-username" href="/forum/users/{{.Comment.Username}}">{{ .Comment.Username }}</a>
+                <a class="comment-username" href="/users/{{.Comment.Username}}">{{ .Comment.Username }}</a>
                 <span class="comment-date"> {{humanize .Comment.CreatedAt}}</span>
             </div>
             <div class="comment-body">
@@ -146,11 +164,67 @@
                     <li><a>Report</a></li>
                 </ul>
             {{ else }}
-                <a href="/forum/posts/{{.Comment.PostID}}?comment={{.Comment.ID}}">CONTINIUE --></a>
+                <a style="font-weight:bold" href="/forum/posts/{{.Comment.PostID}}?comment={{.Comment.ID}}">CONTINIUE
+                    ➡</a>
             {{ end }}
             {{ range .Comment.Replies }}
                 {{ template "forum-comment" dict "Comment" . "Account" $.Account}}
             {{ end }}
         </div>
     </div>
+{{ end }}
+
+{{ define "profile-page" }}
+    <!DOCTYPE html>
+    <html lang="en">
+
+    {{ template "head" (printf "Profile - %s" .Account.Username) }}
+
+    <body>
+
+    {{ template "transient-forum-header" }}
+
+    <div class="account-page-grid">
+        <div class="tab-bar padded card">
+            <a href="#posts">Posts</a>
+            <a href="#comments">Comments</a>
+            <a href="#messages">Messages</a>
+        </div>
+        <div class="account-info-content padded card">
+            <div id="comments" class="tab-content">
+                {{ range .Comments }}
+                    {{ template "forum-comment" dict "Comment" . "Account" $.Account}}
+                {{ end }}
+            </div>
+            <div id="messages" class="tab-content">
+                <div id="logs-results">
+                    {{ range .Messages }}
+                        <p class="log-result" id="{{ .MessageID }}">{{ .Timestamp.Format "2006-01-02 15:04:05" }}
+                            [{{ .Username }}] {{ .Message }}</p>
+                    {{ end }}
+                </div>
+            </div>
+            <div id="posts" class="tab-content">
+                {{ range .Posts }}
+                    <forum-post title="{{ .Title }}" post-id="{{ .ID }}"></forum-post>
+                {{ end }}
+            </div>
+        </div>
+        <div class="account-info padded card">
+            <h2 style="margin:0">{{.Account.Username}}</h2>
+            <span style="color:var(--text-color-subtle)">Created on {{.Account.CreatedAt.Format "January 2, 2006"}}</span>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', function () {
+            new acolyte.TransientHeader("forum-header")
+        });
+
+        window.addEventListener('hashchange', function () {
+            window.scrollTo(window.scrollX, 0)
+        });
+    </script>
+
+    </body>
 {{ end }}

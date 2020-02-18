@@ -4,7 +4,7 @@
     position: fixed;
     z-index: 100;
 
-    max-width: 800px;
+    max-width: 1116px;
     margin: auto;
 
     left: 8px;
@@ -92,6 +92,10 @@ forum-post {
 
 .post-body p:first-child {
     margin-top: 0;
+}
+
+.post-body p:last-child {
+    margin-bottom: 0;
 }
 
 .post-title {
@@ -324,4 +328,91 @@ forum-post {
 
 .article-description {
     color: var(--text-color-subtle);
+}
+
+/* Generic memes */
+
+.forum-grid {
+    margin: 96px auto auto auto;
+    display: grid;
+    grid-gap: 16px;
+    grid-template-columns: 66fr 34fr;
+    max-width: 1116px;
+}
+
+.forum-grid .forum-content {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.chat-sidebar {
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    top: 16px;
+    height: calc(100vh - 32px);
+}
+
+@media screen and (max-width: 1200px) {
+    .forum-grid {
+        grid-template-columns: 100fr;
+    }
+
+    .chat-sidebar {
+        grid-column: 1;
+        grid-row: 2;
+    }
+}
+
+/* Account page */
+
+.account-page-grid {
+    display: grid;
+    grid-gap: 16px;
+    grid-template-columns: auto 256px;
+    max-width: 1116px;
+    grid-template-rows: auto auto auto;
+    margin: 96px auto auto auto;
+}
+
+.tab-bar {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.tab-bar a {
+    color: var(--text-color-bold);
+    font-weight: bold;
+    font-size: 18px;
+    margin-right: 16px;
+}
+
+.account-info-content > .tab-content:target ~ .tab-content:last-child,
+.account-info-content > .tab-content {
+    display: none;
+}
+
+.account-info-content > :last-child,
+.account-info-content > .tab-content:target {
+    display: block;
+}
+
+#posts {
+    float: left;
+}
+
+.tab-bar ul {
+    list-style: none;
+}
+
+.account-info {
+    top: 96px;
+    position: sticky;
+    grid-column: 2;
+    grid-row: 1 / 3;
+}
+
+.account-info-content {
+    grid-column: 1;
+    grid-row: 2 / 5;
 }

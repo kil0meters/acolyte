@@ -42,7 +42,7 @@ class ForumPost extends HTMLElement {
         this.innerHTML = `
             <div class="post-thumbnail"></div>
             <div class="post-content">
-                <a class="post-title" href="forum/posts/${postID}">${title}</a>
+                <a class="post-title" href="/forum/posts/${postID}">${title}</a>
                 <ul class="post-options">
                     <li class="post-option expander">+</li>
                     <li class="post-option">Comments</li>

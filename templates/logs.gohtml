@@ -72,12 +72,7 @@
                 ]
             });
             acolyte.renderEmotesInElement(document.getElementById("logs-results"));
-
-            if (window.location.hash !== '') {
-                window.location.href = window.location.href; // this is simply to reset the :target
-                window.scrollTo(window.scrollX, window.scrollY - 128)
-            }
-        })
+        });
     </script>
     </body>
 
@@ -133,8 +128,7 @@
         {{ else }}
             {{ range .Results }}
                 <p class="log-result" id="{{ .MessageID }}">{{ .Timestamp.Format "2006-01-02 15:04:05" }}
-                    [{{ .Username }}
-                    ] {{ .Message }}</p>
+                    [{{ .Username }}] {{ .Message }}</p>
             {{ end }}
         {{ end }}
     </div>

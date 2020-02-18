@@ -33,6 +33,7 @@ const (
 type Post struct {
 	ID        string        `db:"post_id"    valid:"printableascii,required"`
 	AccountID string        `db:"account_id" valid:"printableascii,required"`
+	Username  string        `db:"username"   valid:"alphanum"`
 	Title     string        `db:"title"      valid:"type(string),required"`
 	LinkStr   string        `db:"link"       valid:"printableascii,optional"`
 	Link      links.Article `db:"-"          valid:"-"`
@@ -61,6 +62,7 @@ func CreateNewPost(title string, account *authorization.Account, body string, li
 	post := Post{
 		ID:        authorization.GenerateID("p", 6),
 		AccountID: account.ID,
+		Username:  account.Username,
 		Title:     title,
 		LinkStr:   link,
 		Body:      body,
@@ -70,7 +72,7 @@ func CreateNewPost(title string, account *authorization.Account, body string, li
 		return nil, ErrInvalidPostData
 	}
 
-	_, err := database.DB.NamedExec("INSERT INTO posts (post_id, account_id, title, body, link) VALUES (:post_id, :account_id, :title, :body, :link)", post)
+	_, err := database.DB.NamedExec("INSERT INTO posts (post_id, account_id, username, title, body, link) VALUES (:post_id, :account_id, :username, :title, :body, :link)", post)
 	if err != nil {
 		return &post, err
 	}
@@ -89,4 +91,28 @@ func PostFromID(id string) *Post {
 	}
 
 	return &post
+}
+
+func PostsFromUsername(username string) []*Post {
+	rows, err := database.DB.Queryx("SELECT * FROM posts WHERE username = $1 ORDER BY created_at DESC", username)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	posts := make([]*Post, 0)
+
+	for rows.Next() {
+		post := new(Post)
+
+		err = rows.StructScan(post)
+		if err != nil {
+			log.Println(err)
+			return nil
+		}
+
+		posts = append(posts, post)
+	}
+
+	return posts
 }

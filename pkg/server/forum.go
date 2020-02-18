@@ -6,6 +6,7 @@ import (
 	"github.com/kil0meters/acolyte/pkg/database"
 	"github.com/kil0meters/acolyte/pkg/forum"
 	"github.com/kil0meters/acolyte/pkg/links"
+	"github.com/kil0meters/acolyte/pkg/logs"
 	"golang.org/x/net/html"
 	"log"
 	"net/http"
@@ -113,6 +114,31 @@ func CreateCommentForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/forum/posts/"+postID+"#"+commentID, http.StatusSeeOther)
+}
+
+func ServeProfile(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	username := params["username"]
+	account := authorization.AccountFromUsername(username)
+	if account == nil {
+		w.Write([]byte("Account not found"))
+	}
+
+	err := webTemplate.ExecuteTemplate(w, "profile-page", struct {
+		Account  *authorization.Account
+		Messages []logs.LogMessage
+		Posts    []*forum.Post
+		Comments []*forum.Comment
+	}{
+		Account:  account,
+		Messages: logs.StalkUser(account.Username),
+		Posts:    forum.PostsFromUsername(account.Username),
+		Comments: forum.CommentsFromUsername(account.Username, 3),
+	})
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 // ServePost serves a post

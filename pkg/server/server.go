@@ -69,6 +69,8 @@ func StartServer() {
 	forumRouter.HandleFunc("/posts/{post_id:p[a-zA-Z]{6}}", ServePost).Methods("GET")
 	forumRouter.HandleFunc("/posts/{parent_id:[pc][a-zA-Z]{6}}", CreateCommentForm).Methods("POST")
 
+	r.HandleFunc("/user/{username:[a-zA-Z0-9]{1,16}}", ServeProfile)
+
 	r.HandleFunc("/chat", ServeChat)
 	r.HandleFunc("/live", ServeLivestream)
 

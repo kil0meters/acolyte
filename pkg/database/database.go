@@ -37,6 +37,7 @@ func InitDatabase(connStr string) {
 	// We have to use (now() at time zone 'utc') because pq assumes all timezones are in that format
 
 	DB.MustExec(`CREATE TABLE IF NOT EXISTS posts (post_id text UNIQUE PRIMARY KEY,
+	                                                    username text,
 														account_id text,
 														title text NOT NULL,
 														body text,

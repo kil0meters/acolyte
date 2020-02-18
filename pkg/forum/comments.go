@@ -34,6 +34,37 @@ func CreateComment(account *authorization.Account, parentID string, postID strin
 	return commentID, nil
 }
 
+func CommentsFromUsername(username string, depth int) []*Comment {
+	rows, err := database.DB.Queryx("SELECT * FROM comments WHERE username = $1 ORDER BY created_at DESC", username)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	comments := make([]*Comment, 0)
+
+	for rows.Next() {
+		comment := new(Comment)
+		comment.HasMoreChildren = false
+
+		err = rows.StructScan(comment)
+		if err != nil {
+			log.Println(err)
+			return nil
+		}
+
+		if depth != 1 {
+			comment.Replies = GetCommentChildren(comment.ID, depth-1)
+		} else {
+			comment.HasMoreChildren = true
+		}
+
+		comments = append(comments, comment)
+	}
+
+	return comments
+}
+
 func GetComment(commentID string, depth int) *Comment {
 	if depth == 0 {
 		return nil

@@ -55,12 +55,39 @@ pre {
 .hljs-meta{
     color:#1f7199
 }
-.hljs-meta-string{
-    color:#4d99bf
+.hljs-meta-string {
+    color: #4d99bf
 }
-.hljs-emphasis{
-    font-style:italic
+
+.hljs-emphasis {
+    font-style: italic
 }
-.hljs-strong{
-    font-weight:bold
+
+.hljs-strong {
+    font-weight: bold
+}
+
+/* Quotes */
+
+blockquote {
+    margin-left: 0;
+    margin-bottom: 0;
+    border-left: 4px solid var(--accent-color);
+    padding: 12px;
+}
+
+blockquote ~ blockquote {
+    margin-top: 0;
+}
+
+blockquote blockquote:first-child {
+    margin-top: 0;
+}
+
+blockquote p:first-child {
+    margin-top: 0;
+}
+
+blockquote p:last-child {
+    margin-bottom: 0;
 }
