@@ -11,10 +11,11 @@
 
     <div class="forum-grid">
         <div class="forum-content content-wrapper padded card">
-            <div id="post-list"></div>
-            {{ range .Posts }}
-                <forum-post title="{{ .Title }}" post-id="{{ .ID }}"></forum-post>
-            {{ end }}
+            <div id="post-list">
+                {{ range .Posts }}
+                    <forum-post title="{{ .Title }}" post-id="{{ .ID }}"></forum-post>
+                {{ end }}
+            </div>
         </div>
         <div class="chat-sidebar">
             <div class="content-wrapper" style="height: 100%">

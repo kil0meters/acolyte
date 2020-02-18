@@ -1,10 +1,13 @@
 html {
-    background-color: var(--background-color)
+    background-color: var(--background-color);
+    color: var(--text-color-bold);
 }
 
 * {
     box-sizing: border-box;
-    word-wrap: break-word;
+    text-overflow: ellipsis;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 *:focus {

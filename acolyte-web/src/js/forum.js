@@ -76,7 +76,7 @@ class LinkPreview extends HTMLElement {
             this.innerHTML = `
             <div class="link-preview-container card">
                 <div>
-                    <a class="article-title" href="${link}">${title}</a>
+                    <a class="article-title" target="_blank" href="${link}">${title}</a>
                     <span class="article-date"> ${publishedDate}</span>
                 </div>
                 <div class="article-description">
