@@ -149,7 +149,7 @@ class Autocompletion {
     }
 
     setPopupToSuggestions() {
-        if (this.suggestions === []) {
+        if (this.suggestions.length === 0) {
             this.popup.classList.add('hidden');
         } else {
             while (this.popup.firstChild) {

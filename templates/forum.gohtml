@@ -9,7 +9,7 @@
 
     {{ template "transient-forum-header" .LoginStatus}}
 
-    <div class="wrapper padded">
+    <div class="wrapper padded card">
         <div id="post-list"></div>
         {{ range .Posts }}
             <forum-post title="{{ .Title }}" post-id="{{ .ID }}"></forum-post>
@@ -35,7 +35,7 @@
 
     <body>
     {{ template "transient-forum-header" .LoginStatus }}
-    <div class="wrapper">
+    <div class="wrapper card">
         <div class="post-meta">
             <span class="post-title">{{.Post.Title}}</span>
             <span class="post-byline">posted by <a
@@ -47,7 +47,9 @@
             {{ end }}
             <noscript><a class="link-preview-link" href="{{.Post.Link.Link}}">{{.Post.Link.Title}}</a></noscript>
         </div>
-        <div id="post-body" class="post-body">{{.Post.Body}}</div>
+        {{ if .Post.Body }}
+            <div id="post-body" class="post-body">{{.Post.Body}}</div>
+        {{ end }}
     </div>
     <div class="content-wrapper comment-entry">
         <comment-editor username="{{.Account.Username}}" parent-id="{{.Post.ID}}"
@@ -106,7 +108,7 @@
         <a class="logo" href="/">Post Editor</a>
     </header>
 
-    <div class="wrapper padded">
+    <div class="wrapper padded card">
         <form action="/forum/create-post" method="POST" style="margin: 0;">
             <input name="title" type="text" class="authorize-form-input" placeholder="Title">
             <input name="link" type="url" class="authorize-form-input" placeholder="Link/Image">
@@ -125,7 +127,7 @@
 {{ end }}
 
 {{ define "forum-comment" }}
-    <div id="{{.Comment.ID}}" class="comment">
+    <div id="{{.Comment.ID}}" class="comment card">
         <input name="{{.Comment.ID}}" type="checkbox" autocomplete="on" class="comment-collapse-toggle">
         <span class="comment-collapse-toggle-visible"></span>
         <div class="comment-container">

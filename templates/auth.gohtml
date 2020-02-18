@@ -9,7 +9,7 @@
         <a class="logo" href="/">Log In</a>
     </header>
 
-    <div class="content-wrapper">
+    <div class="content-wrapper card padded">
         {{ if .Error }}
             <div class="auth-error">
                 error: Invalid username or password
@@ -42,7 +42,7 @@
         <a class="logo" href="/">Sign Up</a>
     </header>
 
-    <div class="content-wrapper">
+    <div class="content-wrapper card padded">
         <form name="signup-form" action="/sign-up?target={{.Target}}" method="POST">
             {{ if .Error }}
                 <div class="auth-error">

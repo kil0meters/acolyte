@@ -27,7 +27,7 @@ footer {
 
 .static-header {
     max-width: 800px;
-    line-height: 64px;
+    line-height: 48px;
     margin: auto;
 }
 
@@ -66,7 +66,7 @@ footer {
 .header-hamburger-menu {
     position: absolute;
     right: 8px;
-    top: 32px;
+    top: 16px;
     margin: 0;
     opacity: 0;
     cursor: pointer;
@@ -77,7 +77,7 @@ footer {
 .header-hamburger-menu-container span {
     position: absolute;
     right: 8px;
-    top: 32px;
+    top: 20px;
     width: 32px;
     height: 4px;
     border-radius: 50px;
@@ -87,10 +87,10 @@ footer {
 }
 
 .header-hamburger-menu-container span:nth-child(2) {
-    top: 40px;
+    top: 28px;
 }
 .header-hamburger-menu-container span:nth-child(3) {
-    top: 48px;
+    top: 36px;
 }
 
 .header-hamburger-menu:checked ~ span {
@@ -140,7 +140,6 @@ footer {
     height: 450px;
     grid-gap: 12px;
     transition: all 0.2s ease-in-out;
-    box-shadow: 0 0 47px 2px var(--shadow-color);
 }
 
 .video-display:hover {

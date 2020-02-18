@@ -14,7 +14,7 @@
             <section>
                 <div class="subheading">
                     <h2 class="subheading">WOW I'M LIVESTREAMING HOW NEAT <span class="live-indicator">LIVE</span></h2>
-                    <iframe class="video-display"
+                    <iframe class="video-display card"
                             src="https://www.youtube-nocookie.com/embed/live_stream?channel={{.ChannelID}}&modestbranding=1"
                             style="border: 0;" allowfullscreen></iframe>
                 </div>
@@ -24,7 +24,7 @@
                 <div class="subheading">
                     <h2>LATEST VIDEO</h2>
                 </div>
-                <div class="video-display">
+                <div class="video-display card">
                     <div class="video-display--main-video"
                          style="background-image: url('{{ .FeaturedVideo.Thumbnail }}')">
                         <span class="main-video-title">{{ .FeaturedVideo.Title }}</span>

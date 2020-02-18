@@ -43,13 +43,13 @@
                   d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
         </svg>
         <h2>Users</h2>
-        <div id="user-list-list" class="wrapper" style="margin-top: 0;">
+        <div id="user-list-list" class="wrapper card" style="margin-top: 0;">
         </div>
     </div>
 
     <div id="message-entry">
-        <div id="autocompletion-popup"></div>
-        <div id="emote-popup" class="hidden"></div>
+        <div id="autocompletion-popup" class="hidden card"></div>
+        <div id="emote-popup" class="hidden card"></div>
         <textarea id="entry-body" style="resize: none;" class="authorize-form-input"
                   placeholder="Say something as {{ .Account.Username }}" autocomplete="off"></textarea>
         <a id="emote-button" onclick="acolyte.toggleEmotePopup()">Emotes</a>

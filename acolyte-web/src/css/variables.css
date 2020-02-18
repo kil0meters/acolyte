@@ -1,3 +1,7 @@
+html {
+    background-color: var(--background-color)
+}
+
 * {
     box-sizing: border-box;
     word-wrap: break-word;
@@ -12,25 +16,27 @@ a {
 }
 
 :root {
-    --background-color: white;
+    --background-color: #F8F8F8;
+    --card-color: white;
     --text-color-bold: black;
     --text-color-subtle: darkslategrey;
     --link-color: blueviolet;
     --accent-color: lightgrey;
 
-    --shadow-color: rgba(0,0,0,0.07);
-    --shadow-color-intense: rgba(0,0,0,.28);
+    --shadow-color: rgba(111, 111, 111, .2);
+    --shadow-color-intense: rgba(111, 111, 111, .4);
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
         --background-color: #021615;
+        --card-color: black;
         --text-color-bold: white;
         --text-color-subtle: #e0e0e0;
         --link-color: #ebf745;
         --accent-color: #092d2c;
 
-        --shadow-color: rgba(235, 247, 69, 0.07);
-        --shadow-color-intense: rgba(235, 247, 69, 0.28);
+        --shadow-color: rgba(0, 0, 0, 0.6);
+        --shadow-color-intense: rgba(0, 0, 0, 0.9);
     }
 }

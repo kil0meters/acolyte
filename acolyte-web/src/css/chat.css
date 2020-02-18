@@ -14,12 +14,14 @@
     bottom: 0;
 
     padding: 12px;
-    box-shadow: 16px 0 47px 2px var(--shadow-color);
+
+    border-top: 1px solid var(--accent-color);
+    box-shadow: 0 -4px 8px 0 var(--shadow-color);
 }
 
 /* messages */
 #message-list {
-    margin-bottom: 112px;
+    margin-bottom: 116px;
 }
 
 .fullscreen-overlay {
@@ -115,8 +117,6 @@
 
     opacity: 1;
     transition: all 0.5s ease;
-
-    box-shadow: 0 0 47px 2px var(--shadow-color);
 }
 
 #emote-popup .emote {
@@ -192,10 +192,6 @@
     line-height: 20px;
 }
 
-.chat-message:not(.self) .link-preview-container {
-    background-color: var(--accent-color);
-}
-
 .mentioned {
     background-color: var(--link-color);
     color: var(--background-color);
@@ -246,9 +242,7 @@
 }
 
 #autocompletion-popup {
-    background-color: var(--background-color);
-
-    box-shadow: 0 0 47px 2px var(--shadow-color);
+    background-color: var(--card-color);
 
     overflow-y: auto;
     max-height: calc(100% - 148px);

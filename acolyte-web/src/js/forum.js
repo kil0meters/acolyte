@@ -68,13 +68,13 @@ class LinkPreview extends HTMLElement {
 
         if (title === "") {
             this.innerHTML = `
-                <div class="link-preview-container">
+                <div class="link-preview-container card">
                     <a class="link-preview-link" href="${link}">${link}</a>
                 </div>
             `
         } else {
             this.innerHTML = `
-            <div class="link-preview-container">
+            <div class="link-preview-container card">
                 <div>
                     <a class="article-title" href="${link}">${title}</a>
                     <span class="article-date"> ${publishedDate}</span>
@@ -112,8 +112,8 @@ class CommentEditor extends HTMLElement {
 }
 
 export function toggleReplyEditorVisibility(id, postID, username) {
-    let editor = document.querySelector(`#${id} .comment-container comment-editor`);
-    let commentContainer = document.querySelector(`#${id} .comment-container`);
+    let editor = document.querySelector(`#${id} .comment-container .comment-actions comment-editor`);
+    let commentActions = document.querySelector(`#${id} .comment-container .comment-actions`);
 
     if (editor === undefined || editor === null) {
 
@@ -122,7 +122,7 @@ export function toggleReplyEditorVisibility(id, postID, username) {
         editor.setAttribute('parent-id', id);
         editor.setAttribute('post-id', postID);
 
-        commentContainer.appendChild(editor)
+        commentActions.appendChild(editor)
     } else {
         editor.remove()
     }

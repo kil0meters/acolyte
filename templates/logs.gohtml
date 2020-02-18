@@ -9,22 +9,25 @@
         <a class="logo" href="/">Logs</a>
     </header>
     <article class="content-wrapper">
-        <form action="/logs/stalk" method="GET">
-            <span class="authorize-form-label">Stalk</span>
-            <input name="username" type="text" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1"
-                   maxlength="16" placeholder="stalk someone">
-        </form>
-        <form action="/logs/search" method="GET">
-            <span class="authorize-form-label">Search</span>
-            <input name="search" type="text" class="authorize-form-input" placeholder="search for a meme">
-        </form>
+        <div class="wrapper padded card" style="margin:0;">
+            <form action="/logs/stalk" method="GET">
+                <span class="authorize-form-label">Stalk</span>
+                <input name="username" type="text" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1"
+                       maxlength="16" placeholder="stalk someone">
+            </form>
+            <form action="/logs/search" method="GET">
+                <span class="authorize-form-label">Search</span>
+                <input name="search" type="text" class="authorize-form-input" style="margin:0"
+                       placeholder="search for a meme">
+            </form>
+        </div>
         <h2>Moderation</h2>
-        <div class="wrapper" style="margin: 0;">
+        <div class="wrapper card" style="margin: 0;">
             <a class="list-card" href="/logs/moderation/bans">Bans</a>
             <a class="list-card" href="/logs/moderation/mutes">Mutes</a>
         </div>
         <h2>Messages By Day</h2>
-        <div class="wrapper" style="margin: 0;">
+        <div class="wrapper card" style="margin: 0;">
             {{ range . }}
                 <a class="list-card"
                    href='/logs/messages/{{ .Format "2006-01-02" }}'>{{ .Format "January 2, 2006" }}</a>
@@ -45,10 +48,10 @@
     {{ template "head" "Logs"}}
 
     <body>
-    <header id="forum-header">
-        <a href="/logs" class="logo">Logs</a>
+    <header id="forum-header" class="card">
+        <a href="/logs" class="logo">Logs - {{ (index . 0).Username }}</a>
     </header>
-    <div id="logs-results" class="wrapper padded">
+    <div id="logs-results" class="wrapper padded card">
         {{ if not . }}
             Yikes that person hasn't said anything
         {{ else }}
@@ -88,11 +91,11 @@
     {{ template "head" "Logs - Search"}}
 
     <body>
-    <header id="forum-header">
+    <header id="forum-header" class="card">
         <input type="text" id="logs-search-bar" class="authorize-form-input" placeholder="Search">
     </header>
 
-    <div id="logs-results" class="wrapper padded">
+    <div id="logs-results" class="wrapper padded card">
     </div>
     <script>
         window.addEventListener('load', function () {
@@ -121,10 +124,10 @@
     {{ template "head" "Logs"}}
 
     <body>
-    <header id="forum-header">
+    <header id="forum-header" class="card">
         <a href="/logs" class="logo">{{ .Title }}</a>
     </header>
-    <div id="logs-results" class="wrapper padded">
+    <div id="logs-results" class="wrapper padded card">
         {{ if not .Results }}
             Nothing has been said on that day :(
         {{ else }}
