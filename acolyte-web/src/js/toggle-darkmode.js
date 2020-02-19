@@ -33,6 +33,21 @@ function setToTheme(theme) {
     document.documentElement.style.setProperty('--accent-color', theme.accentColor);
     document.documentElement.style.setProperty('--shadow-color', theme.shadowColor);
     document.documentElement.style.setProperty('--shadow-color-intense', theme.shadowColorIntense);
+
+    let chatFrame = document.getElementById("chat");
+
+    if (chatFrame) {
+        let chatDocument = chatFrame.contentDocument;
+
+        chatDocument.documentElement.style.setProperty('--background-color', theme.backgroundColor);
+        chatDocument.documentElement.style.setProperty('--card-color', theme.cardColor);
+        chatDocument.documentElement.style.setProperty('--text-color-bold', theme.textColorBold);
+        chatDocument.documentElement.style.setProperty('--text-color-subtle', theme.textColorSubtle);
+        chatDocument.documentElement.style.setProperty('--link-color', theme.linkColor);
+        chatDocument.documentElement.style.setProperty('--accent-color', theme.accentColor);
+        chatDocument.documentElement.style.setProperty('--shadow-color', theme.shadowColor);
+        chatDocument.documentElement.style.setProperty('--shadow-color-intense', theme.shadowColorIntense);
+    }
 }
 
 function setThemeToStorage() {

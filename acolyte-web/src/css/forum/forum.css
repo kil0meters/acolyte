@@ -7,8 +7,8 @@
     max-width: 1116px;
     margin: auto;
 
-    left: 8px;
-    right: 8px;
+    left: 12px;
+    right: 12px;
     top: 16px;
 
     height: 64px;
@@ -44,6 +44,7 @@
     max-width: 800px;
     margin: 92px auto auto auto;
 }
+
 
 .padded {
     padding: 12px;
@@ -354,6 +355,10 @@ forum-post {
 }
 
 @media screen and (max-width: 1200px) {
+    .container {
+        max-width: 800px;
+    }
+
     .forum-grid {
         grid-template-columns: 100fr;
     }
@@ -416,3 +421,4 @@ forum-post {
     grid-column: 1;
     grid-row: 2 / 5;
 }
+

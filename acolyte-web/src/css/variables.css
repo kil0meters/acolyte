@@ -1,12 +1,17 @@
-html {
+html, body {
+    font-family: 'Open Sans', sans-serif;
     background-color: var(--background-color);
     color: var(--text-color-bold);
+}
+
+body {
+    margin: 12px;
 }
 
 * {
     box-sizing: border-box;
     text-overflow: ellipsis;
-    overflow-wrap: break-word;
+    word-break: break-word;
     hyphens: auto;
 }
 
@@ -16,6 +21,13 @@ html {
 
 a {
     cursor: pointer;
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--link-color) !important;
+    text-decoration: underline;
 }
 
 :root {

@@ -8,7 +8,7 @@
     <header class="static-header">
         <a class="logo" href="/">Logs</a>
     </header>
-    <article class="content-wrapper">
+    <main class="content-wrapper">
         <div class="wrapper padded card" style="margin:0;">
             <form action="/logs/stalk" method="GET">
                 <span class="authorize-form-label">Stalk</span>
@@ -33,7 +33,10 @@
                    href='/logs/messages/{{ .Format "2006-01-02" }}'>{{ .Format "January 2, 2006" }}</a>
             {{ end }}
         </div>
-    </article>
+    </main>
+
+    {{ template "footer" "content-wrapper"}}
+
     <script>
     </script>
     </body>
@@ -62,6 +65,9 @@
             {{ end }}
         {{ end }}
     </div>
+
+    {{ template "footer" "content-wrapper"}}
+
     <script>
         window.addEventListener('load', function () {
             new acolyte.TransientHeader("forum-header");
@@ -92,6 +98,9 @@
 
     <div id="logs-results" class="wrapper padded card">
     </div>
+
+    {{ template "footer" "content-wrapper"}}
+
     <script>
         window.addEventListener('load', function () {
             new acolyte.TransientHeader("forum-header");
@@ -138,6 +147,9 @@
         <a class="authorize-form-button" style="grid-column: 2;"
            href='/logs/messages/{{ (.Date.AddDate 0 0 1).Format "2006-01-02" }}'>NEXT DAY ></a>
     </div>
+
+    {{ template "footer" "content-wrapper"}}
+
     <script>
 
         window.addEventListener('load', function () {

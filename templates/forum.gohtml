@@ -9,20 +9,24 @@
 
     {{ template "transient-forum-header" .LoginStatus}}
 
-    <div class="forum-grid">
-        <div class="forum-content content-wrapper padded card">
-            <div id="post-list">
-                {{ range .Posts }}
-                    <forum-post title="{{ .Title }}" post-id="{{ .ID }}"></forum-post>
-                {{ end }}
+    <main class="container">
+        <div class="forum-grid">
+            <div class="forum-content content-wrapper padded card">
+                <div id="post-list">
+                    {{ range .Posts }}
+                        <forum-post title="{{ .Title }}" post-id="{{ .ID }}"></forum-post>
+                    {{ end }}
+                </div>
+            </div>
+            <div class="chat-sidebar">
+                <div class="content-wrapper" style="height: 100%">
+                    <iframe id="chat" class="card" src="/chat"></iframe>
+                </div>
             </div>
         </div>
-        <div class="chat-sidebar">
-            <div class="content-wrapper" style="height: 100%">
-                <iframe id="chat" class="card" src="/chat"></iframe>
-            </div>
-        </div>
-    </div>
+    </main>
+
+    {{ template "footer" "container"}}
 
     <script>
         window.addEventListener('load', function () {
@@ -44,42 +48,46 @@
     <body>
     {{ template "transient-forum-header" .LoginStatus }}
 
-    <div class="forum-grid">
-        <div class="forum-content">
-            <div class="content-wrapper card">
-                <div class="post-meta">
-                    <span class="post-title">{{.Post.Title}}</span>
-                    <span class="post-byline">posted by <a
-                                href="/user/{{.PosterAccount.Username}}">{{.PosterAccount.Username}}</a> {{humanize .Post.CreatedAt}}</span>
-                    {{ if .Post.Link.Link }}
-                        <link-preview title="{{.Post.Link.Title}}"
-                                      published-date="{{.Post.Link.Date.Format "2006-01-02T15:04:05Z07:00"}}"
-                                      content="{{.Post.Link.Content}}" link="{{.Post.Link.Link}}"></link-preview>
+    <main class="container">
+        <div class="forum-grid">
+            <div class="forum-content">
+                <div class="content-wrapper card">
+                    <div class="post-meta">
+                        <span class="post-title">{{.Post.Title}}</span>
+                        <span class="post-byline">posted by <a
+                                    href="/user/{{.PosterAccount.Username}}">{{.PosterAccount.Username}}</a> {{humanize .Post.CreatedAt}}</span>
+                        {{ if .Post.Link.Link }}
+                            <link-preview title="{{.Post.Link.Title}}"
+                                          published-date="{{.Post.Link.Date.Format "2006-01-02T15:04:05Z07:00"}}"
+                                          content="{{.Post.Link.Content}}" link="{{.Post.Link.Link}}"></link-preview>
+                        {{ end }}
+                        <noscript><a class="link-preview-link" href="{{.Post.Link.Link}}">{{.Post.Link.Title}}</a>
+                        </noscript>
+                    </div>
+                    {{ if .Post.Body }}
+                        <div id="post-body" class="post-body">{{.Post.Body}}</div>
                     {{ end }}
-                    <noscript><a class="link-preview-link" href="{{.Post.Link.Link}}">{{.Post.Link.Title}}</a>
-                    </noscript>
                 </div>
-                {{ if .Post.Body }}
-                    <div id="post-body" class="post-body">{{.Post.Body}}</div>
-                {{ end }}
+                <div class="content-wrapper comment-entry">
+                    <comment-editor username="{{.Account.Username}}" parent-id="{{.Post.ID}}"
+                                    post-id="{{.Post.ID}}"></comment-editor>
+                </div>
+                <div class="content-wrapper replies">
+                    <h2>Replies</h2>
+                    {{ range .Post.Replies }}
+                        {{ template "forum-comment" dict "Comment" . "Account" $.Account}}
+                    {{ end }}
+                </div>
             </div>
-            <div class="content-wrapper comment-entry">
-                <comment-editor username="{{.Account.Username}}" parent-id="{{.Post.ID}}"
-                                post-id="{{.Post.ID}}"></comment-editor>
-            </div>
-            <div class="content-wrapper replies">
-                <h2>Replies</h2>
-                {{ range .Post.Replies }}
-                    {{ template "forum-comment" dict "Comment" . "Account" $.Account}}
-                {{ end }}
-            </div>
-        </div>
-        <div class="chat-sidebar">
-            <div class="content-wrapper" style="height: 100%">
-                <iframe id="chat" class="card" src="/chat"></iframe>
+            <div class="chat-sidebar">
+                <div class="content-wrapper" style="height: 100%">
+                    <iframe id="chat" class="card" src="/chat"></iframe>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
+
+    {{ template "footer" "container"}}
 
     <script>
         window.addEventListener('load', function () {
@@ -151,7 +159,7 @@
         <span class="comment-collapse-toggle-visible"></span>
         <div class="comment-container">
             <div class="comment-byline">
-                <a class="comment-username" href="/users/{{.Comment.Username}}">{{ .Comment.Username }}</a>
+                <a class="comment-username" href="/user/{{.Comment.Username}}">{{ .Comment.Username }}</a>
                 <span class="comment-date"> {{humanize .Comment.CreatedAt}}</span>
             </div>
             <div class="comment-body">

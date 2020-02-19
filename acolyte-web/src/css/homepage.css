@@ -1,25 +1,5 @@
 @import url("variables.css");
 
-a {
-    color: var(--link-color);
-    text-decoration: none;
-}
-
-a:hover {
-    color: var(--link-color) !important;
-    text-decoration: underline;
-}
-
-body {
-    font-family: 'Open Sans', sans-serif;
-}
-
-footer {
-    text-align: center;
-    font-weight: bold;
-    margin: 16px 0;
-}
-
 .static-header {
     max-width: 800px;
     line-height: 48px;
@@ -60,7 +40,7 @@ footer {
 
 .header-hamburger-menu {
     position: absolute;
-    right: 8px;
+    right: 16px;
     top: 16px;
     margin: 0;
     opacity: 0;
@@ -71,7 +51,7 @@ footer {
 
 .header-hamburger-menu-container span {
     position: absolute;
-    right: 8px;
+    right: 16px;
     top: 20px;
     width: 32px;
     height: 4px;
@@ -200,6 +180,11 @@ footer {
     box-shadow: 8px 8px 47px 2px var(--shadow-color);
 }
 
+.container {
+    max-width: 1116px;
+    margin: auto;
+}
+
 @media screen and (max-width: 800px) {
     .video-display {
         height: calc(56.25vw - 9px); /* offset from 16px / 0.5625 */
@@ -208,13 +193,24 @@ footer {
     .main-video-title {
         font-size: 24px;
     }
-}
 
-@media screen and (max-width: 800px) {
     .header-links {
         display: none;
     }
+
     .header-hamburger-menu-container {
         display: inline-block;
     }
 }
+
+footer {
+    font-weight: bold;
+    background-color: var(--accent-color);
+    margin-top: 16px !important;
+    padding: 32px;
+}
+
+.footer-link {
+    display: block;
+}
+

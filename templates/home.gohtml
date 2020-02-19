@@ -9,18 +9,18 @@
 
     {{ template "static-header" .Header }}
 
-    <article class="content-wrapper">
+    <main class="content-wrapper">
         {{ if .LiveStatus }}
-            <section>
+            <article>
                 <div class="subheading">
                     <h2 class="subheading">WOW I'M LIVESTREAMING HOW NEAT <span class="live-indicator">LIVE</span></h2>
-                    <iframe class="video-display card"
-                            src="https://www.youtube-nocookie.com/embed/live_stream?channel={{.ChannelID}}&modestbranding=1"
-                            style="border: 0;" allowfullscreen></iframe>
                 </div>
-            </section>
+                <iframe class="video-display card"
+                        src="https://www.youtube-nocookie.com/embed/live_stream?channel={{.ChannelID}}&modestbranding=1"
+                        style="border: 0;" allowfullscreen></iframe>
+            </article>
         {{ else }}
-            <section>
+            <article>
                 <div class="subheading">
                     <h2>LATEST VIDEO</h2>
                 </div>
@@ -30,13 +30,12 @@
                         <span class="main-video-title">{{ .FeaturedVideo.Title }}</span>
                     </div>
                 </div>
-            </section>
+            </article>
         {{ end }}
-    </article>
-    <footer>
-        <span>contact: me @ {this website}</span> - <a onclick="acolyte.toggleDarkMode()" style="cursor: pointer;">Toggle
-            Theme</a>
-    </footer>
+    </main>
+
+    {{ template "footer" "content-wrapper" }}
+
     </body>
 
     </html>
