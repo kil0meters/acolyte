@@ -6,7 +6,7 @@
 
 #message-entry {
     position: fixed;
-    background-color: var(--background-color);
+    background-color: var(--card-color);
 
     /* height: 48px; */
     left: 0;

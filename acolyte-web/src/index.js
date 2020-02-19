@@ -1,6 +1,6 @@
 import {MBChat, toggleEmotePopup, toggleLoginPrompt, toggleSettings, toggleUserList} from './js/chat.js';
 import {toggleReplyEditorVisibility, TransientHeader} from './js/forum.js';
-import {toggleDarkMode} from './js/toggle-darkmode.js';
+import {theme} from './js/theme.js';
 import {renderEmotesInElement} from './js/emotes.js';
 import {renderMarkdownInElement} from './js/markdown.js';
 import {LogSearch} from './js/logs.js';
@@ -34,6 +34,6 @@ export {
 
     LogSearch,
 
-    toggleDarkMode,
+    theme,
     Split,
 }

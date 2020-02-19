@@ -1,7 +1,8 @@
-html, body {
+html {
     font-family: 'Open Sans', sans-serif;
-    background-color: var(--background-color);
+    background: var(--brand-background);
     color: var(--text-color-bold);
+    min-height: 100vh;
 }
 
 body {
@@ -40,6 +41,8 @@ a:hover {
 
     --shadow-color: rgba(111, 111, 111, .2);
     --shadow-color-intense: rgba(111, 111, 111, .4);
+
+    --brand-background: linear-gradient(-45deg, #bbe8c2, #dcbbe8);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -53,5 +56,7 @@ a:hover {
 
         --shadow-color: rgba(0, 0, 0, 0.6);
         --shadow-color-intense: rgba(0, 0, 0, 0.9);
+
+        --brand-background: linear-gradient(-45deg, #0f3538, #240f38);
     }
 }

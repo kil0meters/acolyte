@@ -411,6 +411,7 @@ forum-post {
 }
 
 .account-info {
+    background: var(--brand-background);
     top: 96px;
     position: sticky;
     grid-column: 2;

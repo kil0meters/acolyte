@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/kil0meters/acolyte/pkg/authorization"
 	"github.com/kil0meters/acolyte/pkg/homepage"
+	"github.com/kil0meters/acolyte/pkg/logs"
 	"log"
 	"net/http"
 )
@@ -32,10 +33,12 @@ func ServeChat(w http.ResponseWriter, r *http.Request) {
 
 	err := webTemplate.ExecuteTemplate(w, "chat", struct {
 		Account       *authorization.Account
+		History       []logs.LogMessage
 		IsModerator   bool
 		IsStreamEmbed bool
 	}{
 		Account:       account,
+		History:       logs.MostRecent(50),
 		IsModerator:   account.Permissions.AtLeast(authorization.Moderator),
 		IsStreamEmbed: r.Form.Get("stream_embed") == "1",
 	})

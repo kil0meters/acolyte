@@ -24,3 +24,21 @@ func GetByDay(timestamp time.Time) []LogMessage {
 
 	return resultRows
 }
+
+func MostRecent(amount int) []LogMessage {
+	rows, err := database.DB.Queryx("SELECT * FROM chat_log ORDER BY time DESC LIMIT $1", amount)
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	resultRows := make([]LogMessage, 0)
+	row := LogMessage{}
+
+	for rows.Next() {
+		rows.StructScan(&row)
+
+		resultRows = append([]LogMessage{row}, resultRows...)
+	}
+
+	return resultRows
+}

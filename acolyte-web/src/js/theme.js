@@ -7,6 +7,7 @@ const lightTheme = {
     accentColor: 'lightgrey',
     shadowColor: 'rgba(111,111,111,.2)',
     shadowColorIntense: 'rgba(111,111,111,.4)',
+    brandBackground: 'linear-gradient(-45deg, #bbe8c2, #dcbbe8)',
 };
 
 const darkTheme = {
@@ -18,6 +19,7 @@ const darkTheme = {
     accentColor: '#092d2c',
     shadowColor: 'rgba(0,0,0, 0.6)',
     shadowColorIntense: 'rgba(0,0,0, 0.9)',
+    brandBackground: 'linear-gradient(-45deg, #0f3538,#240f38)',
 };
 
 let currentTheme = lightTheme;
@@ -33,6 +35,8 @@ function setToTheme(theme) {
     document.documentElement.style.setProperty('--accent-color', theme.accentColor);
     document.documentElement.style.setProperty('--shadow-color', theme.shadowColor);
     document.documentElement.style.setProperty('--shadow-color-intense', theme.shadowColorIntense);
+    document.documentElement.style.setProperty('--brand-background', theme.brandBackground);
+
 
     let chatFrame = document.getElementById("chat");
 
@@ -47,8 +51,10 @@ function setToTheme(theme) {
         chatDocument.documentElement.style.setProperty('--accent-color', theme.accentColor);
         chatDocument.documentElement.style.setProperty('--shadow-color', theme.shadowColor);
         chatDocument.documentElement.style.setProperty('--shadow-color-intense', theme.shadowColorIntense);
+        chatDocument.documentElement.style.setProperty('--brand-background', theme.brandBackground);
     }
 }
+
 
 function setThemeToStorage() {
     let storageTheme = localStorage.getItem("theme");
@@ -62,7 +68,7 @@ function setThemeToStorage() {
 
 setThemeToStorage();
 
-export function toggleDarkMode() {
+export function theme() {
     if (currentTheme === darkTheme) {
         setToTheme(lightTheme);
         localStorage.setItem("theme", "light");

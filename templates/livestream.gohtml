@@ -1,6 +1,6 @@
 {{ define "chat" }}
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="en" style="background: var(--background-color)">
 
     {{ template "head" "Chat" }}
 
@@ -17,13 +17,20 @@
             <a href="/sign-up?target=/chat" class="login-prompt-button">SIGN UP</a>
         </div>
     </div>
-    <div id="message-list"></div>
+    <div id="message-list">
+        {{ range .History }}
+            <div id="{{ .MessageID }}" class="chat-message">
+                <a href="#{{ .Username }}" class="message-username">{{ .Username }}</a>
+                <span class="message-text" class="message-text">{{ .Message }}</span>
+            </div>
+        {{ end }}
+    </div>
     {{ if .IsStreamEmbed }}
     <script>
         window.addEventListener('load', function () {
             acolyte.toggleDarkMode();
             liveChat = new acolyte.MBChat(window.innerHeight, true, {{ .IsModerator }});
-            liveChat.initializeConnection()
+            liveChat.initializeConnection();
         })
     </script>
     {{ else }}
@@ -58,6 +65,20 @@
     </div>
     <script>
         window.addEventListener('load', function () {
+            document.querySelectorAll(".chat-message").forEach((message) => {
+                console.log(message);
+                acolyte.renderMathInElement(message, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false},
+                    ]
+                });
+                acolyte.renderLinksInElement(message);
+                acolyte.renderEmotesInElement(message);
+            });
+
+            window.scrollTo(0, document.body.scrollHeight);
+
             liveChat = new acolyte.MBChat(window.innerHeight * 3, false, "{{ .Account.Username }}", {{ .IsModerator }});
             liveChat.initializeConnection()
         })
