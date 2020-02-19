@@ -68,7 +68,7 @@ function setThemeToStorage() {
 
 setThemeToStorage();
 
-export function theme() {
+export function toggleDarkMode() {
     if (currentTheme === darkTheme) {
         setToTheme(lightTheme);
         localStorage.setItem("theme", "light");

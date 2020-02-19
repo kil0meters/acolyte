@@ -7,8 +7,8 @@
     </head>
 {{ end }}
 
-{{ define "transient-forum-header" }}
-    <header id="forum-header" class="card container">
+{{ define "forum-header" }}
+    <header class="header card container" style="margin-bottom:16px">
         <a class="logo" href="/">Miles Benton Forum</a>
         <ul class="header-links">
             {{ if . }}
@@ -38,7 +38,7 @@
 {{ end }}
 
 {{ define "static-header" }} <!-- .Header --->
-<header class="static-header">
+<header class="header wrapper" style="padding:0">
     <span class="logo">Miles Benton</span>
     <ul class="header-links">
         {{ range . }}

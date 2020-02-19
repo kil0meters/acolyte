@@ -1,20 +1,3 @@
-export class TransientHeader {
-    constructor(id) {
-        this.oldWindowScrollY = 0;
-        this.id = id;
-
-
-        window.addEventListener("scroll", () => {
-            if (window.scrollY > this.oldWindowScrollY && window.scrollY > 64) {
-                document.getElementById(this.id).classList.add('header-hidden');
-            } else {
-                document.getElementById(this.id).classList.remove('header-hidden');
-            }
-            this.oldWindowScrollY = window.scrollY;
-        })
-    }
-}
-
 function formatDate(date) {
     let monthNames = [
         "January", "February", "March",

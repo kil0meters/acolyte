@@ -1,23 +1,5 @@
 @import url("../variables.css");
 
-#forum-header {
-    position: fixed;
-    z-index: 100;
-
-    max-width: 1116px;
-    margin: auto;
-
-    left: 12px;
-    right: 12px;
-    top: 16px;
-
-    height: 64px;
-    padding: 0 16px;
-
-    transition: all 0.2s ease-in-out;
-    line-height: 64px;
-}
-
 .card {
     background-color: var(--card-color);
     border-radius: 3px;
@@ -42,7 +24,7 @@
 
 .wrapper {
     max-width: 800px;
-    margin: 92px auto auto auto;
+    margin: auto;
 }
 
 
@@ -334,7 +316,7 @@ forum-post {
 /* Generic memes */
 
 .forum-grid {
-    margin: 96px auto auto auto;
+    width: 100%;
     display: grid;
     grid-gap: 16px;
     grid-template-columns: 66fr 34fr;
@@ -343,18 +325,20 @@ forum-post {
 
 .forum-grid .forum-content {
     grid-column: 1;
-    grid-row: 1;
 }
 
 .chat-sidebar {
     grid-column: 2;
-    grid-row: 1;
     position: sticky;
     top: 16px;
     height: calc(100vh - 32px);
 }
 
 @media screen and (max-width: 1200px) {
+    .forum-grid .header {
+        grid-column: 1 / 2;
+    }
+
     .container {
         max-width: 800px;
     }
@@ -365,7 +349,7 @@ forum-post {
 
     .chat-sidebar {
         grid-column: 1;
-        grid-row: 2;
+        grid-row: 3;
     }
 }
 
@@ -377,7 +361,6 @@ forum-post {
     grid-template-columns: auto 256px;
     max-width: 1116px;
     grid-template-rows: auto auto auto;
-    margin: 96px auto auto auto;
 }
 
 .tab-bar {

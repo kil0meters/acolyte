@@ -38,12 +38,6 @@
     }
 }
 
-@media screen and (max-width: 420px) {
-    .subscribe-button {
-        display: none;
-    }
-}
-
 #video {
     height: 100%;
     width: 100%;

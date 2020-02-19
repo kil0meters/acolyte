@@ -1,8 +1,11 @@
 @import url("variables.css");
 
-.static-header {
+.header {
     max-width: 800px;
-    line-height: 48px;
+    line-height: 64px;
+    height: 64px;
+    padding: 0 16px;
+
     margin: auto;
 }
 
@@ -40,8 +43,8 @@
 
 .header-hamburger-menu {
     position: absolute;
-    right: 16px;
-    top: 16px;
+    right: 24px;
+    top: 28px;
     margin: 0;
     opacity: 0;
     cursor: pointer;
@@ -51,8 +54,8 @@
 
 .header-hamburger-menu-container span {
     position: absolute;
-    right: 16px;
-    top: 20px;
+    right: 24px;
+    top: 34px;
     width: 32px;
     height: 4px;
     border-radius: 50px;
@@ -62,10 +65,10 @@
 }
 
 .header-hamburger-menu-container span:nth-child(2) {
-    top: 28px;
+    top: 42px;
 }
 .header-hamburger-menu-container span:nth-child(3) {
-    top: 36px;
+    top: 50px;
 }
 
 .header-hamburger-menu:checked ~ span {
@@ -167,11 +170,6 @@
     animation: live-animation 3s ease-in-out;
     animation-iteration-count: infinite;
     vertical-align: middle;
-}
-
-.content-wrapper {
-    max-width: 800px;
-    margin: auto;
 }
 
 .livestream-container {

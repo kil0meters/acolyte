@@ -9,7 +9,7 @@
 
     {{ template "static-header" .Header }}
 
-    <main class="content-wrapper">
+    <main class="wrapper">
         {{ if .LiveStatus }}
             <article>
                 <div class="subheading">
@@ -34,7 +34,7 @@
         {{ end }}
     </main>
 
-    {{ template "footer" "content-wrapper" }}
+    {{ template "footer" "wrapper" }}
 
     </body>
 

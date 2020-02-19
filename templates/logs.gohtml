@@ -5,10 +5,10 @@
     {{ template "head" "Logs"}}
 
     <body>
-    <header class="static-header">
+    <header class="header" style="padding:0;margin-bottom:16px">
         <a class="logo" href="/">Logs</a>
     </header>
-    <main class="content-wrapper">
+    <main class="wrapper">
         <div class="wrapper padded card" style="margin:0;">
             <form action="/logs/stalk" method="GET">
                 <span class="authorize-form-label">Stalk</span>
@@ -35,7 +35,7 @@
         </div>
     </main>
 
-    {{ template "footer" "content-wrapper"}}
+    {{ template "footer" "wrapper"}}
 
     <script>
     </script>
@@ -51,7 +51,7 @@
     {{ template "head" "Logs"}}
 
     <body>
-    <header id="forum-header" class="card wrapper">
+    <header class="header card wrapper" style="margin-bottom:16px">
         <a href="/logs" class="logo">Logs - {{ (index . 0).Username }}</a>
     </header>
     <div id="logs-results" class="wrapper padded card">
@@ -66,11 +66,10 @@
         {{ end }}
     </div>
 
-    {{ template "footer" "content-wrapper"}}
+    {{ template "footer" "wrapper"}}
 
     <script>
         window.addEventListener('load', function () {
-            new acolyte.TransientHeader("forum-header");
             acolyte.renderMathInElement(document.getElementById("logs-results"), {
                 delimiters: [
                     {left: "$$", right: "$$", display: true},
@@ -92,18 +91,18 @@
     {{ template "head" "Logs - Search"}}
 
     <body>
-    <header id="forum-header" class="card wrapper">
-        <input type="text" id="logs-search-bar" class="authorize-form-input" placeholder="Search">
+    <header class="header card wrapper" style="margin-bottom:16px;padding:0">
+        <input type="text" id="logs-search-bar" class="authorize-form-input" placeholder="Search"
+               style="margin:0;height:100%">
     </header>
 
     <div id="logs-results" class="wrapper padded card">
     </div>
 
-    {{ template "footer" "content-wrapper"}}
+    {{ template "footer" "wrapper"}}
 
     <script>
         window.addEventListener('load', function () {
-            new acolyte.TransientHeader("forum-header");
             let logSearchbar = new acolyte.LogSearch();
             logSearchbar.initializeCallbacks();
 
@@ -128,7 +127,7 @@
     {{ template "head" "Logs"}}
 
     <body>
-    <header id="forum-header" class="card wrapper">
+    <header class="header card wrapper" style="margin-bottom:16px">
         <a href="/logs" class="logo">{{ .Title }}</a>
     </header>
     <div id="logs-results" class="wrapper padded card">
@@ -148,12 +147,11 @@
            href='/logs/messages/{{ (.Date.AddDate 0 0 1).Format "2006-01-02" }}'>NEXT DAY ></a>
     </div>
 
-    {{ template "footer" "content-wrapper"}}
+    {{ template "footer" "wrapper"}}
 
     <script>
 
         window.addEventListener('load', function () {
-            new acolyte.TransientHeader("forum-header");
             acolyte.renderMathInElement(document.getElementById("logs-results"), {
                 delimiters: [
                     {left: "$$", right: "$$", display: true},
