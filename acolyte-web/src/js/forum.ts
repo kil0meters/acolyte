@@ -1,4 +1,4 @@
-function formatDate(date) {
+function formatDate(date: Date) {
     let monthNames = [
         "January", "February", "March",
         "April", "May", "June", "July",
@@ -94,15 +94,15 @@ class CommentEditor extends HTMLElement {
     }
 }
 
-export function toggleReplyEditorVisibility(id, postID, username) {
-    let editor = document.querySelector(`#${id} .comment-container .comment-actions comment-editor`);
-    let commentActions = document.querySelector(`#${id} .comment-container .comment-actions`);
+export function toggleReplyEditorVisibility(parentID: string, postID: string, username: string) {
+    let editor = document.querySelector(`#${parentID} .comment-container .comment-actions comment-editor`);
+    let commentActions = document.querySelector(`#${parentID} .comment-container .comment-actions`);
 
     if (editor === undefined || editor === null) {
 
         editor = document.createElement('comment-editor');
         editor.setAttribute('username', username);
-        editor.setAttribute('parent-id', id);
+        editor.setAttribute('parent-id', parentID);
         editor.setAttribute('post-id', postID);
 
         commentActions.appendChild(editor)

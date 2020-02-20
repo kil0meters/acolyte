@@ -1,9 +1,11 @@
-import {MBChat, toggleEmotePopup, toggleLoginPrompt, toggleSettings, toggleUserList} from './js/chat.js';
-import {toggleReplyEditorVisibility} from './js/forum.js';
-import {toggleDarkMode} from './js/theme.js';
-import {renderEmotesInElement} from './js/emotes.js';
-import {renderMarkdownInElement} from './js/markdown.js';
-import {LogSearch} from './js/logs.js';
+import {MBChat, toggleEmotePopup, toggleLoginPrompt, toggleSettings, toggleUserList} from './js/chat';
+import {toggleReplyEditorVisibility} from './js/forum';
+import {toggleDarkMode} from './js/theme';
+import {renderEmotesInElement} from './js/emotes';
+import {renderMarkdownInElement} from './js/markdown';
+import {renderLinksInElement} from "./js/messageList";
+import {LogSearch} from './js/logs';
+
 import Split from 'split.js';
 
 import renderMathInElement from 'katex/dist/contrib/auto-render';
@@ -28,6 +30,7 @@ export {
 
     renderMathInElement,
     toggleReplyEditorVisibility,
+    renderLinksInElement,
     renderEmotesInElement,
     renderMarkdownInElement,
 

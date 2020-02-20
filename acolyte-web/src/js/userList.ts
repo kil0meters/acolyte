@@ -1,13 +1,8 @@
-class UserList {
-    constructor() {
-        this.userList = [];
-    }
+export class UserList {
 
-    get list() {
-        return this.userList;
-    }
+    public list: string[] = [];
 
-    static buildListElement(username) {
+    static buildListElement(username: string) {
         let listElement = document.createElement("span");
         listElement.classList.add("list-card");
 
@@ -17,15 +12,15 @@ class UserList {
         return listElement;
     }
 
-    add(username) {
-        let index = this.userList.indexOf(username);
-        if (index === -1) this.userList.push(username);
+    add(username: string) {
+        let index = this.list.indexOf(username);
+        if (index === -1) this.list.push(username);
         this.updateList();
     }
 
-    remove(username) {
-        let index = this.userList.indexOf(username);
-        if (index !== -1) this.userList.splice(index, 1);
+    remove(username: string) {
+        let index = this.list.indexOf(username);
+        if (index !== -1) this.list.splice(index, 1);
         this.updateList();
     }
 
@@ -33,8 +28,8 @@ class UserList {
         let overlay = document.getElementById("user-list-list");
         overlay.innerHTML = "";
 
-        this.userList.forEach((username) => {
+        for (let username of this.list) {
             overlay.appendChild(UserList.buildListElement(username))
-        })
+        }
     }
 }

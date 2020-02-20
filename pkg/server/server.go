@@ -18,6 +18,7 @@ import (
 	"github.com/kil0meters/acolyte/pkg/database"
 
 	"github.com/gorilla/mux"
+	"github.com/lpar/gzipped"
 	"github.com/urfave/negroni"
 )
 
@@ -60,7 +61,11 @@ func StartServer() {
 	authorization.CheckBansJob()
 
 	r.HandleFunc("/", ServeHomepage)
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./acolyte-web/dist/"))))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", gzipped.FileServer(http.Dir("./acolyte-web/dist/"))))
+
+	// we specifically DO NOT compress other pages because
+	// they serve session cookies https://en.wikipedia.org/wiki/CRIME
+	// most of the benefit is for the landing page regardless
 
 	forumRouter.HandleFunc("", ServeForum)
 	forumRouter.HandleFunc("/create-post", ServePostEditor).Methods("GET")

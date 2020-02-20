@@ -1,5 +1,16 @@
-function renderLinksInElement(element) {
-    element_default()(element, {
+import {getEmotes, renderEmotesInElement, replaceTextWithEmotes} from "./emotes";
+import {AutocompletionSuggestion} from "./autocompletion";
+import linkifyElement from "linkifyjs/element";
+import renderMathInElement from "katex/dist/contrib/auto-render";
+
+export interface Message {
+    text: any;
+    username: string;
+    id?: string;
+}
+
+export function renderLinksInElement(element: HTMLElement) {
+    linkifyElement(element, {
         "target": {
             url: "_blank",
         },
@@ -12,25 +23,23 @@ function renderLinksInElement(element) {
                         scrollToBottom(element.offsetHeight);
                     });
 
-
                 return value.length > 50 ? value.slice(0, 50) + '...' : value
             }
         }
     });
 }
 
-function scrollToBottom(offsetHeight) {
+function scrollToBottom(offsetHeight: number) {
     if ((window.innerHeight + window.scrollY + 64) >= (document.body.offsetHeight - offsetHeight)) {
         window.scrollTo(0, document.body.scrollHeight);
     }
 }
 
-async function getLinkPreview(value) {
-    let response = await fetch('/api/v1/link-data?link=' + encodeURI(value), {
+async function getLinkPreview(linkURL: string) {
+    let response = await fetch('/api/v1/link-data?link=' + encodeURI(linkURL), {
         credentials: 'include',
     });
     let data = await response.json();
-    console.log(data);
 
     if (data["title"].length === 0) {
         return
@@ -45,24 +54,27 @@ async function getLinkPreview(value) {
     return linkElement;
 }
 
-class messageList_MessageList {
-    constructor(messageListID, maxHeight, username, moderatorPerms) {
-        this._list = [];
+export class MessageList {
+    public list: Message[] = [];
+    currentCombo: Message[] = [];
+
+    messageListElement: HTMLElement;
+    emotes: AutocompletionSuggestion[] = getEmotes();
+    maxHeight: number;
+
+    username: string;
+    moderatorPerms: boolean;
+
+    constructor(messageListID: string, maxHeight: number, username: string, moderatorPerms: boolean) {
         this.messageListElement = document.getElementById(messageListID);
         this.emotes = getEmotes();
         this.maxHeight = maxHeight;
 
         this.username = username;
         this.moderatorPerms = moderatorPerms;
-
-        this.currentCombo = [];
     }
 
-    get list() {
-        return this._list
-    }
-
-    buildMessage(message) {
+    buildMessage(message: Message) {
         let messageElement = document.createElement("div");
         messageElement.id = message.id;
         messageElement.classList.add("chat-message");
@@ -81,7 +93,7 @@ class messageList_MessageList {
         let textElement = document.createElement("span");
         textElement.innerHTML = message.text;
 
-        auto_render(textElement, {
+        renderMathInElement(textElement, {
             delimiters: [
                 {left: "$$", right: "$$", display: true},
                 {left: "$", right: "$", display: false}
@@ -100,6 +112,8 @@ class messageList_MessageList {
             removeMessageElement.textContent = "Remove";
             removeMessageElement.classList.add("remove-message-button");
             removeMessageElement.onclick = function () {
+                // @ts-ignore
+                // the variable `liveChat` is defined in the HTML document
                 liveChat.sendMessage(`/remove ${message.id}`)
             };
 
@@ -111,11 +125,11 @@ class messageList_MessageList {
         return messageElement;
     }
 
-    push(message) {
+    push(message: Message) {
         if (message.username === "delete-message") {
             this.removeByID(message.text);
         } else {
-            this._list.push(message);
+            this.list.push(message);
 
             let messageElement = this.buildMessage(message);
             this.messageListElement.appendChild(messageElement);
@@ -133,16 +147,16 @@ class messageList_MessageList {
     checkForCombos() {
         this.currentCombo = [];
 
-        let recentMessage = this._list[this._list.length - 1];
+        let recentMessage = this.list[this.list.length - 1];
         let prevMessage = recentMessage;
 
         if (!this.emotes.map((name) => name.name).includes(recentMessage.text)) {
             return;
         }
 
-        for (let i = 1; recentMessage.text === prevMessage.text && i <= this._list.length; i++) {
-            this.currentCombo.push(this._list[this._list.length - i]);
-            prevMessage = this._list[this._list.length - i];
+        for (let i = 1; recentMessage.text === prevMessage.text && i <= this.list.length; i++) {
+            this.currentCombo.push(this.list[this.list.length - i]);
+            prevMessage = this.list[this.list.length - i];
         }
 
         if (this.currentCombo[this.currentCombo.length - 1].text !== recentMessage.text) {
@@ -160,31 +174,36 @@ class messageList_MessageList {
                 }
             }
 
-            let currentComboElement = document.createElement('div');
+            let currentComboElement = <HTMLDivElement>document.createElement('div');
 
-            let mostRecentMessage = this.messageListElement.lastChild;
+            let mostRecentMessage = <HTMLDivElement>this.messageListElement.lastElementChild;
 
             if (mostRecentMessage !== null) {
-                if (Array.from(mostRecentMessage.classList).includes('combo-message') && mostRecentMessage.firstChild.getAttribute('alt') === this.currentCombo[0].text) {
+                if (Array.from(mostRecentMessage.classList).includes('combo-message') && mostRecentMessage.firstElementChild.getAttribute('alt') === this.currentCombo[0].text) {
                     currentComboElement = mostRecentMessage;
                 }
             }
 
             currentComboElement.classList.add('chat-message', 'combo-message');
-            currentComboElement.innerHTML = `${replaceTextWithEmotes(this.currentCombo[0].text)} ${this.currentCombo.length}x`;
+            currentComboElement.innerHTML = `${replaceTextWithEmotes(this.currentCombo[0].text)} ${this.currentCombo.length}x ~combo~`;
 
             this.messageListElement.appendChild(currentComboElement);
         }
     }
 
-    removeByIndex(index) {
-        this._list.splice(index, 1);
+    removeByIndex(index: number) {
+        this.list.splice(index, 1);
         this.messageListElement.children[0].remove()
     }
 
-    removeByID(id) {
-        let i = this._list.indexOf(id);
-        if (i !== -1) this._list.splice(i, 1);
+    removeByID(id: string) {
+        let i;
+        for (i = 0; i < this.list.length; i++) {
+            if (this.list[i].id === id) {
+                break;
+            }
+        }
+        if (i !== this.list.length) this.list.splice(i, 1);
 
         this.messageListElement.removeChild(document.getElementById(id))
     }

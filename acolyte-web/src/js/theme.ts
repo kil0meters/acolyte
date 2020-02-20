@@ -1,3 +1,15 @@
+interface Theme {
+    backgroundColor: string,
+    cardColor: string,
+    textColorBold: string,
+    textColorSubtle: string,
+    linkColor: string,
+    accentColor: string,
+    shadowColor: string,
+    shadowColorIntense: string,
+    brandBackground: string,
+}
+
 const lightTheme = {
     backgroundColor: '#F8F8F8',
     cardColor: 'white',
@@ -24,7 +36,7 @@ const darkTheme = {
 
 let currentTheme = lightTheme;
 
-function setToTheme(theme) {
+function setToTheme(theme: Theme) {
     currentTheme = theme;
 
     document.documentElement.style.setProperty('--background-color', theme.backgroundColor);
@@ -38,7 +50,7 @@ function setToTheme(theme) {
     document.documentElement.style.setProperty('--brand-background', theme.brandBackground);
 
 
-    let chatFrame = document.getElementById("chat");
+    let chatFrame = <HTMLIFrameElement>document.getElementById("chat");
 
     if (chatFrame) {
         let chatDocument = chatFrame.contentDocument;

@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "target": "es6",
+    "module": "es6",
+    "allowSyntheticDefaultImports": true
+    // remove once split.js dep is removed
+  }
+}
