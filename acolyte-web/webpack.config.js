@@ -2,7 +2,7 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const BrotliPlugin = require('brotli-webpack-plugin');
+const zopfli = require('@gfx/zopfli');
 const CompressionPlugin = require('compression-webpack-plugin');
 
 const libraryName = 'acolyte';
@@ -17,17 +17,27 @@ module.exports = (env, argv) => ({
             filename: 'bundle.css',
             chunkFilename: 'chunk.css',
         }),
-        new BrotliPlugin({
-            asset: '[path].br[query]',
-            test: /\.(js|css|html|svg|eot|woff|woff2|ttf)$/,
+        // compression: we explicitly ignore woff, woff2, jpg, and png files since they cannot be compressed with
+        // generic lossless algorithms well
+        new CompressionPlugin({
+            filename: '[path].br[query]',
+            algorithm: 'brotliCompress',
+            test: (argv.mode === 'production') ? /\.(js|css|html|svg|eot|ttf)$/ : /.^/,
+            compressionOptions: {level: 11},
             threshold: 10240,
-            minRatio: 0.8
+            minRatio: 0.9
         }),
         new CompressionPlugin({
             filename: '[path].gz[query]',
-            test: /\.(js|css|html|svg|eot|woff|woff2|ttf)$/,
+            test: (argv.mode === 'production') ? /\.(js|css|html|svg|eot|ttf)$/ : /.^/,
+            algorithm(input, compressionOptions, callback) {
+                return zopfli.gzip(input, compressionOptions, callback);
+            },
+            compressionOptions: {
+                numiterations: 15,
+            },
             threshold: 10240,
-            minRatio: 0.8
+            minRatio: 0.9
         })
     ],
     mode: 'development',
@@ -78,13 +88,16 @@ module.exports = (env, argv) => ({
                     {
                         loader: 'image-webpack-loader',
                         options: {
+                            name: (argv.mode !== 'production') ? '[name].[ext]' : '[contenthash].[ext]',
+                            enabled: argv.mode === 'production',
                             optipng: {
                                 enabled: argv.mode === 'production',
                                 optimizationLevel: 7,
                             },
                             pngquant: {
+                                enabled: argv.mode === 'production',
                                 quality: [0.65, 0.90],
-                                speed: (argv.mode === 'production') ? 1 : 11
+                                speed: 1
                             },
                         },
                     }
