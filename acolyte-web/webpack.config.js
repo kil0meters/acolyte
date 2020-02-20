@@ -7,9 +7,9 @@ const CompressionPlugin = require('compression-webpack-plugin');
 
 const libraryName = 'acolyte';
 
-module.exports = {
+module.exports = (env, argv) => ({
     optimization: {
-        // minimize: false,
+        minimize: argv.mode === 'production',
         minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})]
     },
     plugins: [
@@ -19,13 +19,13 @@ module.exports = {
         }),
         new BrotliPlugin({
             asset: '[path].br[query]',
-            test: /\.(js|css|html|svg)$/,
+            test: /\.(js|css|html|svg|eot|woff|woff2|ttf)$/,
             threshold: 10240,
             minRatio: 0.8
         }),
         new CompressionPlugin({
             filename: '[path].gz[query]',
-            test: /\.(js|css|html|svg)$/,
+            test: /\.(js|css|html|svg|eot|woff|woff2|ttf)$/,
             threshold: 10240,
             minRatio: 0.8
         })
@@ -49,7 +49,16 @@ module.exports = {
             },
             {
                 test: /\.(eot|woff|woff2|svg|ttf)([?]?.*)$/,
-                use: ['file-loader']
+                loader: 'file-loader',
+                options: {
+                    name(file) {
+                        if (argv.mode !== 'production') {
+                            return '[name].[ext]';
+                        }
+
+                        return '[contenthash].[ext]';
+                    }
+                }
             },
             {
                 test: /\.css$/i,
@@ -58,17 +67,24 @@ module.exports = {
             {
                 test: /\.(png|jpe?g|gif)$/i,
                 use: [
-                    'file-loader',
+                    {
+                        loader: 'responsive-loader',
+                        options: {
+                            name: (argv.mode !== 'production') ? '[name].[ext]' : '[contenthash].[ext]',
+                            sizes: [128],
+                            adapter: require('responsive-loader/sharp'),
+                        }
+                    },
                     {
                         loader: 'image-webpack-loader',
                         options: {
                             optipng: {
-                                enabled: true,
-                                optimizationLevel: 3,
+                                enabled: argv.mode === 'production',
+                                optimizationLevel: 7,
                             },
                             pngquant: {
                                 quality: [0.65, 0.90],
-                                speed: 4
+                                speed: (argv.mode === 'production') ? 1 : 11
                             },
                         },
                     }
@@ -76,4 +92,4 @@ module.exports = {
             },
         ],
     }
-};
+});
