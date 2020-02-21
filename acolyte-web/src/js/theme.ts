@@ -27,7 +27,7 @@ const darkTheme = {
     cardColor: 'black',
     textColorBold: 'white',
     textColorSubtle: '#e0e0e0',
-    linkColor: '#ebf745',
+    linkColor: '#35deea',
     accentColor: '#092d2c',
     shadowColor: 'rgba(0,0,0, 0.6)',
     shadowColorIntense: 'rgba(0,0,0, 0.9)',
@@ -36,7 +36,7 @@ const darkTheme = {
 
 let currentTheme = lightTheme;
 
-function setToTheme(theme: Theme) {
+export function setTheme(theme: Theme) {
     currentTheme = theme;
 
     document.documentElement.style.setProperty('--background-color', theme.backgroundColor);
@@ -65,27 +65,27 @@ function setToTheme(theme: Theme) {
         chatDocument.documentElement.style.setProperty('--shadow-color-intense', theme.shadowColorIntense);
         chatDocument.documentElement.style.setProperty('--brand-background', theme.brandBackground);
     }
+
+    localStorage.setItem("theme", JSON.stringify(theme));
 }
 
-
-function setThemeToStorage() {
-    let storageTheme = localStorage.getItem("theme");
-    if (storageTheme === "dark") {
-        setToTheme(darkTheme);
-    } else if (storageTheme === "light") {
-        setToTheme(lightTheme);
+function setThemeFromStorage() {
+    try {
+        let storageTheme: Theme = JSON.parse(localStorage.getItem("theme"));
+        if (storageTheme != null) {
+            setTheme(storageTheme);
+        }
+    } catch (e) {
+        localStorage.setItem("theme", JSON.stringify(darkTheme));
     }
-    // if no previously set theme, do nothing
 }
 
-setThemeToStorage();
+setThemeFromStorage();
 
 export function toggleDarkMode() {
     if (currentTheme === darkTheme) {
-        setToTheme(lightTheme);
-        localStorage.setItem("theme", "light");
+        setTheme(lightTheme);
     } else {
-        setToTheme(darkTheme);
-        localStorage.setItem("theme", "dark");
+        setTheme(darkTheme);
     }
 }

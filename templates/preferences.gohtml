@@ -1,0 +1,61 @@
+{{ define "preferences-home" }}
+    <!DOCTYPE html>
+    <html lang="en">
+
+    {{ template "head" "Forum" }}
+
+    <body>
+
+    {{ template "forum-header" .LoginStatus}}
+
+    <main class="container">
+        <div class="wrapper forum-grid">
+            <div class="forum-content wrapper">
+                <div class="padded card" style="margin-bottom:16px">
+                    <form id="theme-editor">
+                        <label for="themeInput">Theme Editor</label>
+                        <textarea name="themeInput" id="theme-input" class="authorize-form-input" rows="11"
+                                  style="resize:none"></textarea>
+                    </form>
+                </div>
+                <div class="padded card" style="margin-bottom:16px">
+                    <h2>Link Minecraft Account</h2>
+                    <p>Copy this code into chat:</p>
+                    <span class="authorize-form-input">ajsdkjfaksd</span>
+                </div>
+                <div class="padded card">
+                    <h2>you can delete your account here but why would you want to do that :(</h2>
+                </div>
+            </div>
+            <div class="forum-sidebar">
+                <div class="wrapper padded card" style="height: 100%">
+                    <h2>Stats</h2>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {{ template "footer" "container"}}
+
+    <script>
+        let form = document.forms["theme-editor"];
+        form.themeInput.value = JSON.stringify(JSON.parse(localStorage.getItem("theme")), null, 2);
+
+        document.getElementById('theme-input').addEventListener('keyup', () => {
+            try {
+                form.themeInput.valid = true;
+                let theme = JSON.parse(form.themeInput.value);
+
+                acolyte.setTheme(theme);
+            } catch (e) {
+                form.themeInput.setCustomValidity("Invalid formatting");
+                form.themeInput.valid = false;
+            }
+        });
+    </script>
+
+    </body>
+
+    </html>
+{{ end }}
+
