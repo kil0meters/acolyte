@@ -75,7 +75,7 @@
 
 .login-prompt-button {
     border: none;
-    border-radius: 3px;
+    border-radius: 8px;
 
     color: var(--link-color);
 
@@ -215,7 +215,7 @@
 .remove-message-button {
     background: inherit;
     border: 2px solid red;
-    border-radius: 3px;
+    border-radius: 8px;
 
     position: absolute;
     right: 16px;

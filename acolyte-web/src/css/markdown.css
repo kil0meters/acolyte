@@ -22,7 +22,7 @@ th, td {
 pre {
     font-size: 14px;
     padding: 12px;
-    border-radius: 3px;
+    border-radius: 8px;
     background-color: var(--accent-color);
     overflow-x: auto;
 }

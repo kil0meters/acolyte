@@ -48,6 +48,7 @@ func StartServer() {
 	api := r.PathPrefix("/api/v1/").Subrouter()
 	forumRouter := r.PathPrefix("/forum").Subrouter()
 	logsRouter := r.PathPrefix("/logs").Subrouter()
+	preferencesRouter := r.PathPrefix("/preferences").Subrouter()
 
 	// live chat socket
 	pool := chat.NewPool()
@@ -89,6 +90,8 @@ func StartServer() {
 	logsRouter.HandleFunc("/search", ServeLogsSearch)
 	logsRouter.HandleFunc("/stalk", ServeStalk).Queries("username", "{username}")
 	logsRouter.HandleFunc("/messages/{date:(?:[12]\\d{3}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01]))}", ServeMessagesByDate)
+
+	preferencesRouter.HandleFunc("", ServePreferencesHomepage)
 
 	api.NotFoundHandler = APINotFoundHandler()
 
