@@ -36,6 +36,10 @@
     .logo {
         font-size: 24px !important;
     }
+
+    .post-title {
+        font-size: 18px !important;
+    }
 }
 
 #video {

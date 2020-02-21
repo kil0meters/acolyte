@@ -11,10 +11,10 @@
 
     <main class="container">
         <div class="wrapper forum-grid">
-            <div class="forum-content wrapper padded card">
-                <div id="post-list">
+            <div class="forum-content wrapper card">
+                <div id="posts">
                     {{ range .Posts }}
-                        <forum-post title="{{ .Title }}" post-id="{{ .ID }}"></forum-post>
+                        {{ template "forum-post" . }}
                     {{ end }}
                 </div>
             </div>
@@ -34,7 +34,14 @@
 
 {{ end }}
 
-{{ define "forum-post"}}
+{{ define "forum-post" }}
+    <div class="list-card">
+        <a class="post-title" href="/forum/posts/{{ .ID }}">{{ .Title }}</a>
+        <div class="post-byline">by <a href="/user/{{.Username}}">{{ .Username }}</a> {{humanize .CreatedAt}}</div>
+    </div>
+{{ end }}
+
+{{ define "forum-post-page"}}
     <!DOCTYPE html>
     <html lang="en">
 
@@ -196,13 +203,13 @@
                 <a href="#comments">Comments</a>
                 <a href="#messages">Messages</a>
             </div>
-            <div class="account-info-content padded card">
+            <div class="account-info-content">
                 <div id="comments" class="tab-content">
                     {{ range .Comments }}
                         {{ template "forum-comment" dict "Comment" . "Account" $.Account}}
                     {{ end }}
                 </div>
-                <div id="messages" class="tab-content">
+                <div id="messages" class="tab-content padded card">
                     <div id="logs-results">
                         {{ range .Messages }}
                             <p class="log-result" id="{{ .MessageID }}">{{ .Timestamp.Format "2006-01-02 15:04:05" }}
@@ -210,9 +217,9 @@
                         {{ end }}
                     </div>
                 </div>
-                <div id="posts" class="tab-content">
+                <div id="posts" class="tab-content card">
                     {{ range .Posts }}
-                        <forum-post title="{{ .Title }}" post-id="{{ .ID }}"></forum-post>
+                        {{ template "forum-post" . }}
                     {{ end }}
                 </div>
             </div>

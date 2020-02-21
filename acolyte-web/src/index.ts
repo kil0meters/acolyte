@@ -15,8 +15,8 @@ import './css/fonts.css';
 import './css/homepage.css';
 import './css/livestream.css';
 import './css/markdown.css';
-import './css/forum/forum.css';
-import './css/forum/post-editor.css';
+import './css/forum.css';
+import './css/post-editor.css';
 import './css/logs.css';
 
 import '../node_modules/katex/dist/katex.css';

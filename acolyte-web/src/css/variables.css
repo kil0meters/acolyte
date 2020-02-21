@@ -42,7 +42,7 @@ a:hover {
     --shadow-color: rgba(111, 111, 111, .2);
     --shadow-color-intense: rgba(111, 111, 111, .4);
 
-    --brand-background: linear-gradient(-45deg, #bbe8c2, #dcbbe8);
+    --brand-background: linear-gradient(-45deg, #eaf9ef, #f4eaf9);
 }
 
 @media (prefers-color-scheme: dark) {

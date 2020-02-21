@@ -188,7 +188,7 @@ func ServePost(w http.ResponseWriter, r *http.Request) {
 
 	posterAccount := authorization.AccountFromID(post.AccountID)
 
-	err := webTemplate.ExecuteTemplate(w, "forum-post", struct {
+	err := webTemplate.ExecuteTemplate(w, "forum-post-page", struct {
 		LoginStatus   bool
 		Account       *authorization.Account
 		Post          *forum.Post

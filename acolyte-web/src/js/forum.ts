@@ -13,29 +13,6 @@ function formatDate(date: Date) {
     return day + ' ' + monthNames[monthIndex] + ', ' + year;
 }
 
-class ForumPost extends HTMLElement {
-    constructor() {
-        super();
-    }
-
-    connectedCallback() {
-        let title = this.getAttribute('title');
-        let postID = this.getAttribute('post-id');
-
-        this.innerHTML = `
-            <div class="post-thumbnail"></div>
-            <div class="post-content">
-                <a class="post-title" href="/forum/posts/${postID}">${title}</a>
-                <ul class="post-options">
-                    <li class="post-option expander">+</li>
-                    <li class="post-option">Comments</li>
-                    <li class="post-option">Report</li>
-                </ul>
-            </div>
-        `;
-    }
-}
-
 class LinkPreview extends HTMLElement {
     constructor() {
         super();
@@ -111,6 +88,5 @@ export function toggleReplyEditorVisibility(parentID: string, postID: string, us
     }
 }
 
-customElements.define('forum-post', ForumPost);
 customElements.define('comment-editor', CommentEditor);
 customElements.define('link-preview', LinkPreview);

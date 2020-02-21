@@ -35,7 +35,7 @@ function scrollToBottom(offsetHeight: number) {
     }
 }
 
-async function getLinkPreview(linkURL: string) {
+async function getLinkPreview(linkURL: string): Promise<HTMLElement> {
     let response = await fetch('/api/v1/link-data?link=' + encodeURI(linkURL), {
         credentials: 'include',
     });
@@ -74,7 +74,7 @@ export class MessageList {
         this.moderatorPerms = moderatorPerms;
     }
 
-    buildMessage(message: Message) {
+    buildMessage(message: Message): HTMLElement {
         let messageElement = document.createElement("div");
         messageElement.id = message.id;
         messageElement.classList.add("chat-message");
