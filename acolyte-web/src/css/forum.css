@@ -3,6 +3,7 @@
 .card {
     background-color: var(--card-color);
     border-radius: 8px;
+    overflow: auto;
     border: 1px solid var(--accent-color);
 
     box-shadow: 0 2px 4px 0 var(--shadow-color);
@@ -64,7 +65,7 @@ forum-post {
 
 .post-meta {
     padding: 16px;
-    background-color: var(--accent-color);
+    background: var(--brand-background);
     border-bottom: 1px solid var(--accent-color);
 }
 
@@ -181,6 +182,10 @@ forum-post {
     display: grid;
     grid-template-columns: 12px 100fr;
     border: 0;
+}
+
+.comment .comment {
+    box-shadow: none;
 }
 
 .comment-body {

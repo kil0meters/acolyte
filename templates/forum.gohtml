@@ -76,7 +76,11 @@
                                     post-id="{{.Post.ID}}"></comment-editor>
                 </div>
                 <div class="wrapper replies">
-                    <h2>Replies</h2>
+                    {{ if .Post.Replies }}
+                        <h2>Replies</h2>
+                    {{ else }}
+                        <h2 style="margin:auto">Looks like this post is forever alone :(</h2>
+                    {{ end }}
                     {{ range .Post.Replies }}
                         {{ template "forum-comment" dict "Comment" . "Account" $.Account}}
                     {{ end }}
@@ -125,12 +129,7 @@
     <!DOCTYPE html>
     <html lang="en">
 
-    <head>
-        <title>Sign up - milesbenton.com</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-        <link rel="stylesheet" href="/static/bundle.min.css">
-        <script defer src="/static/bundle.min.js"></script>
-    </head>
+    {{ template "head" "Create Post"}}
 
     <body>
     <header class="header">
@@ -144,7 +143,7 @@
             <textarea name="body" class="authorize-form-input" id="markdown-editor" placeholder="Body"
                       rows="30"></textarea>
             <div class="authorize-form-grid">
-                <a class="authorize-form-button" style="grid-column: 1;">PREVIEW</a>
+                <button class="authorize-form-button" style="grid-column: 1;" type="button">PREVIEW</button>
                 <button class="authorize-form-button" style="grid-column: 2;">POST</button>
             </div>
         </form>

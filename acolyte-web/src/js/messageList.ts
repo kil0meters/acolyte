@@ -1,6 +1,5 @@
 import {getEmotes, renderEmotesInElement, replaceTextWithEmotes} from "./emotes";
 import {AutocompletionSuggestion} from "./autocompletion";
-import linkifyElement from "linkifyjs/element";
 import renderMathInElement from "katex/dist/contrib/auto-render";
 
 export interface Message {
@@ -9,23 +8,21 @@ export interface Message {
     id?: string;
 }
 
-export function renderLinksInElement(element: HTMLElement) {
-    linkifyElement(element, {
-        "target": {
-            url: "_blank",
-        },
-        "className": 'chat-link',
-        "format": (value, type) => {
-            if (type === 'url') {
-                getLinkPreview(value)
-                    .then(linkElement => {
-                        element.appendChild(linkElement);
-                        scrollToBottom(element.offsetHeight);
-                    });
+let linkRegex: RegExp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g;
 
-                return value.length > 50 ? value.slice(0, 50) + '...' : value
-            }
-        }
+export function renderLinksInElement(element: HTMLElement) {
+    element.innerHTML = element.innerHTML.replace(linkRegex, (url: string) => {
+        getLinkPreview(url)
+            .then((linkElement: HTMLElement) => {
+                if (linkElement != null) {
+                    element.appendChild(linkElement);
+                    scrollToBottom(element.offsetHeight);
+                }
+            });
+
+        let displayURL = (url.length > 50) ? url.substring(1, 50) + "..." : url;
+
+        return `<a class="chat-link" target="_blank" href="${url}">${displayURL}</a>`
     });
 }
 

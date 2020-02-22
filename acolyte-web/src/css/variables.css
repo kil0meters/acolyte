@@ -1,6 +1,6 @@
 html {
     font-family: 'Open Sans', sans-serif;
-    background: var(--brand-background);
+    background: var(--background-color);
     color: var(--text-color-bold);
     min-height: 100vh;
 }
@@ -42,7 +42,7 @@ a:hover {
     --shadow-color: rgba(111, 111, 111, .2);
     --shadow-color-intense: rgba(111, 111, 111, .4);
 
-    --brand-background: linear-gradient(-45deg, #eaf9ef, #f4eaf9);
+    --brand-background: linear-gradient(-45deg, #bcf6b3, #b6d2ff);
 }
 
 @media (prefers-color-scheme: dark) {

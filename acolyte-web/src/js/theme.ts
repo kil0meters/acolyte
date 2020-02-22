@@ -19,7 +19,7 @@ const lightTheme = {
     accentColor: 'lightgrey',
     shadowColor: 'rgba(111,111,111,.2)',
     shadowColorIntense: 'rgba(111,111,111,.4)',
-    brandBackground: 'linear-gradient(-45deg, #eaf9ef, #f4eaf9)',
+    brandBackground: 'linear-gradient(-45deg, #bcf6b3, #b6d2ff)',
 };
 
 const darkTheme = {

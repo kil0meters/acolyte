@@ -91,33 +91,27 @@
 
 {{ define "livestream" }}
     <!DOCTYPE html>
-    <html lang="en" id="html-max-size">
+    <html lang="en" style="height:100vh;width:100vw;overflow-y:hidden">
 
     {{ template "head" "Livestream" }}
 
-    <body id="fullscreen-viewer">
-    <div class="split" id="video" style="width: calc(75% + 5px);">
-        <div id="livestream-header">
-            <a class="logo" href="/">Miles Benton</a>
-            <a class="subscribe-button" href="https://youtube.com/channel/{{.ChannelID}}?sub_confirmation=1">SUBSCRIBE
-                (it's
-                free)</a>
+    <body style="margin:0;height:100vh">
+    <div id="livestream-grid">
+        <div class="livestream-left">
+            <div id="livestream-header">
+                <a class="logo" href="/">Miles Benton</a>
+                <a class="subscribe-button" href="https://youtube.com/channel/{{.ChannelID}}?sub_confirmation=1">SUBSCRIBE
+                    (it's
+                    free)</a>
+            </div>
+            <iframe src="https://www.youtube-nocookie.com/embed/live_stream?channel={{.ChannelID}}&modestbranding=1"
+                    style="border:0;width:100%;height:100%" allowfullscreen></iframe>
         </div>
-        <iframe id="stream-embed"
-                src="https://www.youtube-nocookie.com/embed/live_stream?channel={{.ChannelID}}&modestbranding=1"
-                style="border:0;" allowfullscreen></iframe>
+        <div class="livestream-right">
+            <iframe class="split" id="chat" src="/chat" style="border:0"></iframe>
+        </div>
     </div>
-    <iframe class="split" id="chat" src="/chat" style="border:0;width: calc(25% - 5px);"></iframe>
     </body>
-    <script>
-        window.addEventListener('load', function () {
-            acolyte.Split(['#video', '#chat'], {
-                sizes: [75, 25],
-                gutterSize: 10,
-                minSize: 200,
-            })
-        })
-    </script>
 
     </html>
 

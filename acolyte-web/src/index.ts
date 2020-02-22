@@ -6,8 +6,6 @@ import {renderMarkdownInElement} from './js/markdown';
 import {renderLinksInElement} from "./js/messageList";
 import {LogSearch} from './js/logs';
 
-import Split from 'split.js';
-
 import renderMathInElement from 'katex/dist/contrib/auto-render';
 
 import './css/chat.css';
@@ -38,5 +36,4 @@ export {
 
     toggleDarkMode,
     setTheme,
-    Split,
 }
