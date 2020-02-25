@@ -21,7 +21,7 @@
 
 /* messages */
 #message-list {
-    margin-bottom: 116px;
+    margin-bottom: 126px;
 }
 
 .fullscreen-overlay {
@@ -213,7 +213,7 @@
 }
 
 .remove-message-button {
-    background: inherit;
+    background-color: var(--background-color);
     border: 2px solid red;
     border-radius: 8px;
 
@@ -239,6 +239,37 @@
 .remove-message-button:hover {
     background-color: red;
     color: white;
+}
+
+#messages-below {
+    font-size: 14px;
+    cursor: pointer;
+    border: 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.4);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    color: white;
+    position: fixed;
+
+    bottom: 124px;
+    left: 50%;
+    right: 50%;
+
+    width: 256px;
+    margin-left: -128px;
+    transition: 300ms ease;
+}
+
+#messages-below:hover {
+    background-color: rgba(64, 64, 64, 0.4);
+}
+
+#messages-below.hidden {
+    bottom: 64px;
 }
 
 #autocompletion-popup {

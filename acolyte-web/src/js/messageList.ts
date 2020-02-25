@@ -69,6 +69,15 @@ export class MessageList {
 
         this.username = username;
         this.moderatorPerms = moderatorPerms;
+
+        window.addEventListener("scroll", function () {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                document.getElementById('messages-below').classList.add('hidden');
+            } else {
+                document.getElementById('messages-below').classList.remove('hidden');
+            }
+        })
+
     }
 
     buildMessage(message: Message): HTMLElement {
@@ -78,7 +87,10 @@ export class MessageList {
         if (message.text.includes(this.username) && message.username !== this.username) {
             messageElement.classList.add("mentioned")
         } else if (message.username === this.username) {
-            messageElement.classList.add("self")
+            messageElement.classList.add("self");
+
+            // if sent by self, scroll to bottom regardless of current scroll position
+            scrollToBottom(document.body.offsetHeight);
         }
 
 

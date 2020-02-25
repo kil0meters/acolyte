@@ -37,9 +37,8 @@ const darkTheme = {
 let currentTheme = lightTheme;
 
 export function setTheme(theme: Theme) {
-    currentTheme = theme;
-
     document.documentElement.style.setProperty('--background-color', theme.backgroundColor);
+
     document.documentElement.style.setProperty('--card-color', theme.cardColor);
     document.documentElement.style.setProperty('--text-color-bold', theme.textColorBold);
     document.documentElement.style.setProperty('--text-color-subtle', theme.textColorSubtle);
@@ -48,14 +47,14 @@ export function setTheme(theme: Theme) {
     document.documentElement.style.setProperty('--shadow-color', theme.shadowColor);
     document.documentElement.style.setProperty('--shadow-color-intense', theme.shadowColorIntense);
     document.documentElement.style.setProperty('--brand-background', theme.brandBackground);
-
-
     let chatFrame = <HTMLIFrameElement>document.getElementById("chat");
 
-    if (chatFrame) {
-        let chatDocument = chatFrame.contentDocument;
 
+    if (chatFrame) {
+
+        let chatDocument = chatFrame.contentDocument;
         chatDocument.documentElement.style.setProperty('--background-color', theme.backgroundColor);
+
         chatDocument.documentElement.style.setProperty('--card-color', theme.cardColor);
         chatDocument.documentElement.style.setProperty('--text-color-bold', theme.textColorBold);
         chatDocument.documentElement.style.setProperty('--text-color-subtle', theme.textColorSubtle);
@@ -66,7 +65,8 @@ export function setTheme(theme: Theme) {
         chatDocument.documentElement.style.setProperty('--brand-background', theme.brandBackground);
     }
 
-    localStorage.setItem("theme", JSON.stringify(theme));
+    currentTheme = theme;
+    localStorage.setItem("theme", JSON.stringify(currentTheme));
 }
 
 function setThemeFromStorage() {
@@ -76,14 +76,16 @@ function setThemeFromStorage() {
             setTheme(storageTheme);
         }
     } catch (e) {
-        localStorage.setItem("theme", JSON.stringify(darkTheme));
+        let hasDarkColorScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        let storageTheme: Theme = hasDarkColorScheme ? darkTheme : lightTheme;
+        setTheme(storageTheme);
     }
 }
 
 setThemeFromStorage();
 
 export function toggleDarkMode() {
-    if (currentTheme === darkTheme) {
+    if (JSON.stringify(currentTheme) === JSON.stringify(darkTheme)) {
         setTheme(lightTheme);
     } else {
         setTheme(darkTheme);

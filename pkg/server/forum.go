@@ -119,22 +119,26 @@ func CreateCommentForm(w http.ResponseWriter, r *http.Request) {
 func ServeProfile(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
+	account := authorization.GetAccount(w, r)
+
 	username := params["username"]
-	account := authorization.AccountFromUsername(username)
-	if account == nil {
+	profileAccount := authorization.AccountFromUsername(username)
+	if profileAccount == nil {
 		w.Write([]byte("Account not found"))
 	}
 
 	err := webTemplate.ExecuteTemplate(w, "profile-page", struct {
-		Account  *authorization.Account
-		Messages []logs.LogMessage
-		Posts    []*forum.Post
-		Comments []*forum.Comment
+		LoginStatus bool
+		Account     *authorization.Account
+		Messages    []logs.LogMessage
+		Posts       []*forum.Post
+		Comments    []*forum.Comment
 	}{
-		Account:  account,
-		Messages: logs.StalkUser(account.Username),
-		Posts:    forum.PostsFromUsername(account.Username),
-		Comments: forum.CommentsFromUsername(account.Username, 3),
+		Account:     profileAccount,
+		LoginStatus: account.Permissions.AtLeast(authorization.Standard),
+		Messages:    logs.StalkUser(profileAccount.Username),
+		Posts:       forum.PostsFromUsername(profileAccount.Username),
+		Comments:    forum.CommentsFromUsername(profileAccount.Username, 3),
 	})
 	if err != nil {
 		log.Println(err)

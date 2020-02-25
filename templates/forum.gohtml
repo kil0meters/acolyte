@@ -192,7 +192,7 @@
 
     <body>
 
-    {{ template "forum-header" }}
+    {{ template "forum-header" .LoginStatus }}
 
     <main class="container">
         <div class="account-page-grid">
@@ -235,6 +235,19 @@
     <script>
         window.addEventListener('hashchange', function () {
             window.scrollTo(window.scrollX, 0)
+        });
+
+        window.addEventListener('load', function () {
+            document.querySelectorAll(".comment-body").forEach((comment) => {
+                acolyte.renderMarkdownInElement(comment);
+                acolyte.renderMathInElement(comment, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false},
+                    ]
+                });
+                acolyte.renderEmotesInElement(comment);
+            });
         });
     </script>
 

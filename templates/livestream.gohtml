@@ -54,6 +54,10 @@
         </div>
     </div>
 
+
+    <button id="messages-below" class="hidden" onclick="window.scrollTo(0, document.body.scrollHeight)">Scroll to
+        bottom
+    </button>
     <div id="message-entry">
         <div id="autocompletion-popup" class="hidden card"></div>
         <div id="emote-popup" class="hidden card"></div>
@@ -97,13 +101,13 @@
 
     <body style="margin:0;height:100vh">
     <div id="livestream-grid">
+        <div id="livestream-header">
+            <a class="logo" href="/">Miles Benton</a>
+            <a class="subscribe-button" href="https://youtube.com/channel/{{.ChannelID}}?sub_confirmation=1">SUBSCRIBE
+                (it's
+                free)</a>
+        </div>
         <div class="livestream-left">
-            <div id="livestream-header">
-                <a class="logo" href="/">Miles Benton</a>
-                <a class="subscribe-button" href="https://youtube.com/channel/{{.ChannelID}}?sub_confirmation=1">SUBSCRIBE
-                    (it's
-                    free)</a>
-            </div>
             <iframe src="https://www.youtube-nocookie.com/embed/live_stream?channel={{.ChannelID}}&modestbranding=1"
                     style="border:0;width:100%;height:100%" allowfullscreen></iframe>
         </div>
