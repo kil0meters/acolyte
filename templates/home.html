@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% include "static_header.html" %}
+
+<main class="wrapper">
+  {% if live_status %}
+  <article>
+    <div class="subheading">
+      <h2 class="subheading">WOW I'M LIVESTREAMING HOW NEAT <span class="live-indicator">LIVE</span></h2>
+    </div>
+    <div class="video-display card">
+      <iframe src="https://www.youtube-nocookie.com/embed/live_stream?channel=no&modestbranding=1"
+        style="border: 0;width:100%;height:100%" allowfullscreen></iframe>
+    </div>
+  </article>
+  {% else %}
+  <article>
+    <div class="subheading">
+      <h2>LATEST VIDEO</h2>
+    </div>
+    <div class="video-display card">
+      <div style="background-image: url('test')">
+        <span class="main-video-title">test</span>
+      </div>
+    </div>
+  </article>
+  {% endif %}
+</main>
+{% endblock %}

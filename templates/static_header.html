@@ -1,0 +1,19 @@
+<header class="header wrapper" style="padding:0">
+  <span class="logo">Miles Benton</span>
+  <ul class="header-links">
+    {% for link in header %}
+    <li class="header-link"><a href="{{ link.url }}">{{ link.title }}</a></li>
+    {% endfor %}
+  </ul>
+  <ul class="header-hamburger-menu-container">
+    <input type="checkbox" class="header-hamburger-menu">
+    <span></span>
+    <span></span>
+    <span></span>
+    <div class="header-hamburger-links">
+      {% for link in header %}
+      <li class="header-link"><a href="{{ link.url }}">{{ link.title }}</a></li>
+      {% endfor %}
+    </div>
+  </ul>
+</header>
