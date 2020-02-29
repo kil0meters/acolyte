@@ -1,37 +1,11 @@
 #![warn(clippy::all)]
 
-use actix_web::{error, get, middleware, web, App, Error, HttpResponse, HttpServer};
-use serde::{Deserialize, Serialize};
+use actix::Actor;
+use actix_web::{middleware, web, App, HttpServer};
 use tera::Tera;
 
-#[derive(Serialize, Deserialize, Debug)]
-struct HeaderLink<'a> {
-    title: &'a str,
-    url: &'a str,
-}
-
-impl<'a> HeaderLink<'a> {
-    fn homepage() -> Vec<HeaderLink<'a>> {
-        vec![HeaderLink {
-            title: "wow",
-            url: "https://google.com",
-        }]
-    }
-}
-
-#[get("/")]
-async fn index(tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
-    let mut ctx = tera::Context::new();
-
-    ctx.insert("live_status", &true);
-    ctx.insert("header", &HeaderLink::homepage());
-
-    let s = tmpl
-        .render("home.html", &ctx)
-        .map_err(|_| error::ErrorInternalServerError("Template error"))?;
-
-    Ok(HttpResponse::Ok().content_type("text/html").body(s))
-}
+mod chat;
+mod frontpage;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
@@ -59,15 +33,24 @@ async fn main() -> std::io::Result<()> {
                 include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/home.html")),
             ),
             (
+                "chat.html",
+                include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/chat.html")),
+            ),
+            (
                 "livestream.html",
                 include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/home.html")),
             ),
         ])
         .unwrap();
 
+        let srv = chat::server::Server::default().start();
+
         App::new()
-            .data(tera)
+            .wrap(middleware::NormalizePath)
             .wrap(middleware::Logger::default())
+            .wrap(
+                middleware::DefaultHeaders::new().header("Content-Type", "text/html;charset=utf-8"),
+            )
             .service(
                 actix_files::Files::new(
                     "/static",
@@ -75,7 +58,14 @@ async fn main() -> std::io::Result<()> {
                 )
                 .show_files_listing(),
             )
-            .service(index)
+            .data(tera)
+            .data(srv)
+            .service(frontpage::index)
+            .service(
+                web::scope("/chat")
+                    .service(chat::frontend)
+                    .service(chat::ws_upgrader),
+            )
     })
     .bind("127.0.0.1:8080")?
     .run()

@@ -5,7 +5,7 @@ import {UserList} from "./userList";
 import {Autocompletion} from "./autocompletion";
 
 export class MBChat {
-    wsProtocol: string;
+    websocketLocation: string;
     conn: WebSocket;
 
     username: string;
@@ -21,18 +21,14 @@ export class MBChat {
     entryBody: HTMLElement;
     autocompletionHelper: Autocompletion;
 
-    constructor(maxHeight: number, noEntry: boolean, username: string, moderatorPerms: boolean) {
-        if (location.protocol === 'https:') {
-            this.wsProtocol = 'wss:';
-        } else {
-            this.wsProtocol = 'ws:';
-        }
+    constructor(websocketLocation: string, maxHeight: number, noEntry: boolean, username: string, moderatorPerms: boolean) {
+        this.websocketLocation = websocketLocation;
 
         this.moderatorPerms = moderatorPerms === true;
         this.messageList = new MessageList('message-list', maxHeight, username, this.moderatorPerms);
 
         this.maxHeight = maxHeight;
-        this.conn = new WebSocket(`${this.wsProtocol}//${window.location.host}/api/v1/chat`);
+        this.conn = new WebSocket(websocketLocation);
 
         this.username = username;
 
@@ -86,7 +82,7 @@ export class MBChat {
                     text: "Disconnected. Trying to reconnect in 5 seconds..."
                 });
 
-                this.conn = new WebSocket(`${this.wsProtocol}//${window.location.host}/api/v1/chat`);
+                this.conn = new WebSocket(this.websocketLocation);
 
                 window.setTimeout(() => {
                     if (this.conn.readyState === this.conn.OPEN) {
@@ -101,10 +97,7 @@ export class MBChat {
     }
 
     sendMessage(message: string) {
-        this.conn.send(JSON.stringify({
-            "username": this.username,
-            "text": message,
-        }));
+        this.conn.send(message);
     }
 
     initializeEntryBody() {
