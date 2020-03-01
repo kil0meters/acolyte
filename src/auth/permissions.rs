@@ -1,16 +1,23 @@
-/// AuthLevel
-/// Lower values give higher permissions
-#[derive(Debug)]
-pub enum AuthLevel {
-    Admin = 0,
-    Moderator = 1,
-    Standard = 2,
-    LoggedOut = 3,
-    Banned = 4,
-}
+// only i8/i16/i32/i64 are supported by Insertable
+pub type AuthLevel = i32;
 
-impl AuthLevel {
-    pub fn is_at_least(self, minimum: AuthLevel) -> bool {
-        self as u8 <= minimum as u8
-    }
+pub const ADMIN: AuthLevel = 0;
+pub const MODERATOR: AuthLevel = 1;
+pub const STANDARD: AuthLevel = 2;
+pub const LOGGED_OUT: AuthLevel = 3;
+pub const BANNED: AuthLevel = 4;
+
+/// Lower values give higher permissions
+///
+/// ```
+/// const ADMIN      = 0;
+/// const MODERATOR  = 1;
+/// const STANDARD   = 2;
+/// const LOGGED_OUT = 3;
+/// const BANNED     = 4;
+/// ```
+///
+/// We cannot use an enum because it doesn't integrate with Diesel well.
+pub fn check_auth_level(test_value: usize, minimum_permission: usize) -> bool {
+    test_value <= minimum_permission
 }

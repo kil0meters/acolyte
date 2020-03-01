@@ -29,7 +29,6 @@ impl Default for Server {
 impl Server {
     fn broadcast_message(&self, message: String) {
         for addr in self.sessions.values() {
-            println!("-> {:?}", addr);
             let _ = addr.do_send(Broadcast(message.to_owned()));
         }
     }
@@ -44,8 +43,6 @@ impl Handler<ChatMessage> for Server {
 
     fn handle(&mut self, msg: ChatMessage, _: &mut Context<Self>) {
         let m = serde_json::to_string(&msg).unwrap();
-
-        println!("Sending message: {:?}", msg);
 
         self.broadcast_message(m);
     }

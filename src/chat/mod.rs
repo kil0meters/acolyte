@@ -6,7 +6,7 @@ use actix_web::{error, get, web, Error, HttpRequest, HttpResponse};
 use actix_web_actors::ws;
 use serde_json::json;
 
-use crate::auth::{permissions::AuthLevel, Account};
+use crate::auth::{permissions, Account};
 
 pub mod message_types;
 pub mod server;
@@ -30,7 +30,7 @@ pub async fn ws_upgrader(
         session::Client {
             id: 0,
             username,
-            auth_level: AuthLevel::LoggedOut,
+            auth_level: permissions::LOGGED_OUT,
             hb: time::Instant::now(),
             conn: srv.get_ref().clone(),
         },

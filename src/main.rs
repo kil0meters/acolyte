@@ -1,16 +1,24 @@
 #![warn(clippy::all)]
 
-use std::time;
+#[macro_use]
+extern crate diesel;
+
+use std::{env, time};
 
 use actix::Actor;
-use actix_identity::Identity;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::{middleware, web, App, HttpServer};
+use diesel::pg::PgConnection;
+use diesel::r2d2::{ConnectionManager, Pool};
 use tera::Tera;
 
-mod auth;
-mod chat;
-mod frontpage;
+pub mod auth;
+pub mod chat;
+pub mod frontpage;
+pub mod models;
+pub mod schema;
+
+type DbPool = Pool<ConnectionManager<PgConnection>>;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
@@ -19,7 +27,15 @@ async fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
 
-    HttpServer::new(|| {
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is required.");
+    let manager = ConnectionManager::<PgConnection>::new(database_url);
+    let pool = Pool::builder()
+        .build(manager)
+        .expect("Failed to create database pool");
+
+    let srv = chat::server::Server::default().start();
+
+    HttpServer::new(move || {
         let mut tera = Tera::default();
         tera.add_raw_templates(vec![
             (
@@ -62,8 +78,6 @@ async fn main() -> std::io::Result<()> {
         ])
         .unwrap();
 
-        let srv = chat::server::Server::default().start();
-
         let totally_secure_code = b"abcdefghijklmnopqrstuvwxyz123456789";
 
         App::new()
@@ -80,7 +94,8 @@ async fn main() -> std::io::Result<()> {
                 concat!(env!("CARGO_MANIFEST_DIR"), "/acolyte-web/dist/"),
             ))
             .data(tera)
-            .data(srv)
+            .data(pool.clone())
+            .data(srv.clone())
             .service(frontpage::index)
             .service(auth::login)
             .service(auth::login_form)

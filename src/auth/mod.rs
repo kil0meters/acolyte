@@ -4,6 +4,9 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tera;
 
+use crate::DbPool;
+
+pub mod accounts;
 pub mod permissions;
 
 #[derive(Serialize, Deserialize)]
@@ -21,15 +24,9 @@ struct LoginForm {
 
 #[get("/login")]
 async fn login(id: Identity, tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
-    let title = if let Some(id) = id.identity() {
-        id
-    } else {
-        "Login".to_owned()
-    };
-
     let ctx = tera::Context::from_value(json!({
         "title": "Login - milesbenton.com",
-        "page_title": title,
+        "page_title": "Login",
         "header": [],
         "target": "/",
         "error": false,
@@ -46,19 +43,36 @@ async fn login(id: Identity, tmpl: web::Data<tera::Tera>) -> Result<HttpResponse
 }
 
 #[post("/login")]
-async fn login_form(form: web::Form<LoginForm>, id: Identity) -> Result<HttpResponse, Error> {
-    println!("wow");
-    id.remember(
-        serde_json::to_string(&Account {
-            username: form.username.to_owned(),
-            password: form.password.to_owned(),
-        })
-        .unwrap(),
-    );
+async fn login_form(
+    pool: web::Data<DbPool>,
+    form: web::Form<LoginForm>,
+    id: Identity,
+) -> Result<HttpResponse, Error> {
+    let conn = pool.get().expect("Error getting db connection from pool");
+    let account = accounts::check_login(form.username.to_owned(), form.password.to_owned(), &conn)
+        .expect("Encountered an error when trying to read account");
 
-    Ok(HttpResponse::Found()
-        .header(http::header::LOCATION, form.target.to_owned())
-        .finish())
+    if let Some(account) = account {
+        // web::block(|| {
+        // })
+
+        id.remember(
+            serde_json::to_string(&Account {
+                username: form.username.to_owned(),
+                password: form.password.to_owned(),
+            })
+            .unwrap(),
+        );
+
+        Ok(HttpResponse::Found()
+            .header(http::header::LOCATION, form.target.to_owned())
+            .finish())
+    } else {
+        // If the account didn't exist, redirect with the error optioni
+        Ok(HttpResponse::Found()
+            .header(http::header::LOCATION, "/login?error=1")
+            .finish())
+    }
 }
 
 #[derive(Deserialize)]
@@ -71,7 +85,7 @@ struct SignupForm {
 #[get("/signup")]
 async fn signup(tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
     let ctx = tera::Context::from_value(json!({
-        "title": "Signup",
+        "title": "Signup - milesbenton.com",
         "page_title": "Signup",
         "header": [],
         "target": "/",
