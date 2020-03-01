@@ -4,18 +4,14 @@ use actix::prelude::{Message, Recipient};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-pub enum AuthLevel {
-    Standard,
-    Moderator,
-    Admin,
-}
+use crate::auth::permissions::AuthLevel;
 
 // Struct sent to users
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct Broadcast(pub String);
 
-#[derive(Message, Serialize, Deserialize)]
+#[derive(Debug, Message, Serialize, Deserialize)]
 #[rtype(result = "()")]
 pub struct ChatMessage {
     pub username: String,
@@ -24,19 +20,19 @@ pub struct ChatMessage {
     pub text: String,
 }
 
-#[derive(Message)]
+#[derive(Debug, Message)]
 #[rtype(usize)]
 pub struct Connect {
     pub addr: Recipient<Broadcast>,
 }
 
-#[derive(Message)]
+#[derive(Debug, Message)]
 #[rtype(result = "()")]
 pub struct Disconnect {
     pub id: usize,
 }
 
-#[derive(Message)]
+#[derive(Debug, Message)]
 #[rtype(result = "()")]
 pub struct Join {
     pub id: usize,
@@ -44,7 +40,7 @@ pub struct Join {
     pub auth_level: AuthLevel,
 }
 
-#[derive(Message)]
+#[derive(Debug, Message)]
 #[rtype(result = "()")]
 pub struct Command {
     pub from: String,

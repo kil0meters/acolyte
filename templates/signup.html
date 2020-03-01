@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% include "static_header.html" %}
+
+<div class="wrapper card padded">
+  <form name="signup-form" action="/signup" method="POST">
+    {% if error %}
+    <div class="auth-error">
+      error: That username is taken
+    </div>
+    {% endif %}
+    <input name="target" type="hidden" value="{{ target }}">
+    <label for="username" class="authorize-form-label">Username</label>
+    <input name="username" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1" maxlength="16">
+    <label for="password" class="authorize-form-label">Password</label>
+    <input name="password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8" maxlength="256"
+      type="password">
+    <label for="verify_password" class="authorize-form-label">Verify Password</label>
+    <input name="verify_password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8"
+      maxlength="256" oninput="checkVerifyPassword()" type="password">
+
+    <p>Don't have an account? <a href="/signup">Sign up</a></p>
+    <button class="authorize-form-button" type="submit">SIGN UP</button>
+  </form>
+</div>
+<script>
+  function checkVerifyPassword() {
+    let form = document.forms["signup-form"];
+
+    if (form.password.value !== form.verify_password.value) {
+      form.verify_password.setCustomValidity("Password fields do not match.");
+      form.verify_password.valid = false
+    } else {
+      form.verify_password.setCustomValidity("");
+      form.verify_password.valid = true
+    }
+  }
+</script>
+
+{% endblock %}

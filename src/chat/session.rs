@@ -7,6 +7,8 @@ use uuid::Uuid;
 use super::message_types::*;
 use super::server::Server;
 
+use crate::auth::permissions::AuthLevel;
+
 const HEARTBEAT_INTERVAL: time::Duration = time::Duration::from_secs(5);
 const CLIENT_TIMEOUT: time::Duration = time::Duration::from_secs(10);
 
@@ -89,7 +91,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Client {
                 }
             }
             // ws::Message::Binary(bin) => ctx.binary(bin),
-            ws::Message::Close(msg) => {}
+            // ws::Message::Close(msg) => {}
             _ => (),
         }
     }

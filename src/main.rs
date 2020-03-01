@@ -1,9 +1,14 @@
 #![warn(clippy::all)]
 
+use std::time;
+
 use actix::Actor;
+use actix_identity::Identity;
+use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::{middleware, web, App, HttpServer};
 use tera::Tera;
 
+mod auth;
 mod chat;
 mod frontpage;
 
@@ -37,30 +42,50 @@ async fn main() -> std::io::Result<()> {
                 include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/chat.html")),
             ),
             (
-                "livestream.html",
-                include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/home.html")),
+                "login.html",
+                include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/login.html")),
             ),
+            (
+                "signup.html",
+                include_str!(concat!(
+                    env!("CARGO_MANIFEST_DIR"),
+                    "/templates/signup.html"
+                )),
+            ),
+            // (
+            //     "livestream.html",
+            //     include_str!(concat!(
+            //         env!("CARGO_MANIFEST_DIR"),
+            //         "/templates/livestream.html"
+            //     )),
+            // ),
         ])
         .unwrap();
 
         let srv = chat::server::Server::default().start();
 
+        let totally_secure_code = b"abcdefghijklmnopqrstuvwxyz123456789";
+
         App::new()
-            .wrap(middleware::NormalizePath)
-            .wrap(middleware::Logger::default())
-            .wrap(
-                middleware::DefaultHeaders::new().header("Content-Type", "text/html;charset=utf-8"),
-            )
-            .service(
-                actix_files::Files::new(
-                    "/static",
-                    concat!(env!("CARGO_MANIFEST_DIR"), "/acolyte-web/dist/"),
-                )
-                .show_files_listing(),
-            )
+            .wrap(IdentityService::new(
+                CookieIdentityPolicy::new(totally_secure_code) // TODO: Generate actual key
+                    .name("session")
+                    .max_age(2_629_800) // one month
+                    .secure(false),
+            ))
+            .wrap(middleware::Logger::new("%a \"%r\" %s %b \"%{Referer}i\""))
+            .wrap(middleware::NormalizePath::default()) // this doesn't really work properly what the fuck
+            .service(actix_files::Files::new(
+                "/static",
+                concat!(env!("CARGO_MANIFEST_DIR"), "/acolyte-web/dist/"),
+            ))
             .data(tera)
             .data(srv)
             .service(frontpage::index)
+            .service(auth::login)
+            .service(auth::login_form)
+            .service(auth::signup)
+            .service(auth::signup_form)
             .service(
                 web::scope("/chat")
                     .service(chat::frontend)

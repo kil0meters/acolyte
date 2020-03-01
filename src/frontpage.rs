@@ -43,6 +43,7 @@ async fn index(tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
     let mut ctx = tera::Context::new();
 
     ctx.insert("title", "Miles Benton");
+    ctx.insert("page_title", "Miles Benton");
     ctx.insert("live_status", &true);
     ctx.insert("header", &HeaderLink::homepage());
 
@@ -50,5 +51,7 @@ async fn index(tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
         .render("home.html", &ctx)
         .map_err(|_| error::ErrorInternalServerError("Template error"))?;
 
-    Ok(HttpResponse::Ok().content_type("text/html").body(s))
+    Ok(HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(s))
 }

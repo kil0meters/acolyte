@@ -1,8 +1,12 @@
 use std::time;
 
 use actix::Addr;
+use actix_identity::Identity;
 use actix_web::{error, get, web, Error, HttpRequest, HttpResponse};
 use actix_web_actors::ws;
+use serde_json::json;
+
+use crate::auth::{permissions::AuthLevel, Account};
 
 pub mod message_types;
 pub mod server;
@@ -10,16 +14,23 @@ pub mod session;
 
 #[get("/ws")]
 pub async fn ws_upgrader(
+    id: Identity,
     request: HttpRequest,
     stream: web::Payload,
     srv: web::Data<Addr<server::Server>>,
 ) -> Result<HttpResponse, Error> {
-    println!("Making connection to client...");
+    let username = if let Some(id) = id.identity() {
+        let account: Account = serde_json::from_str(&id).unwrap();
+        Some(account.username)
+    } else {
+        None
+    };
+
     let res = ws::start(
         session::Client {
             id: 0,
-            username: Some("kilometers".to_owned()),
-            auth_level: message_types::AuthLevel::Standard,
+            username,
+            auth_level: AuthLevel::LoggedOut,
             hb: time::Instant::now(),
             conn: srv.get_ref().clone(),
         },
@@ -30,21 +41,31 @@ pub async fn ws_upgrader(
     res
 }
 
-#[get("/")]
+#[get("")]
 pub async fn frontend(
-    request: HttpRequest,
+    // request: HttpRequest,
+    id: Identity,
     tmpl: web::Data<tera::Tera>,
 ) -> Result<HttpResponse, Error> {
-    println!("Heyo");
-    let mut ctx = tera::Context::new();
+    let username = if let Some(id) = id.identity() {
+        let account: Account = serde_json::from_str(&id).unwrap();
+        account.username
+    } else {
+        "ANON".to_owned()
+    };
 
-    ctx.insert("title", "Chat");
-    ctx.insert("username", "kilometers");
-    ctx.insert("is_embed", &false);
+    let ctx = tera::Context::from_value(json!({
+        "title": "Chat",
+        "username": username,
+        "is_embed": false
+    }))
+    .unwrap();
 
     let s = tmpl
         .render("chat.html", &ctx)
         .map_err(|_| error::ErrorInternalServerError("Template error"))?;
 
-    Ok(HttpResponse::Ok().content_type("text/html").body(s))
+    Ok(HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(s))
 }
