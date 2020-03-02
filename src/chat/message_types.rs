@@ -34,14 +34,6 @@ pub struct Disconnect {
 
 #[derive(Debug, Message)]
 #[rtype(result = "()")]
-pub struct Join {
-    pub id: usize,
-    pub username: String,
-    pub auth_level: AuthLevel,
-}
-
-#[derive(Debug, Message)]
-#[rtype(result = "()")]
 pub struct Command {
     pub from: String,
     pub name: String,

@@ -4,16 +4,12 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tera;
 
+use crate::models;
 use crate::DbPool;
 
 pub mod accounts;
+pub mod passwords;
 pub mod permissions;
-
-#[derive(Serialize, Deserialize)]
-pub struct Account {
-    pub username: String,
-    pub password: String,
-}
 
 #[derive(Deserialize)]
 struct LoginForm {
@@ -49,23 +45,22 @@ async fn login_form(
     id: Identity,
 ) -> Result<HttpResponse, Error> {
     let conn = pool.get().expect("Error getting db connection from pool");
-    let account = accounts::check_login(form.username.to_owned(), form.password.to_owned(), &conn)
-        .expect("Encountered an error when trying to read account");
+
+    // we store this here since `form` moves into the closure
+    let target = form.target.clone();
+
+    // Don't block server thread with DB query
+    let account = web::block(move || {
+        accounts::check_login(form.username.to_owned(), form.password.to_owned(), &conn)
+    })
+    .await
+    .map_err(|_| HttpResponse::InternalServerError().finish())?;
 
     if let Some(account) = account {
-        // web::block(|| {
-        // })
-
-        id.remember(
-            serde_json::to_string(&Account {
-                username: form.username.to_owned(),
-                password: form.password.to_owned(),
-            })
-            .unwrap(),
-        );
+        id.remember(serde_json::to_string(&account).unwrap());
 
         Ok(HttpResponse::Found()
-            .header(http::header::LOCATION, form.target.to_owned())
+            .header(http::header::LOCATION, target.to_owned())
             .finish())
     } else {
         // If the account didn't exist, redirect with the error optioni
@@ -103,19 +98,32 @@ async fn signup(tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
 }
 
 #[post("/signup")]
-async fn signup_form(form: web::Form<SignupForm>, id: Identity) -> Result<HttpResponse, Error> {
-    id.remember(
-        serde_json::to_string(&Account {
-            username: form.username.to_owned(),
-            password: form.password.to_owned(),
-        })
-        .unwrap(),
-    );
+async fn signup_form(
+    pool: web::Data<DbPool>,
+    form: web::Form<SignupForm>,
+    id: Identity,
+) -> Result<HttpResponse, Error> {
+    let conn = pool.get().expect("Error getting database");
+    // same as above
+    let target = form.target.clone();
 
-    id.remember(form.username.to_owned());
-    id.remember(form.password.to_owned());
+    let account = web::block(move || {
+        accounts::create_account(form.username.to_owned(), form.password.to_owned(), &conn)
+    })
+    .await
+    .map_err(|_| HttpResponse::InternalServerError().finish())?;
 
-    Ok(HttpResponse::Found()
-        .header(http::header::LOCATION, form.target.to_owned())
-        .finish())
+    println!("result: {:?}", account);
+
+    if let Some(account) = account {
+        id.remember(serde_json::to_string(&account).unwrap());
+
+        Ok(HttpResponse::Found()
+            .header(http::header::LOCATION, target.to_owned())
+            .finish())
+    } else {
+        Ok(HttpResponse::Found()
+            .header(http::header::LOCATION, "/signup?error=1")
+            .finish())
+    }
 }

@@ -6,7 +6,8 @@ use actix_web::{error, get, web, Error, HttpRequest, HttpResponse};
 use actix_web_actors::ws;
 use serde_json::json;
 
-use crate::auth::{permissions, Account};
+use crate::auth::permissions;
+use crate::models::Account;
 
 pub mod message_types;
 pub mod server;
@@ -19,9 +20,14 @@ pub async fn ws_upgrader(
     stream: web::Payload,
     srv: web::Data<Addr<server::Server>>,
 ) -> Result<HttpResponse, Error> {
-    let username = if let Some(id) = id.identity() {
-        let account: Account = serde_json::from_str(&id).unwrap();
-        Some(account.username)
+    let username = if let Some(id_data) = id.identity() {
+        match serde_json::from_str::<Account>(&id_data) {
+            Ok(account) => Some(account.username),
+            _ => {
+                id.forget();
+                None
+            }
+        }
     } else {
         None
     };

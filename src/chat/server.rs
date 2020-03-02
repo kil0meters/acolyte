@@ -48,10 +48,6 @@ impl Handler<ChatMessage> for Server {
     }
 }
 
-// impl Handler<Join> for Server {
-//     fn handle() {}
-// }
-
 impl Handler<Connect> for Server {
     type Result = usize;
 
@@ -59,7 +55,6 @@ impl Handler<Connect> for Server {
         let id = self.rng.gen::<usize>();
         self.sessions.insert(id, msg.addr);
 
-        println!("Users: {:?}", self.sessions.keys());
         id
     }
 }
