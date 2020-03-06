@@ -4,10 +4,12 @@ use actix::Addr;
 use actix_identity::Identity;
 use actix_web::{error, get, web, Error, HttpRequest, HttpResponse};
 use actix_web_actors::ws;
+use askama::Template;
 use serde_json::json;
 
 use crate::auth::permissions;
 use crate::models::Account;
+use crate::templates;
 
 pub mod message_types;
 pub mod server;
@@ -48,11 +50,7 @@ pub async fn ws_upgrader(
 }
 
 #[get("")]
-pub async fn frontend(
-    // request: HttpRequest,
-    id: Identity,
-    tmpl: web::Data<tera::Tera>,
-) -> Result<HttpResponse, Error> {
+pub async fn frontend(id: Identity) -> Result<HttpResponse, Error> {
     let username = if let Some(id) = id.identity() {
         let account: Account = serde_json::from_str(&id).unwrap();
         account.username
@@ -60,16 +58,13 @@ pub async fn frontend(
         "ANON".to_owned()
     };
 
-    let ctx = tera::Context::from_value(json!({
-        "title": "Chat",
-        "username": username,
-        "is_embed": false
-    }))
+    let s = templates::ChatEmbed {
+        username: &username,
+        is_moderator: false,
+        is_embed: false,
+    }
+    .render()
     .unwrap();
-
-    let s = tmpl
-        .render("chat.html", &ctx)
-        .map_err(|_| error::ErrorInternalServerError("Template error"))?;
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")

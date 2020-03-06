@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="/static/bundle.css">
   <script defer src="/static/bundle.js"></script>
-  <title>{{ title }}</title>
+  <title>{% block title %}milesbenton.com{% endblock %}</title>
 </head>
 
 <body>
-  {% block content %}
-  <p>base</p>
+  {% block body %}
+
   {% endblock %}
 </body>
 
-<html>
+</html>

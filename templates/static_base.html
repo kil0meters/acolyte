@@ -1,7 +1,11 @@
+{% extends "base.html" %}
+
+{% block body %}
+
 <header class="header wrapper" style="padding:0">
-  <span class="logo">{{ page_title }}</span>
+  <span class="logo">{% block page_title %}header{% endblock %}</span>
   <ul class="header-links">
-    {% for link in header %}
+    {% for link in header_links %}
     <li class="header-link"><a href="{{ link.url }}">{{ link.title }}</a></li>
     {% endfor %}
   </ul>
@@ -11,9 +15,17 @@
     <span></span>
     <span></span>
     <div class="header-hamburger-links">
-      {% for link in header %}
+      {% for link in header_links %}
       <li class="header-link"><a href="{{ link.url }}">{{ link.title }}</a></li>
       {% endfor %}
     </div>
   </ul>
 </header>
+
+{% block content %}
+<p>base</p>
+{% endblock %}
+
+{% include "footer.html" %}
+
+{% endblock %}

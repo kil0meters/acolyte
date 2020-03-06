@@ -1,10 +1,11 @@
 use actix_identity::Identity;
 use actix_web::{error, get, http, post, web, Error, HttpRequest, HttpResponse};
+use askama::Template;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use tera;
 
 use crate::models;
+use crate::templates;
 use crate::DbPool;
 
 pub mod accounts;
@@ -19,19 +20,14 @@ struct LoginForm {
 }
 
 #[get("/login")]
-async fn login(id: Identity, tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
-    let ctx = tera::Context::from_value(json!({
-        "title": "Login - milesbenton.com",
-        "page_title": "Login",
-        "header": [],
-        "target": "/",
-        "error": false,
-    }))
+async fn login(id: Identity) -> Result<HttpResponse, Error> {
+    let s = templates::Login {
+        header_links: &[],
+        target: "/",
+        error: false,
+    }
+    .render()
     .unwrap();
-
-    let s = tmpl
-        .render("login.html", &ctx)
-        .map_err(|e| error::ErrorInternalServerError(format!("Template error: {}", e)))?;
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
@@ -78,19 +74,14 @@ struct SignupForm {
 }
 
 #[get("/signup")]
-async fn signup(tmpl: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
-    let ctx = tera::Context::from_value(json!({
-        "title": "Signup - milesbenton.com",
-        "page_title": "Signup",
-        "header": [],
-        "target": "/",
-        "error": false,
-    }))
+async fn signup() -> Result<HttpResponse, Error> {
+    let s = templates::Signup {
+        header_links: &[],
+        target: "/",
+        error: false,
+    }
+    .render()
     .unwrap();
-
-    let s = tmpl
-        .render("signup.html", &ctx)
-        .map_err(|e| error::ErrorInternalServerError(format!("Template error: {}", e)))?;
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")

@@ -1,0 +1,22 @@
+{% extends "forum_base.html" %}
+
+{% block content %}
+
+<main class="container">
+  <div class="wrapper forum-grid">
+    <div class="forum-content wrapper card">
+      <div id="posts">
+        {% for post in posts %}
+        post
+        {% endfor %}
+      </div>
+    </div>
+    <div class="forum-sidebar">
+      <div class="wrapper" style="height: 100%">
+        <iframe id="chat" class="card" src="/chat"></iframe>
+      </div>
+    </div>
+  </div>
+</main>
+
+{% endblock %}

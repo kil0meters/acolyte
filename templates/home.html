@@ -1,8 +1,9 @@
-{% extends "base.html" %}
+{% extends "static_base.html" %}
+
+{% block title %}Miles Benton - milesbenton.com{% endblock %}
+{% block page_title %}Miles Benton{% endblock %}
 
 {% block content %}
-
-{% include "static_header.html" %}
 
 <main class="wrapper">
   {% if live_status %}
@@ -28,4 +29,5 @@
   </article>
   {% endif %}
 </main>
+
 {% endblock %}
