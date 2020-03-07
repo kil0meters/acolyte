@@ -1,6 +1,8 @@
 use askama::Template;
 use serde::{Deserialize, Serialize};
 
+use crate::models;
+
 #[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 pub struct HeaderLink<'a> {
     pub title: &'a str,
@@ -36,4 +38,11 @@ pub struct ChatEmbed<'a> {
     pub username: &'a str,
     pub is_embed: bool,
     pub is_moderator: bool,
+}
+
+#[derive(Template)]
+#[template(path = "forum_frontpage.html")]
+pub struct ForumFrontpage {
+    pub posts: Vec<models::Post>,
+    pub logged_in: bool,
 }

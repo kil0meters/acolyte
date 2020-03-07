@@ -36,9 +36,9 @@ async fn login(id: Identity) -> Result<HttpResponse, Error> {
 
 #[post("/login")]
 async fn login_form(
+    id: Identity,
     pool: web::Data<DbPool>,
     form: web::Form<LoginForm>,
-    id: Identity,
 ) -> Result<HttpResponse, Error> {
     let conn = pool.get().expect("Error getting db connection from pool");
 
@@ -90,9 +90,9 @@ async fn signup() -> Result<HttpResponse, Error> {
 
 #[post("/signup")]
 async fn signup_form(
+    id: Identity,
     pool: web::Data<DbPool>,
     form: web::Form<SignupForm>,
-    id: Identity,
 ) -> Result<HttpResponse, Error> {
     let conn = pool.get().expect("Error getting database");
     // same as above

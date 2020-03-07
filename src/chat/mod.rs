@@ -34,7 +34,7 @@ pub async fn ws_upgrader(
         None
     };
 
-    let res = ws::start(
+    ws::start(
         session::Client {
             id: 0,
             username,
@@ -44,9 +44,7 @@ pub async fn ws_upgrader(
         },
         &request,
         stream,
-    );
-    println!("{:?}", res);
-    res
+    )
 }
 
 #[get("")]

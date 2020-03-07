@@ -6,19 +6,25 @@ extern crate diesel;
 #[macro_use]
 extern crate lazy_static;
 
-use log;
-use std::{env, time};
+#[macro_use]
+extern crate log;
+
+use std::borrow::Cow;
+use std::env;
 
 use actix::Actor;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
-use actix_web::{middleware, web, App, HttpServer};
+use actix_web::body::Body;
+use actix_web::{middleware, web, App, HttpRequest, HttpResponse, HttpServer};
 use chrono::Utc;
 use clap::Clap;
 use diesel::pg::PgConnection;
 use diesel::r2d2::{ConnectionManager, Pool};
+use rust_embed::RustEmbed;
 
 pub mod auth;
 pub mod chat;
+pub mod forum;
 pub mod frontpage;
 pub mod models;
 pub mod schema;
@@ -79,6 +85,10 @@ struct Forum {
     chat_url: String,
 }
 
+#[derive(RustEmbed)]
+#[folder = "acolyte-web/dist/"]
+struct Asset;
+
 fn setup_logger(level: log::LevelFilter) -> Result<(), fern::InitError> {
     fern::Dispatch::new()
         .format(|out, message, record| {
@@ -97,6 +107,26 @@ fn setup_logger(level: log::LevelFilter) -> Result<(), fern::InitError> {
     Ok(())
 }
 
+fn handle_embedded_file(path: &str) -> HttpResponse {
+    match Asset::get(path) {
+        Some(content) => {
+            let body: Body = match content {
+                Cow::Borrowed(bytes) => bytes.into(),
+                Cow::Owned(bytes) => bytes.into(),
+            };
+            HttpResponse::Ok()
+                .content_type(mime_guess::from_path(path).first_or_octet_stream().as_ref())
+                .body(body)
+        }
+        None => HttpResponse::NotFound().body("404 Not Found"),
+    }
+}
+
+fn dist(req: HttpRequest) -> HttpResponse {
+    let path = &req.path()["/static/".len()..]; // trim the preceding `/static/` in path
+    handle_embedded_file(path)
+}
+
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     // parse arguments
@@ -111,6 +141,7 @@ async fn main() -> std::io::Result<()> {
         .build(manager)
         .expect("Failed to create database pool");
 
+    let logger_format = "%a \"%r\" %s %b \"%{Referer}i\"".to_owned();
     let totally_secure_code = b"abcdefghijklmnopqrstuvwxyz123456789";
 
     match opts.subcommand {
@@ -126,7 +157,7 @@ async fn main() -> std::io::Result<()> {
                             .max_age(2_629_800) // one month
                             .secure(false),
                     ))
-                    .wrap(middleware::Logger::new("%a \"%r\" %s %b \"%{Referer}i\""))
+                    .wrap(middleware::Logger::new(&logger_format))
                     .wrap(middleware::NormalizePath::default()) // this doesn't really work properly what the fuck
                     .data(pool.clone())
                     .data(srv.clone())
@@ -147,13 +178,10 @@ async fn main() -> std::io::Result<()> {
                             .max_age(2_629_800) // one month
                             .secure(false),
                     ))
-                    .wrap(middleware::Logger::new("%a \"%r\" %s %b \"%{Referer}i\""))
+                    .wrap(middleware::Logger::new(&logger_format))
                     .wrap(middleware::NormalizePath::default()) // this doesn't really work properly what the fuck
-                    .service(actix_files::Files::new(
-                        "/static",
-                        concat!(env!("CARGO_MANIFEST_DIR"), "/acolyte-web/dist/"),
-                    ))
                     .data(pool.clone())
+                    .service(web::resource("/static/{_:.*}").route(web::get().to(dist)))
                     .service(frontpage::index)
                     .service(auth::login)
                     .service(auth::login_form)
@@ -177,12 +205,9 @@ async fn main() -> std::io::Result<()> {
                             .max_age(2_629_800) // one month
                             .secure(false),
                     ))
-                    .wrap(middleware::Logger::new("%a \"%r\" %s %b \"%{Referer}i\""))
+                    .wrap(middleware::Logger::new(&logger_format))
                     .wrap(middleware::NormalizePath::default()) // this doesn't really work properly what the fuck
-                    .service(actix_files::Files::new(
-                        "/static",
-                        concat!(env!("CARGO_MANIFEST_DIR"), "/acolyte-web/dist/"),
-                    ))
+                    .service(web::resource("/static/{_:.*}").route(web::get().to(dist)))
                     .data(pool.clone())
                     .data(srv.clone())
                     .service(frontpage::index)
@@ -190,6 +215,7 @@ async fn main() -> std::io::Result<()> {
                     .service(auth::login_form)
                     .service(auth::signup)
                     .service(auth::signup_form)
+                    .service(web::scope("/forum").service(forum::index))
                     .service(
                         web::scope("/chat")
                             .service(chat::frontend)
