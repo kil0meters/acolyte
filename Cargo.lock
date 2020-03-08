@@ -10,6 +10,7 @@ dependencies = [
  "actix-rt",
  "actix-web",
  "actix-web-actors",
+ "anyhow",
  "askama",
  "chrono",
  "clap",

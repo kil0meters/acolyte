@@ -1,0 +1,20 @@
+{% extends "forum_base.html" %}
+
+{% block title %}Post Editor - milesbenton.com{% endblock %}
+{% block title %}Post Editor - milesbenton.com{% endblock %}
+
+{% block content %}
+
+<div class="wrapper padded card">
+  <form action="/forum/create-post" method="POST" style="margin: 0;">
+    <input name="title" type="text" class="authorize-form-input" placeholder="Title">
+    <input name="link" type="url" class="authorize-form-input" placeholder="Link/Image">
+    <textarea name="body" class="authorize-form-input" id="markdown-editor" placeholder="Body" rows="30"></textarea>
+    <div class="authorize-form-grid">
+      <button class="authorize-form-button" style="grid-column: 1;" type="button">PREVIEW</button>
+      <button class="authorize-form-button" style="grid-column: 2;">POST</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

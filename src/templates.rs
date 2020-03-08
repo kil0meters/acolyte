@@ -46,3 +46,9 @@ pub struct ForumFrontpage {
     pub posts: Vec<models::Post>,
     pub logged_in: bool,
 }
+
+#[derive(Template)]
+#[template(path = "post_editor.html")]
+pub struct PostEditor {
+    pub logged_in: bool,
+}

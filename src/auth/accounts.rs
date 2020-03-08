@@ -1,9 +1,9 @@
+use anyhow::Result;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
-use diesel::result::Error;
 
 use crate::auth::passwords;
-use crate::models;
+use crate::models::Account;
 use crate::schema;
 
 /// Checks whether a username/password pair is valid.
@@ -11,12 +11,12 @@ pub fn check_login(
     username: String,
     password: String,
     conn: &PgConnection,
-) -> Result<Option<models::Account>, Error> {
+) -> Result<Option<Account>> {
     use crate::schema::accounts::dsl;
 
     let account = dsl::accounts
         .filter(dsl::username.eq(username))
-        .first::<models::Account>(conn)
+        .first::<Account>(conn)
         .optional()?;
 
     if let Some(account) = account {
@@ -33,23 +33,17 @@ pub fn check_login(
     }
 }
 
-/// Creates a `models::Account` object and adds it to the database.
-pub fn create_account(
-    username: String,
-    password: String,
-    conn: &PgConnection,
-) -> Result<Option<models::Account>, Error> {
-    let account = models::Account::new(username, password);
+/// Creates a `Account` object and adds it to the database.
+pub fn create_account(username: String, password: String, conn: &PgConnection) -> Result<Account> {
+    let account = Account::new(username, password);
 
-    if account.validate() {
-        let result = diesel::insert_into(schema::accounts::table)
-            .values(&account)
-            .execute(conn)?;
-        println!("result: {}", result);
+    account.validate()?;
 
-        Ok(Some(account))
-    } else {
-        // Account is invalid
-        Ok(None)
-    }
+    let result = diesel::insert_into(schema::accounts::table)
+        .values(&account)
+        .execute(conn)?;
+
+    println!("result: {}", result);
+
+    Ok(account)
 }

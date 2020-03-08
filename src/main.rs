@@ -187,6 +187,11 @@ async fn main() -> std::io::Result<()> {
                     .service(auth::login_form)
                     .service(auth::signup)
                     .service(auth::signup_form)
+                    .service(
+                        web::scope("/forum")
+                            .service(forum::index)
+                            .service(forum::post_editor),
+                    )
             })
             .bind(format!("0.0.0.0:{}", forum.port))?
             .run()
@@ -215,7 +220,11 @@ async fn main() -> std::io::Result<()> {
                     .service(auth::login_form)
                     .service(auth::signup)
                     .service(auth::signup_form)
-                    .service(web::scope("/forum").service(forum::index))
+                    .service(
+                        web::scope("/forum")
+                            .service(forum::index)
+                            .service(forum::post_editor),
+                    )
                     .service(
                         web::scope("/chat")
                             .service(chat::frontend)

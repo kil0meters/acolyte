@@ -55,12 +55,12 @@ async fn login_form(
     if let Some(account) = account {
         id.remember(serde_json::to_string(&account).unwrap());
 
-        Ok(HttpResponse::Found()
+        Ok(HttpResponse::SeeOther()
             .header(http::header::LOCATION, target.to_owned())
             .finish())
     } else {
         // If the account didn't exist, redirect with the error optioni
-        Ok(HttpResponse::Found()
+        Ok(HttpResponse::SeeOther()
             .header(http::header::LOCATION, "/login?error=1")
             .finish())
     }
@@ -93,7 +93,7 @@ async fn signup_form(
     id: Identity,
     pool: web::Data<DbPool>,
     form: web::Form<SignupForm>,
-) -> Result<HttpResponse, Error> {
+) -> HttpResponse {
     let conn = pool.get().expect("Error getting database");
     // same as above
     let target = form.target.clone();
@@ -101,20 +101,20 @@ async fn signup_form(
     let account = web::block(move || {
         accounts::create_account(form.username.to_owned(), form.password.to_owned(), &conn)
     })
-    .await
-    .map_err(|_| HttpResponse::InternalServerError().finish())?;
+    .await;
 
     println!("result: {:?}", account);
 
-    if let Some(account) = account {
-        id.remember(serde_json::to_string(&account).unwrap());
+    match account {
+        Ok(account) => {
+            id.remember(serde_json::to_string(&account).unwrap());
 
-        Ok(HttpResponse::Found()
-            .header(http::header::LOCATION, target.to_owned())
-            .finish())
-    } else {
-        Ok(HttpResponse::Found()
+            HttpResponse::Found()
+                .header(http::header::LOCATION, target.to_owned())
+                .finish()
+        }
+        Err(_) => HttpResponse::Found()
             .header(http::header::LOCATION, "/signup?error=1")
-            .finish())
+            .finish(),
     }
 }
