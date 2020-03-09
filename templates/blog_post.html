@@ -1,0 +1,19 @@
+{% extends "static_base.html" %}
+
+{% block title %}{{ title }} - milesbenton.com{% endblock %}
+{% block page_title %}Miles Benton{% endblock %}
+
+{% block content %}
+
+<article class="wrapper">
+  <header class="post-meta card">
+    <span class="post-title">{{ title }}</span>
+    <span class="post-byline">
+      {{ created_at.format("%B %-d, %Y").to_string() }}
+    </span>
+  </header>
+
+  {{ post_body }}
+</article>
+
+{% endblock %}

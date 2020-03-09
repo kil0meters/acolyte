@@ -43,12 +43,6 @@ export class LogSearch {
 
                         this.results.appendChild(logElement);
                     }
-                    renderMathInElement(document.getElementById("logs-results"), {
-                        delimiters: [
-                            {left: "$$", right: "$$", display: true},
-                            {left: "$", right: "$", display: false},
-                        ]
-                    });
                     renderEmotesInElement(document.getElementById("logs-results"))
                 })
         } else {

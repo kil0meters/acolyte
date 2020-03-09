@@ -1,6 +1,5 @@
 import {getEmotes, renderEmotesInElement, replaceTextWithEmotes} from "./emotes";
 import {AutocompletionSuggestion} from "./autocompletion";
-import renderMathInElement from "katex/dist/contrib/auto-render";
 
 export interface Message {
     text: any;
@@ -101,13 +100,6 @@ export class MessageList {
 
         let textElement = document.createElement("span");
         textElement.innerHTML = message.text;
-
-        renderMathInElement(textElement, {
-            delimiters: [
-                {left: "$$", right: "$$", display: true},
-                {left: "$", right: "$", display: false}
-            ]
-        });
 
         renderLinksInElement(textElement);
         renderEmotesInElement(textElement);

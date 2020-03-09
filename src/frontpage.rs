@@ -3,7 +3,7 @@ use askama::Template;
 
 use crate::templates::{HeaderLink, Homepage};
 
-const HEADER_LINKS: [HeaderLink<'static>; 6] = [
+pub const HEADER_LINKS: [HeaderLink<'static>; 6] = [
     HeaderLink {
         title: "Forum",
         url: "/forum",

@@ -18,6 +18,6 @@ pub const BANNED: AuthLevel = 4;
 /// ```
 ///
 /// We cannot use an enum because it doesn't integrate with Diesel well.
-pub fn check_auth_level(test_value: usize, minimum_permission: usize) -> bool {
+pub fn check_auth_level(test_value: AuthLevel, minimum_permission: AuthLevel) -> bool {
     test_value <= minimum_permission
 }

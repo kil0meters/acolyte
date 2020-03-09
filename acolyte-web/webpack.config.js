@@ -23,7 +23,7 @@ module.exports = (env, argv) => ({
             filename: '[path].br[query]',
             algorithm: 'brotliCompress',
             test: (argv.mode === 'production') ? /\.(js|css|html|svg|eot|ttf)$/ : /.^/,
-            compressionOptions: {level: 11},
+            compressionOptions: { level: 11 },
             threshold: 10240,
             minRatio: 0.9
         }),
@@ -41,10 +41,13 @@ module.exports = (env, argv) => ({
         })
     ],
     mode: 'development',
-    entry: './src/index.ts',
+    entry: {
+        index: './src/acolyte.ts',
+        post_editor: './src/post_editor.ts'
+    },
     output: {
-        filename: 'bundle.js',
-        library: libraryName,
+        filename: '[name].js',
+        library: '[name]',
         path: path.resolve(__dirname, 'dist'),
     },
     resolve: {

@@ -9,6 +9,16 @@ table! {
 }
 
 table! {
+    blog_posts (id) {
+        id -> Text,
+        title -> Text,
+        body -> Text,
+        last_modified -> Timestamp,
+        created_at -> Timestamp,
+    }
+}
+
+table! {
     posts (id) {
         id -> Text,
         account_id -> Text,
@@ -26,5 +36,6 @@ joinable!(posts -> accounts (account_id));
 
 allow_tables_to_appear_in_same_query!(
     accounts,
+    blog_posts,
     posts,
 );

@@ -1,0 +1,14 @@
+{% extends "static_base.html" %}
+
+{% block title %}Blog - milesbenton.com{% endblock %}
+{% block page_title %}Blog{% endblock %}
+
+{% block content %}
+
+<article class="wrapper">
+  {% for post in posts %}
+  <h1>{{ post.title }}</h1>
+  {% endfor %}
+</article>
+
+{% endblock %}

@@ -50,7 +50,7 @@ async fn login_form(
         accounts::check_login(form.username.to_owned(), form.password.to_owned(), &conn)
     })
     .await
-    .map_err(|_| HttpResponse::InternalServerError().finish())?;
+    .map_err(|_| HttpResponse::InternalServerError())?;
 
     if let Some(account) = account {
         id.remember(serde_json::to_string(&account).unwrap());

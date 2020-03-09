@@ -1,6 +1,8 @@
+use std::str::FromStr;
 use std::time;
 
 use anyhow::{anyhow, Result};
+use chrono::prelude::*;
 use diesel::{Insertable, Queryable};
 use rand::distributions::Alphanumeric;
 use rand::Rng;
@@ -8,7 +10,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 
 use crate::auth::{passwords, permissions};
-use crate::schema::{accounts, posts};
+use crate::schema::{accounts, blog_posts, posts};
 
 const ID_LENGTH: usize = 8;
 
@@ -114,7 +116,7 @@ pub struct Post {
 }
 
 impl Post {
-    pub fn new(by: Account, title: String, body: String, link: String) -> Post {
+    pub fn new(account_id: String, title: String, body: String, link: String) -> Post {
         let id = create_id(ID_LENGTH);
 
         let body: Option<String> = if body.trim().is_empty() {
@@ -131,7 +133,7 @@ impl Post {
 
         Post {
             id,
-            account_id: by.id,
+            account_id,
             title,
             body,
             link,
@@ -157,6 +159,68 @@ impl Post {
             }
         } else {
             Ok(())
+        }
+    }
+}
+
+#[derive(Insertable, Queryable, Debug, PartialEq)]
+#[table_name = "blog_posts"]
+pub struct BlogPost {
+    pub id: String,
+    pub title: String,
+    pub body: String,
+    pub last_modified: chrono::NaiveDateTime,
+    pub created_at: chrono::NaiveDateTime,
+}
+
+impl FromStr for BlogPost {
+    type Err = anyhow::Error;
+
+    fn from_str(post: &str) -> Result<BlogPost> {
+        lazy_static! {
+            /// Matching group 1: inside yaml metadata
+            ///
+            /// Matching group 2: Post content
+            static ref METADATA_REGEX: Regex =
+                Regex::new(r"---\n((?:.|\n)*)---\n((?:.|\n)*)").unwrap();
+
+            /// Mathces everything that isn't alphanumeric
+            static ref NON_ALPHANUM_REGEX: Regex =
+                Regex::new(r"[^A-Za-z0-9 ]").unwrap();
+        }
+
+        if let Some(caps) = METADATA_REGEX.captures(post.trim()) {
+            let metadata_str = caps.get(1).map_or("", |m| m.as_str());
+            let post_content = caps.get(2).map_or("", |m| m.as_str());
+
+            #[derive(Deserialize)]
+            struct PostMetadata {
+                title: String,
+                date: String,
+            }
+
+            let metadata = serde_yaml::from_str::<PostMetadata>(&metadata_str)?;
+
+            let date = NaiveDate::parse_from_str(&metadata.date, "%Y-%m-%d")?.and_hms(0, 0, 0);
+
+            let id = NON_ALPHANUM_REGEX
+                .replace(&metadata.title, "")
+                .to_lowercase()
+                .replace(" ", "_");
+
+            Ok(BlogPost {
+                id,
+                title: metadata.title,
+                body: post_content.to_owned(),
+                last_modified: date,
+                created_at: date,
+            })
+        } else {
+            debug!(
+                "Encountered error matching the following post data:\n\"{}\"",
+                post.trim()
+            );
+            Err(anyhow!("Invalid post metadata"))
         }
     }
 }

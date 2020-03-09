@@ -52,3 +52,21 @@ pub struct ForumFrontpage {
 pub struct PostEditor {
     pub logged_in: bool,
 }
+
+#[derive(Template)]
+#[template(path = "blog_post.html", escape = "none")]
+pub struct BlogPost<'a> {
+    pub title: String,
+    pub post_body: String,
+    pub created_at: chrono::NaiveDateTime,
+    pub last_modified: chrono::NaiveDateTime,
+    pub header_links: &'a [HeaderLink<'a>],
+    // pub comments: Vec<Comment>,
+}
+
+#[derive(Template)]
+#[template(path = "blog_index.html")]
+pub struct BlogIndex<'a> {
+    pub posts: Vec<models::BlogPost>,
+    pub header_links: &'a [HeaderLink<'a>],
+}

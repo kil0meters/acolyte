@@ -1,9 +1,8 @@
-use actix_web::web::Form;
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 
-use crate::forum::PostForm;
+use crate::auth::permissions;
 use crate::models::{Account, Post};
 use crate::schema::posts;
 
@@ -29,10 +28,16 @@ pub fn create_new_post(
     link: String,
     conn: &PgConnection,
 ) -> Result<Post> {
-    let post = Post::new(by, title, body, link);
+    let post = Post::new(by.id, title, body, link);
+
+    // make sure user is allowed to post
+    if !permissions::check_auth_level(by.permissions, permissions::STANDARD) {
+        return Err(anyhow!(
+            "User doesn't have minimum permsission level to post"
+        ));
+    }
 
     post.validate()?;
-
     Ok(diesel::insert_into(posts::table)
         .values(&post)
         .get_result::<Post>(conn)?)

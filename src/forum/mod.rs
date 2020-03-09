@@ -10,7 +10,7 @@ use crate::{templates, DbPool};
 pub mod posts;
 
 #[derive(Deserialize)]
-struct PostForm {
+pub struct PostForm {
     title: String,
     link: String,
     body: String,
@@ -40,7 +40,7 @@ pub async fn index(
 }
 
 #[post("/create-post")]
-pub async fn submit_post(
+pub async fn post_form(
     id: Identity,
     pool: web::Data<DbPool>,
     form: web::Form<PostForm>,
@@ -60,12 +60,18 @@ pub async fn submit_post(
             )
         })
         .await
-        .map_err(|_| HttpResponse::InternalServerError())?;
+        .map_err(|e| {
+            error!("error creating post: {}", e);
+            HttpResponse::InternalServerError();
+        })?;
+
+        info!("{} created post {}", id, post.title);
 
         Ok(HttpResponse::SeeOther()
             .header(http::header::LOCATION, format!("/forum/{}", post.id))
             .finish())
     } else {
+        debug!("Unauthorized request");
         Ok(HttpResponse::Unauthorized().finish())
     }
 }

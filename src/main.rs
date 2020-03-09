@@ -23,6 +23,7 @@ use diesel::r2d2::{ConnectionManager, Pool};
 use rust_embed::RustEmbed;
 
 pub mod auth;
+pub mod blog;
 pub mod chat;
 pub mod forum;
 pub mod frontpage;
@@ -141,8 +142,10 @@ async fn main() -> std::io::Result<()> {
         .build(manager)
         .expect("Failed to create database pool");
 
-    let logger_format = "%a \"%r\" %s %b \"%{Referer}i\"".to_owned();
+    let logger_format = "%a \"%r\" %s %b \"%{Referer}i\" %Dms".to_owned();
     let totally_secure_code = b"abcdefghijklmnopqrstuvwxyz123456789";
+
+    debug!("test");
 
     match opts.subcommand {
         // Standalone chat
@@ -190,6 +193,7 @@ async fn main() -> std::io::Result<()> {
                     .service(
                         web::scope("/forum")
                             .service(forum::index)
+                            .service(forum::post_form)
                             .service(forum::post_editor),
                     )
             })
@@ -220,9 +224,11 @@ async fn main() -> std::io::Result<()> {
                     .service(auth::login_form)
                     .service(auth::signup)
                     .service(auth::signup_form)
+                    .service(blog::blog_handler)
                     .service(
                         web::scope("/forum")
                             .service(forum::index)
+                            .service(forum::post_form)
                             .service(forum::post_editor),
                     )
                     .service(
