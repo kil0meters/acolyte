@@ -4,8 +4,7 @@ const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const zopfli = require('@gfx/zopfli');
 const CompressionPlugin = require('compression-webpack-plugin');
-
-const libraryName = 'acolyte';
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = (env, argv) => ({
     optimization: {
@@ -13,6 +12,7 @@ module.exports = (env, argv) => ({
         minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})]
     },
     plugins: [
+        // new BundleAnalyzerPlugin(),
         new MiniCssExtractPlugin({
             filename: 'bundle.css',
             chunkFilename: 'chunk.css',

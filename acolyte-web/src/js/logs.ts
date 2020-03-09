@@ -1,5 +1,4 @@
 import {renderEmotesInElement} from './emotes'
-import renderMathInElement from 'katex/dist/contrib/auto-render'
 
 export class LogSearch {
 
