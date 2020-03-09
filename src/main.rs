@@ -108,6 +108,7 @@ fn setup_logger(level: log::LevelFilter) -> Result<(), fern::InitError> {
     Ok(())
 }
 
+// TODO: serve compressed verions if possible
 fn handle_embedded_file(path: &str) -> HttpResponse {
     match Asset::get(path) {
         Some(content) => {
@@ -224,7 +225,10 @@ async fn main() -> std::io::Result<()> {
                     .service(auth::login_form)
                     .service(auth::signup)
                     .service(auth::signup_form)
-                    .service(blog::blog_handler)
+                    .service(blog::blog_index)
+                    .service(blog::blog_editor)
+                    .service(blog::blog_upload_form)
+                    .service(blog::serve_blogpost)
                     .service(
                         web::scope("/forum")
                             .service(forum::index)

@@ -1,11 +1,14 @@
 use std::str::FromStr;
 
-use actix_web::{get, web, Error, HttpResponse};
+use actix_identity::Identity;
+use actix_web::{get, http, post, web, Error, HttpResponse};
 use anyhow::anyhow;
 use askama::Template;
 use diesel::prelude::*;
 use pulldown_cmark::{html, Options, Parser};
+use serde::Deserialize;
 
+use crate::auth::permissions;
 use crate::frontpage::HEADER_LINKS;
 use crate::models;
 use crate::schema::blog_posts;
@@ -13,7 +16,7 @@ use crate::templates;
 use crate::DbPool;
 
 #[get("/blog")]
-pub async fn blog_handler(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
+pub async fn blog_index(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
     let conn = pool
         .get()
         .map_err(|_| HttpResponse::InternalServerError())?;
@@ -39,21 +42,75 @@ pub async fn blog_handler(pool: web::Data<DbPool>) -> Result<HttpResponse, Error
         .body(s))
 }
 
-#[derive(Form)]
-struct BlogUploadForm {
+#[derive(Deserialize)]
+pub struct BlogUploadForm {
     data: String,
 }
 
+// TODO: create `redirect_if!` macro
 #[post("/blog/new")]
 pub async fn blog_upload_form(
     id: Identity,
-    data: web::Form<BlogUploadForm>,
-) -> Result<HttpResponse, Error> {
+    pool: web::Data<DbPool>,
+    form: web::Form<BlogUploadForm>,
+) -> HttpResponse {
+    if let Some(id) = id.identity() {
+        let account = serde_json::from_str::<models::Account>(&id).unwrap();
+
+        if account.permissions == permissions::ADMIN {
+            match models::BlogPost::from_str(&form.data) {
+                Ok(post) => {
+                    let conn = pool.get().unwrap();
+                    let post_id = post.id.clone();
+
+                    web::block(move || {
+                        diesel::insert_into(blog_posts::table)
+                            .values(&post)
+                            .execute(&conn)
+                    })
+                    .await
+                    .unwrap();
+
+                    HttpResponse::SeeOther()
+                        .header(http::header::LOCATION, format!("/blog/{}", post_id))
+                        .finish()
+                }
+                Err(e) => {
+                    error!("Encountered an error while parsing blog post: {}", e);
+
+                    HttpResponse::SeeOther()
+                        .header(http::header::LOCATION, "/blog/new?error=1")
+                        .finish()
+                }
+            }
+        } else {
+            HttpResponse::SeeOther()
+                .header(http::header::LOCATION, "/unauthorized")
+                .finish()
+        }
+    } else {
+        HttpResponse::SeeOther()
+            .header(http::header::LOCATION, "/unauthorized")
+            .finish()
+    }
 }
 
 #[get("/blog/new")]
-pub async fn blog_upload() -> Result<HttpResponse, Error> {
-    Ok(HttpResponse::Ok())
+pub async fn blog_editor(id: Identity) -> HttpResponse {
+    if let Some(id) = id.identity() {
+        let account = serde_json::from_str::<models::Account>(&id).unwrap();
+
+        if account.permissions == permissions::ADMIN {
+            let s = templates::BlogPostEditor {}.render().unwrap();
+
+            return HttpResponse::Ok()
+                .content_type("text/html; charset=utf-8")
+                .body(s);
+        }
+    }
+    HttpResponse::SeeOther()
+        .header(http::header::LOCATION, "/unauthorized")
+        .finish()
 }
 
 #[get("/blog/{id}")]

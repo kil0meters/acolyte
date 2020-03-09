@@ -178,11 +178,10 @@ impl FromStr for BlogPost {
 
     fn from_str(post: &str) -> Result<BlogPost> {
         lazy_static! {
-            /// Matching group 1: inside yaml metadata
-            ///
-            /// Matching group 2: Post content
+            // \r\n has to be used because of some weird meme with how forms are escaped
+            // https://github.com/rust-lang/regex/issues/244
             static ref METADATA_REGEX: Regex =
-                Regex::new(r"---\n((?:.|\n)*)---\n((?:.|\n)*)").unwrap();
+                Regex::new(r"(?m)---\r\n((?:.|\n)*)---\r\n((?:.|\n)*)").unwrap();
 
             /// Mathces everything that isn't alphanumeric
             static ref NON_ALPHANUM_REGEX: Regex =
@@ -199,6 +198,7 @@ impl FromStr for BlogPost {
                 date: String,
             }
 
+            debug!("Metadata:\n\"{}\"", metadata_str);
             let metadata = serde_yaml::from_str::<PostMetadata>(&metadata_str)?;
 
             let date = NaiveDate::parse_from_str(&metadata.date, "%Y-%m-%d")?.and_hms(0, 0, 0);
@@ -216,11 +216,7 @@ impl FromStr for BlogPost {
                 created_at: date,
             })
         } else {
-            debug!(
-                "Encountered error matching the following post data:\n\"{}\"",
-                post.trim()
-            );
-            Err(anyhow!("Invalid post metadata"))
+            Err(anyhow!("Invalid post data:\n\"{}\"", post.trim()))
         }
     }
 }

@@ -70,3 +70,7 @@ pub struct BlogIndex<'a> {
     pub posts: Vec<models::BlogPost>,
     pub header_links: &'a [HeaderLink<'a>],
 }
+
+#[derive(Template)]
+#[template(path = "blog_post_editor.html")]
+pub struct BlogPostEditor {}
