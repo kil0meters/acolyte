@@ -1,27 +1,34 @@
 #live-chat {
-    margin: 0;
-    font-family: 'Open Sans', sans-serif;
+    z-index: 0;
+
+    width: 100%;
+    height: 100%;
+    overflow-y: hidden;
+    min-height: 100%;
+    max-height: 100%;
+
+    display: grid;
+    grid-template-rows: calc(100% - 114px) 114px;
     font-size: 14px;
 }
 
 #message-entry {
-    position: fixed;
-    background-color: var(--card-color);
+    z-index: 2;
 
-    /* height: 48px; */
-    left: 0;
-    right: 0;
-    bottom: 0;
+    grid-row: 2;
 
     padding: 12px;
 
     border-top: 1px solid var(--accent-color);
     box-shadow: 0 -4px 8px 0 var(--shadow-color);
+    background-color: var(--card-color);
 }
 
 /* messages */
 #message-list {
-    margin-bottom: 126px;
+    overflow-y: auto;
+    max-height: 100%;
+    grid-row: 1;
 }
 
 .fullscreen-overlay {
@@ -49,7 +56,7 @@
 
     font-family: 'Open Sans', sans-serif;
 
-    background-color: rgba(1, 1, 1, 0.3);
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .login-prompt-container {
@@ -108,13 +115,14 @@
 #emote-popup {
     background-color: var(--background-color);
 
-    position: fixed;
-    left: 8px;
-    bottom: 120px;
+    position: absolute;
+    left: 16px;
+    bottom: 130px;
 
     padding: 8px;
-    width: 256px;
+    /* width: 256px; */
 
+    max-width: calc(100% - 32px);
     opacity: 1;
     transition: all 0.5s ease;
 }
@@ -242,7 +250,10 @@
 }
 
 #messages-below {
+    z-index: 1;
+
     font-size: 14px;
+    display: block;
     cursor: pointer;
     border: 0;
     padding: 8px 12px;
@@ -253,14 +264,13 @@
     -webkit-backdrop-filter: blur(16px);
 
     color: white;
-    position: fixed;
+    position: absolute;
 
-    bottom: 124px;
-    left: 50%;
-    right: 50%;
+    bottom: 130px;
+    width: calc(100% - 32px);
+    left: 16px;
+    right: 16px;
 
-    width: 256px;
-    margin-left: -128px;
     transition: 300ms ease;
 }
 
@@ -269,20 +279,19 @@
 }
 
 #messages-below.hidden {
-    bottom: 64px;
+    bottom: 100px;
 }
 
 #autocompletion-popup {
+    z-index: 1;
+
     background-color: var(--card-color);
 
-    overflow-y: auto;
-    max-height: calc(100% - 148px);
+    position: absolute;
 
-    position: fixed;
-
-    bottom: 124px;
-    right: 16px;
+    bottom: 130px;
     left: 16px;
+    right: 16px;
 }
 
 #autocompletion-popup p {

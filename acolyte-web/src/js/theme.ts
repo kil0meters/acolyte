@@ -37,33 +37,18 @@ const darkTheme = {
 let currentTheme = lightTheme;
 
 export function setTheme(theme: Theme) {
-    document.documentElement.style.setProperty('--background-color', theme.backgroundColor);
+    let documentElementStyle = document.documentElement.style;
 
-    document.documentElement.style.setProperty('--card-color', theme.cardColor);
-    document.documentElement.style.setProperty('--text-color-bold', theme.textColorBold);
-    document.documentElement.style.setProperty('--text-color-subtle', theme.textColorSubtle);
-    document.documentElement.style.setProperty('--link-color', theme.linkColor);
-    document.documentElement.style.setProperty('--accent-color', theme.accentColor);
-    document.documentElement.style.setProperty('--shadow-color', theme.shadowColor);
-    document.documentElement.style.setProperty('--shadow-color-intense', theme.shadowColorIntense);
-    document.documentElement.style.setProperty('--brand-background', theme.brandBackground);
-    let chatFrame = <HTMLIFrameElement>document.getElementById("chat");
+    documentElementStyle.setProperty('--background-color', theme.backgroundColor);
 
-
-    if (chatFrame) {
-
-        let chatDocument = chatFrame.contentDocument;
-        chatDocument.documentElement.style.setProperty('--background-color', theme.backgroundColor);
-
-        chatDocument.documentElement.style.setProperty('--card-color', theme.cardColor);
-        chatDocument.documentElement.style.setProperty('--text-color-bold', theme.textColorBold);
-        chatDocument.documentElement.style.setProperty('--text-color-subtle', theme.textColorSubtle);
-        chatDocument.documentElement.style.setProperty('--link-color', theme.linkColor);
-        chatDocument.documentElement.style.setProperty('--accent-color', theme.accentColor);
-        chatDocument.documentElement.style.setProperty('--shadow-color', theme.shadowColor);
-        chatDocument.documentElement.style.setProperty('--shadow-color-intense', theme.shadowColorIntense);
-        chatDocument.documentElement.style.setProperty('--brand-background', theme.brandBackground);
-    }
+    documentElementStyle.setProperty('--card-color', theme.cardColor);
+    documentElementStyle.setProperty('--text-color-bold', theme.textColorBold);
+    documentElementStyle.setProperty('--text-color-subtle', theme.textColorSubtle);
+    documentElementStyle.setProperty('--link-color', theme.linkColor);
+    documentElementStyle.setProperty('--accent-color', theme.accentColor);
+    documentElementStyle.setProperty('--shadow-color', theme.shadowColor);
+    documentElementStyle.setProperty('--shadow-color-intense', theme.shadowColorIntense);
+    documentElementStyle.setProperty('--brand-background', theme.brandBackground);
 
     currentTheme = theme;
     localStorage.setItem("theme", JSON.stringify(currentTheme));

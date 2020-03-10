@@ -15,7 +15,6 @@ export function renderLinksInElement(element: HTMLElement) {
             .then((linkElement: HTMLElement) => {
                 if (linkElement != null) {
                     element.appendChild(linkElement);
-                    scrollToBottom(element.offsetHeight);
                 }
             });
 
@@ -23,12 +22,6 @@ export function renderLinksInElement(element: HTMLElement) {
 
         return `<a class="chat-link" target="_blank" href="${url}">${displayURL}</a>`
     });
-}
-
-function scrollToBottom(offsetHeight: number) {
-    if ((window.innerHeight + window.scrollY + 64) >= (document.body.offsetHeight - offsetHeight)) {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
 }
 
 async function getLinkPreview(linkURL: string): Promise<HTMLElement> {
@@ -54,7 +47,7 @@ export class MessageList {
     public list: Message[] = [];
     currentCombo: Message[] = [];
 
-    messageListElement: HTMLElement;
+    messageListElement: HTMLDivElement;
     emotes: AutocompletionSuggestion[] = getEmotes();
     maxHeight: number;
 
@@ -62,36 +55,33 @@ export class MessageList {
     moderatorPerms: boolean;
 
     constructor(messageListID: string, maxHeight: number, username: string, moderatorPerms: boolean) {
-        this.messageListElement = document.getElementById(messageListID);
+        this.messageListElement = <HTMLDivElement>document.getElementById(messageListID);
         this.emotes = getEmotes();
         this.maxHeight = maxHeight;
 
         this.username = username;
         this.moderatorPerms = moderatorPerms;
 
-        window.addEventListener("scroll", function () {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        this.messageListElement.addEventListener("scroll", function () {
+            // checks if it's scrolled to the ototm
+            if ((this.scrollTop + this.clientHeight) >= this.scrollHeight) {
+                console.log("false");
                 document.getElementById('messages-below').classList.add('hidden');
             } else {
+                console.log("true");
                 document.getElementById('messages-below').classList.remove('hidden');
             }
         })
 
+        document.getElementById("messages-below").addEventListener("", () => {
+            this.scrollToBottom(0);
+        })
     }
 
     buildMessage(message: Message): HTMLElement {
         let messageElement = document.createElement("div");
         messageElement.id = message.id;
         messageElement.classList.add("chat-message");
-        if (message.text.includes(this.username) && message.username !== this.username) {
-            messageElement.classList.add("mentioned")
-        } else if (message.username === this.username) {
-            messageElement.classList.add("self");
-
-            // if sent by self, scroll to bottom regardless of current scroll position
-            scrollToBottom(document.body.offsetHeight);
-        }
-
 
         let usernameElement = document.createElement("a");
         usernameElement.href = '#' + message.username;
@@ -103,6 +93,14 @@ export class MessageList {
 
         renderLinksInElement(textElement);
         renderEmotesInElement(textElement);
+
+        if (message.text.includes(this.username) && message.username !== this.username) {
+            messageElement.classList.add("mentioned")
+        } else if (message.username === this.username) {
+            messageElement.classList.add("self");
+            // if sent by self, scroll to bottom regardless of current scroll position
+            this.scrollToBottom(document.body.offsetHeight);
+        }
 
         textElement.classList.add("message-text");
 
@@ -126,6 +124,14 @@ export class MessageList {
         return messageElement;
     }
 
+
+    scrollToBottom(offsetHeight: number) {
+        if ((this.messageListElement.clientHeight + this.messageListElement.scrollTop + 64) >= (this.messageListElement.scrollHeight - offsetHeight)) {
+            this.messageListElement.scrollTo(0, this.messageListElement.scrollHeight);
+        }
+    }
+
+
     push(message: Message) {
         if (message.username === "delete-message") {
             this.removeByID(message.text);
@@ -138,7 +144,7 @@ export class MessageList {
             this.checkForCombos();
             this.replaceComboListWithElement();
 
-            scrollToBottom(messageElement.offsetHeight);
+            this.scrollToBottom(messageElement.offsetHeight);
             while ((this.messageListElement.offsetHeight + 24) > this.maxHeight) { // offset for padding
                 this.removeByIndex(0);
             }
