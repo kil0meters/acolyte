@@ -1,6 +1,6 @@
 {% extends "forum_base.html" %}
 
-{% block title %}Forum - milesbenton.com{% endblock %}
+{% block title %}Forum{% endblock %}
 {% block page_title %}Forum{% endblock %}
 
 {% block content %}
@@ -9,8 +9,8 @@
   <div class="wrapper forum-grid">
     <div class="forum-content wrapper card">
       <div id="posts">
-        {% for post in posts %}
-        {% include "post.html" %}
+        {% for thread in threads %}
+        {% include "thread_widget.html" %}
         {% endfor %}
       </div>
     </div>

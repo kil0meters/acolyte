@@ -10,7 +10,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 
 use crate::auth::{passwords, permissions};
-use crate::schema::{accounts, blog_posts, posts};
+use crate::schema::{blog_posts, threads, users};
 
 const ID_LENGTH: usize = 8;
 
@@ -26,49 +26,49 @@ fn create_id(length: usize) -> String {
         .collect::<String>()
 }
 
-/// Struct containing account data
+/// Struct containing user data
 /// ````
-/// struct Account {
+/// struct User {
 ///     id: String,
 ///     username: String,
 ///     password_hash: String, // not serialized
+///     updated_at: chrono::NaiveDateTime,
 ///     created_at: time::SystemTime,
 ///     permissions: permissions::AuthLevel,
 /// }
 /// ```
 #[derive(Serialize, Deserialize, Insertable, Queryable, Identifiable, Debug, PartialEq)]
-#[table_name = "accounts"]
-pub struct Account {
+#[table_name = "users"]
+pub struct User {
     pub id: String,
-
     pub username: String,
-
     #[serde(skip_serializing, default = "string_default")]
     pub password_hash: String,
-
-    pub created_at: time::SystemTime,
-
+    pub updated_at: chrono::NaiveDateTime,
+    pub created_at: chrono::NaiveDateTime,
     pub permissions: permissions::AuthLevel,
 }
 
-impl Account {
-    /// Creates a new account object, hashing the password
-    pub fn new(username: String, password: String) -> Account {
+impl User {
+    /// Creates a new user object, hashing the password
+    pub fn new(username: String, password: String) -> User {
         let id = create_id(ID_LENGTH);
 
         // TODO: handle error
         let password_hash = passwords::hash_password(password).unwrap();
+        let now = Utc::now().naive_utc();
 
-        Account {
+        User {
             id,
             username: username.to_lowercase().trim().to_owned(),
             password_hash,
-            created_at: time::SystemTime::now(),
+            created_at: now,
+            updated_at: now,
             permissions: permissions::STANDARD,
         }
     }
 
-    /// Checks an account ot see if it's valid
+    /// Checks an user ot see if it's valid
     pub fn validate(&self) -> Result<()> {
         // avoid compiling the regex every time
         lazy_static! {
@@ -83,11 +83,12 @@ impl Account {
     }
 }
 
-/// Struct containing a post
+/// Struct containing a forum thread
 /// ```
-/// struct Post {
+/// struct Thread {
 ///     id: String,
-///     account_id: String,
+///     username: String,
+///     user_id: String,
 ///     title: String,
 ///     body: Option<String>,
 ///     link: Option<String>,
@@ -98,25 +99,27 @@ impl Account {
 /// }
 /// ```
 #[derive(Associations, Insertable, Queryable, Debug, PartialEq)]
-#[belongs_to(Account)]
-#[table_name = "posts"]
-pub struct Post {
+#[belongs_to(User)]
+#[table_name = "threads"]
+pub struct Thread {
     pub id: String,
-    pub account_id: String,
+    pub username: String,
+    pub user_id: String,
     pub title: String,
     pub body: Option<String>,
     pub link: Option<String>,
     pub removed: bool,
-    pub created_at: time::SystemTime,
+    pub updated_at: chrono::NaiveDateTime,
+    pub created_at: chrono::NaiveDateTime,
 
     // this should possibly be stored as some sort of BigInt
-    // but that's an issue for another time
+    // but that's an issue for anoher time
     pub upvotes: i32,
     pub downvotes: i32,
 }
 
-impl Post {
-    pub fn new(account_id: String, title: String, body: String, link: String) -> Post {
+impl Thread {
+    pub fn new(author: User, title: String, body: String, link: String) -> Thread {
         let id = create_id(ID_LENGTH);
 
         let body: Option<String> = if body.trim().is_empty() {
@@ -131,14 +134,18 @@ impl Post {
             Some(link)
         };
 
-        Post {
+        let now = Utc::now().naive_utc();
+
+        Thread {
             id,
-            account_id,
+            user_id: author.id,
+            username: author.username,
             title,
             body,
             link,
             removed: false,
-            created_at: time::SystemTime::now(),
+            updated_at: now,
+            created_at: now,
             upvotes: 0,
             downvotes: 0,
         }
@@ -169,7 +176,7 @@ pub struct BlogPost {
     pub id: String,
     pub title: String,
     pub body: String,
-    pub last_modified: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
     pub created_at: chrono::NaiveDateTime,
 }
 
@@ -193,13 +200,13 @@ impl FromStr for BlogPost {
             let post_content = caps.get(2).map_or("", |m| m.as_str());
 
             #[derive(Deserialize)]
-            struct PostMetadata {
+            struct ThreadMetadata {
                 title: String,
                 date: String,
             }
 
             debug!("Metadata:\n\"{}\"", metadata_str);
-            let metadata = serde_yaml::from_str::<PostMetadata>(&metadata_str)?;
+            let metadata = serde_yaml::from_str::<ThreadMetadata>(&metadata_str)?;
 
             let date = NaiveDate::parse_from_str(&metadata.date, "%Y-%m-%d")?.and_hms(0, 0, 0);
 
@@ -212,7 +219,7 @@ impl FromStr for BlogPost {
                 id,
                 title: metadata.title,
                 body: post_content.to_owned(),
-                last_modified: date,
+                updated_at: date,
                 created_at: date,
             })
         } else {

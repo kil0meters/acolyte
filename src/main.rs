@@ -184,8 +184,6 @@ async fn main() -> std::io::Result<()> {
     let logger_format = "%a \"%r\" %s %b \"%{Referer}i\" %Dms".to_owned();
     let totally_secure_code = b"abcdefghijklmnopqrstuvwxyz123456789";
 
-    debug!("test");
-
     match opts.subcommand {
         // Standalone chat
         Some(SubCommand::Chat(chat)) => {
@@ -232,8 +230,8 @@ async fn main() -> std::io::Result<()> {
                     .service(
                         web::scope("/forum")
                             .service(forum::index)
-                            .service(forum::post_form)
-                            .service(forum::post_editor),
+                            .service(forum::create_thread_form)
+                            .service(forum::thread_editor),
                     )
             })
             .bind(format!("0.0.0.0:{}", forum.port))?
@@ -266,12 +264,12 @@ async fn main() -> std::io::Result<()> {
                     .service(blog::blog_index)
                     .service(blog::blog_editor)
                     .service(blog::blog_upload_form)
-                    .service(blog::serve_blogpost)
+                    .service(blog::serve_blog_post)
                     .service(
                         web::scope("/forum")
                             .service(forum::index)
-                            .service(forum::post_form)
-                            .service(forum::post_editor),
+                            .service(forum::create_thread_form)
+                            .service(forum::thread_editor),
                     )
                     .service(
                         web::scope("/chat")

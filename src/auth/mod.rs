@@ -8,9 +8,9 @@ use crate::models;
 use crate::templates;
 use crate::DbPool;
 
-pub mod accounts;
 pub mod passwords;
 pub mod permissions;
+pub mod users;
 
 #[derive(Deserialize)]
 struct LoginForm {
@@ -46,20 +46,20 @@ async fn login_form(
     let target = form.target.clone();
 
     // Don't block server thread with DB query
-    let account = web::block(move || {
-        accounts::check_login(form.username.to_owned(), form.password.to_owned(), &conn)
+    let user = web::block(move || {
+        users::check_login(form.username.to_owned(), form.password.to_owned(), &conn)
     })
     .await
     .map_err(|_| HttpResponse::InternalServerError())?;
 
-    if let Some(account) = account {
-        id.remember(serde_json::to_string(&account).unwrap());
+    if let Some(user) = user {
+        id.remember(serde_json::to_string(&user).unwrap());
 
         Ok(HttpResponse::SeeOther()
             .header(http::header::LOCATION, target.to_owned())
             .finish())
     } else {
-        // If the account didn't exist, redirect with the error optioni
+        // If the user didn't exist, redirect with the error optioni
         Ok(HttpResponse::SeeOther()
             .header(http::header::LOCATION, "/login?error=1")
             .finish())
@@ -98,16 +98,16 @@ async fn signup_form(
     // same as above
     let target = form.target.clone();
 
-    let account = web::block(move || {
-        accounts::create_account(form.username.to_owned(), form.password.to_owned(), &conn)
+    let user = web::block(move || {
+        users::create_user(form.username.to_owned(), form.password.to_owned(), &conn)
     })
     .await;
 
-    println!("result: {:?}", account);
+    println!("result: {:?}", user);
 
-    match account {
-        Ok(account) => {
-            id.remember(serde_json::to_string(&account).unwrap());
+    match user {
+        Ok(user) => {
+            id.remember(serde_json::to_string(&user).unwrap());
 
             HttpResponse::Found()
                 .header(http::header::LOCATION, target.to_owned())

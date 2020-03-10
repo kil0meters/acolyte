@@ -7,10 +7,10 @@ use serde::Deserialize;
 
 use crate::{templates, DbPool};
 
-pub mod posts;
+pub mod threads;
 
 #[derive(Deserialize)]
-pub struct PostForm {
+pub struct ThreadForm {
     title: String,
     link: String,
     body: String,
@@ -23,12 +23,12 @@ pub async fn index(
 ) -> Result<HttpResponse, actix_web::Error> {
     let conn = pool.get().expect("Error getting database");
 
-    let posts = web::block(move || posts::get_hot_posts(0, &conn))
+    let threads = web::block(move || threads::get_hot_threads(0, &conn))
         .await
         .map_err(|_| HttpResponse::InternalServerError())?;
 
     let s = templates::ForumFrontpage {
-        posts,
+        threads,
         logged_in: id.identity().is_some(),
     }
     .render()
@@ -39,20 +39,20 @@ pub async fn index(
         .body(s))
 }
 
-#[post("/create-post")]
-pub async fn post_form(
+#[post("/create-thread")]
+pub async fn create_thread_form(
     id: Identity,
     pool: web::Data<DbPool>,
-    form: web::Form<PostForm>,
+    form: web::Form<ThreadForm>,
 ) -> Result<HttpResponse, actix_web::Error> {
     if let Some(id) = id.identity() {
         let conn = pool.get().expect("Error getting database");
 
-        let account = serde_json::from_str(&id).unwrap();
+        let user = serde_json::from_str(&id).unwrap();
 
-        let post = web::block(move || {
-            posts::create_new_post(
-                account,
+        let thread = web::block(move || {
+            threads::create_new_thread(
+                user,
                 form.title.to_owned(),
                 form.body.to_owned(),
                 form.link.to_owned(),
@@ -61,14 +61,14 @@ pub async fn post_form(
         })
         .await
         .map_err(|e| {
-            error!("error creating post: {}", e);
+            error!("error creating thread: {}", e);
             HttpResponse::InternalServerError();
         })?;
 
-        info!("{} created post {}", id, post.title);
+        info!("{} created thread {}", id, thread.title);
 
         Ok(HttpResponse::SeeOther()
-            .header(http::header::LOCATION, format!("/forum/{}", post.id))
+            .header(http::header::LOCATION, format!("/forum/{}", thread.id))
             .finish())
     } else {
         debug!("Unauthorized request");
@@ -76,9 +76,9 @@ pub async fn post_form(
     }
 }
 
-#[get("/create-post")]
-pub async fn post_editor(id: Identity) -> HttpResponse {
-    let s = templates::PostEditor {
+#[get("/create-thread")]
+pub async fn thread_editor(id: Identity) -> HttpResponse {
+    let s = templates::ThreadEditor {
         logged_in: id.identity().is_some(),
     }
     .render()

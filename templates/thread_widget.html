@@ -1,0 +1,6 @@
+<div class="list-card">
+  <a class="post-title" href="/forum/threads/{{ thread.id }}">{{ thread.title }}</a>
+  <div class="post-byline">by <a href="/user/{{ thread.username }}">{{ thread.username }}</a>
+    {{ thread.created_at.format("%B %-d, %Y").to_string() }}
+  </div>
+</div>

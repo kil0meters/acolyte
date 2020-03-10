@@ -8,7 +8,7 @@ use askama::Template;
 use serde_json::json;
 
 use crate::auth::permissions;
-use crate::models::Account;
+use crate::models::User;
 use crate::templates;
 
 pub mod message_types;
@@ -23,8 +23,8 @@ pub async fn ws_upgrader(
     srv: web::Data<Addr<server::Server>>,
 ) -> Result<HttpResponse, Error> {
     let username = if let Some(id_data) = id.identity() {
-        match serde_json::from_str::<Account>(&id_data) {
-            Ok(account) => Some(account.username),
+        match serde_json::from_str::<User>(&id_data) {
+            Ok(user) => Some(user.username),
             _ => {
                 id.forget();
                 None
@@ -50,8 +50,8 @@ pub async fn ws_upgrader(
 #[get("")]
 pub async fn frontend(id: Identity) -> Result<HttpResponse, Error> {
     let username = if let Some(id) = id.identity() {
-        let account: Account = serde_json::from_str(&id).unwrap();
-        account.username
+        let user: User = serde_json::from_str(&id).unwrap();
+        user.username
     } else {
         "ANON".to_owned()
     };

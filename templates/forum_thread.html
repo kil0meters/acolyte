@@ -1,0 +1,49 @@
+{% extends "forum_base.html" %}
+
+{% block content %}
+
+<main class="container">
+  <div class="wrapper forum-grid">
+    <div class="forum-content">
+      <div class="wrapper card">
+        <div class="post-meta">
+          <span class="post-title">{{.Post.Title}}</span>
+          <span class="post-byline">posted by <a
+              href="/user/{{.PosterAccount.Username}}">{{.PosterAccount.Username}}</a>
+            {{humanize .Post.CreatedAt}}</span>
+          {{ if .Post.Link.Link }}
+          <link-preview title="{{.Post.Link.Title}}"
+            published-date="{{.Post.Link.Date.Format "2006-01-02T15:04:05Z07:00"}}" content="{{.Post.Link.Content}}"
+            link="{{.Post.Link.Link}}"></link-preview>
+          {{ end }}
+          <noscript><a class="link-preview-link" href="{{.Post.Link.Link}}">{{.Post.Link.Title}}</a>
+          </noscript>
+        </div>
+        {{ if .Post.Body }}
+        <div id="post-body" class="post-body">{{.Post.Body}}</div>
+        {{ end }}
+      </div>
+      <div class="wrapper comment-entry">
+        <comment-editor username="{{.Account.Username}}" parent-id="{{.Post.ID}}" post-id="{{.Post.ID}}">
+        </comment-editor>
+      </div>
+      <div class="wrapper replies">
+        {{ if .Post.Replies }}
+        <h2>Replies</h2>
+        {{ else }}
+        <h2 style="margin:auto">Looks like this post is forever alone :(</h2>
+        {{ end }}
+        {{ range .Post.Replies }}
+        {{ template "forum-comment" dict "Comment" . "Account" $.Account}}
+        {{ end }}
+      </div>
+    </div>
+    <div class="forum-sidebar">
+      <div class="wrapper" style="height: 100%">
+        <iframe id="chat" class="card" src="/chat"></iframe>
+      </div>
+    </div>
+  </div>
+</main>
+
+{% endblock %}

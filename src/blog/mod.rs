@@ -55,9 +55,9 @@ pub async fn blog_upload_form(
     form: web::Form<BlogUploadForm>,
 ) -> HttpResponse {
     if let Some(id) = id.identity() {
-        let account = serde_json::from_str::<models::Account>(&id).unwrap();
+        let user = serde_json::from_str::<models::User>(&id).unwrap();
 
-        if account.permissions == permissions::ADMIN {
+        if user.permissions == permissions::ADMIN {
             match models::BlogPost::from_str(&form.data) {
                 Ok(post) => {
                     let conn = pool.get().unwrap();
@@ -98,9 +98,9 @@ pub async fn blog_upload_form(
 #[get("/blog/new")]
 pub async fn blog_editor(id: Identity) -> HttpResponse {
     if let Some(id) = id.identity() {
-        let account = serde_json::from_str::<models::Account>(&id).unwrap();
+        let user = serde_json::from_str::<models::User>(&id).unwrap();
 
-        if account.permissions == permissions::ADMIN {
+        if user.permissions == permissions::ADMIN {
             let s = templates::BlogPostEditor {}.render().unwrap();
 
             return HttpResponse::Ok()
@@ -114,7 +114,7 @@ pub async fn blog_editor(id: Identity) -> HttpResponse {
 }
 
 #[get("/blog/{id}")]
-pub async fn serve_blogpost(
+pub async fn serve_blog_post(
     pool: web::Data<DbPool>,
     id: web::Path<String>,
 ) -> Result<HttpResponse, Error> {
@@ -139,7 +139,7 @@ pub async fn serve_blogpost(
     let s = templates::BlogPost {
         title: post.title,
         created_at: post.created_at,
-        last_modified: post.last_modified,
+        updated_at: post.updated_at,
         post_body: html_output,
         header_links: &HEADER_LINKS,
     }

@@ -43,25 +43,24 @@ pub struct ChatEmbed<'a> {
 #[derive(Template)]
 #[template(path = "forum_frontpage.html")]
 pub struct ForumFrontpage {
-    pub posts: Vec<models::Post>,
+    pub threads: Vec<models::Thread>,
     pub logged_in: bool,
 }
 
 #[derive(Template)]
-#[template(path = "post_editor.html")]
-pub struct PostEditor {
+#[template(path = "thread_editor.html")]
+pub struct ThreadEditor {
     pub logged_in: bool,
 }
 
 #[derive(Template)]
-#[template(path = "blog_post.html", escape = "none")]
+#[template(path = "blog_post_page.html", escape = "none")]
 pub struct BlogPost<'a> {
     pub title: String,
     pub post_body: String,
     pub created_at: chrono::NaiveDateTime,
-    pub last_modified: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
     pub header_links: &'a [HeaderLink<'a>],
-    // pub comments: Vec<Comment>,
 }
 
 #[derive(Template)]
@@ -74,3 +73,9 @@ pub struct BlogIndex<'a> {
 #[derive(Template)]
 #[template(path = "blog_post_editor.html")]
 pub struct BlogPostEditor {}
+
+// #[derive(Template)]
+// #[template(path = "forum_thread.html")]
+// pub struct ForumThread {
+//     pub post: models::Post,
+// }
