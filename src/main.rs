@@ -15,7 +15,7 @@ use std::env;
 use actix::Actor;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::body::Body;
-use actix_web::{middleware, web, App, HttpRequest, HttpResponse, HttpServer};
+use actix_web::{http, middleware, web, App, HttpRequest, HttpResponse, HttpServer};
 use chrono::Utc;
 use clap::Clap;
 use diesel::pg::PgConnection;
@@ -108,14 +108,45 @@ fn setup_logger(level: log::LevelFilter) -> Result<(), fern::InitError> {
     Ok(())
 }
 
-// TODO: serve compressed verions if possible
-fn handle_embedded_file(path: &str) -> HttpResponse {
-    match Asset::get(path) {
+// TODO: this function is poorly written; duplicates a lot of code
+fn handle_embedded_file(path: &str, accepted_encodings: &str) -> HttpResponse {
+    let path = path.to_owned();
+
+    if accepted_encodings.contains("br") {
+        if let Some(content) = Asset::get(&(path.clone() + ".br")) {
+            let body: Body = match content {
+                Cow::Borrowed(bytes) => bytes.into(),
+                Cow::Owned(bytes) => bytes.into(),
+            };
+
+            return HttpResponse::Ok()
+                .content_type(mime_guess::from_path(path).first_or_octet_stream().as_ref())
+                .header(http::header::CONTENT_ENCODING, "br")
+                .body(body);
+        }
+    }
+
+    if accepted_encodings.contains("gzip") {
+        if let Some(content) = Asset::get(&(path.clone() + ".gz")) {
+            let body: Body = match content {
+                Cow::Borrowed(bytes) => bytes.into(),
+                Cow::Owned(bytes) => bytes.into(),
+            };
+
+            return HttpResponse::Ok()
+                .content_type(mime_guess::from_path(path).first_or_octet_stream().as_ref())
+                .header(http::header::CONTENT_ENCODING, "gzip")
+                .body(body);
+        }
+    }
+
+    match Asset::get(&path) {
         Some(content) => {
             let body: Body = match content {
                 Cow::Borrowed(bytes) => bytes.into(),
                 Cow::Owned(bytes) => bytes.into(),
             };
+
             HttpResponse::Ok()
                 .content_type(mime_guess::from_path(path).first_or_octet_stream().as_ref())
                 .body(body)
@@ -125,8 +156,15 @@ fn handle_embedded_file(path: &str) -> HttpResponse {
 }
 
 fn dist(req: HttpRequest) -> HttpResponse {
+    let encodings = req
+        .headers()
+        .get(http::header::ACCEPT_ENCODING)
+        .unwrap()
+        .to_str()
+        .unwrap_or("");
+
     let path = &req.path()["/static/".len()..]; // trim the preceding `/static/` in path
-    handle_embedded_file(path)
+    handle_embedded_file(path, encodings)
 }
 
 #[actix_rt::main]
