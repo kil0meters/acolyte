@@ -49,16 +49,8 @@ pub async fn ws_upgrader(
 
 #[get("")]
 pub async fn frontend(id: Identity) -> Result<HttpResponse, Error> {
-    let username = if let Some(id) = id.identity() {
-        let user: User = serde_json::from_str(&id).unwrap();
-        user.username
-    } else {
-        "ANON".to_owned()
-    };
-
-    let s = templates::ChatEmbed {
-        username: &username,
-        is_moderator: false,
+    let s = templates::ChatPage {
+        user: User::from_identity(id),
         is_embed: false,
     }
     .render()

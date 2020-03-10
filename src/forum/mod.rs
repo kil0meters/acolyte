@@ -5,6 +5,9 @@ use anyhow::anyhow;
 use askama::Template;
 use serde::Deserialize;
 
+use crate::auth::permissions;
+use crate::auth::permissions::Permission;
+use crate::models::User;
 use crate::{templates, DbPool};
 
 pub mod threads;
@@ -28,8 +31,8 @@ pub async fn index(
         .map_err(|_| HttpResponse::InternalServerError())?;
 
     let s = templates::ForumFrontpage {
+        user: User::from_identity(id),
         threads,
-        logged_in: id.identity().is_some(),
     }
     .render()
     .map_err(|_| HttpResponse::InternalServerError())?;
@@ -45,41 +48,39 @@ pub async fn create_thread_form(
     pool: web::Data<DbPool>,
     form: web::Form<ThreadForm>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    if let Some(id) = id.identity() {
-        let conn = pool.get().expect("Error getting database");
+    let user = User::from_identity(id);
 
-        let user = serde_json::from_str(&id).unwrap();
-
-        let thread = web::block(move || {
-            threads::create_new_thread(
-                user,
-                form.title.to_owned(),
-                form.body.to_owned(),
-                form.link.to_owned(),
-                &conn,
-            )
-        })
-        .await
-        .map_err(|e| {
-            error!("error creating thread: {}", e);
-            HttpResponse::InternalServerError();
-        })?;
-
-        info!("{} created thread {}", id, thread.title);
-
-        Ok(HttpResponse::SeeOther()
-            .header(http::header::LOCATION, format!("/forum/{}", thread.id))
-            .finish())
-    } else {
+    if !user.permissions.at_least(permissions::STANDARD) {
         debug!("Unauthorized request");
-        Ok(HttpResponse::Unauthorized().finish())
+        return Ok(HttpResponse::Unauthorized().finish());
     }
+
+    let conn = pool.get().expect("Error getting database");
+
+    let thread = web::block(move || {
+        threads::create_new_thread(
+            user,
+            form.title.to_owned(),
+            form.body.to_owned(),
+            form.link.to_owned(),
+            &conn,
+        )
+    })
+    .await
+    .map_err(|e| {
+        error!("error creating thread: {}", e);
+        HttpResponse::InternalServerError();
+    })?;
+
+    Ok(HttpResponse::SeeOther()
+        .header(http::header::LOCATION, format!("/forum/{}", thread.id))
+        .finish())
 }
 
 #[get("/create-thread")]
 pub async fn thread_editor(id: Identity) -> HttpResponse {
     let s = templates::ThreadEditor {
-        logged_in: id.identity().is_some(),
+        user: User::from_identity(id),
     }
     .render()
     .unwrap();

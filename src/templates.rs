@@ -1,6 +1,10 @@
 use askama::Template;
 use serde::{Deserialize, Serialize};
 
+// used in templates
+use crate::auth::permissions;
+use crate::auth::permissions::Permission;
+
 use crate::models;
 
 #[derive(Serialize, Deserialize, Debug, Copy, Clone)]
@@ -34,23 +38,22 @@ pub struct Login<'a> {
 
 #[derive(Template)]
 #[template(path = "chat.html")]
-pub struct ChatEmbed<'a> {
-    pub username: &'a str,
+pub struct ChatPage {
+    pub user: models::User,
     pub is_embed: bool,
-    pub is_moderator: bool,
 }
 
 #[derive(Template)]
 #[template(path = "forum_frontpage.html")]
 pub struct ForumFrontpage {
+    pub user: models::User,
     pub threads: Vec<models::Thread>,
-    pub logged_in: bool,
 }
 
 #[derive(Template)]
 #[template(path = "thread_editor.html")]
 pub struct ThreadEditor {
-    pub logged_in: bool,
+    pub user: models::User,
 }
 
 #[derive(Template)]

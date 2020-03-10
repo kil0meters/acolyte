@@ -21,3 +21,13 @@ pub const BANNED: AuthLevel = 4;
 pub fn check_auth_level(test_value: AuthLevel, minimum_permission: AuthLevel) -> bool {
     test_value <= minimum_permission
 }
+
+pub trait Permission {
+    fn at_least(&self, minimum_permission: AuthLevel) -> bool;
+}
+
+impl Permission for AuthLevel {
+    fn at_least(&self, minimum_permission: AuthLevel) -> bool {
+        self <= &minimum_permission
+    }
+}

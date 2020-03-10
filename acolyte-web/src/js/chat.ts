@@ -1,4 +1,3 @@
-// import katex from 'katex'
 import {getEmotes, replaceTextWithEmotes} from './emotes';
 import {Message, MessageList} from "./messageList";
 import {UserList} from "./userList";

@@ -68,6 +68,23 @@ impl User {
         }
     }
 
+    pub fn from_identity(id: actix_identity::Identity) -> User {
+        if let Some(id) = id.identity() {
+            if let Ok(user) = serde_json::from_str::<User>(&id) {
+                return user;
+            }
+        }
+
+        User {
+            id: String::new(),
+            username: "ANON".to_owned(),
+            password_hash: String::new(),
+            created_at: NaiveDateTime::from_timestamp(0, 0),
+            updated_at: NaiveDateTime::from_timestamp(0, 0),
+            permissions: permissions::LOGGED_OUT,
+        }
+    }
+
     /// Checks an user ot see if it's valid
     pub fn validate(&self) -> Result<()> {
         // avoid compiling the regex every time

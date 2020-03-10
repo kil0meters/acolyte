@@ -1,0 +1,55 @@
+<div id="login-prompt" class="hidden">
+  <svg class="overlay-close-button" onclick="acolyte.toggleLoginPrompt()" viewBox="0 0 24 24">
+    <path fill="currentColor"
+      d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+  </svg>
+  <div class="login-prompt-container">
+    <span class="login-prompt-big">Woah there partner</span>
+    <span class="login-prompt-small">You need to have an account to chat</span>
+    <a href="/log-in?target=/chat" class="login-prompt-button">LOG IN</a>
+    <a href="/sign-up?target=/chat" class="login-prompt-button">SIGN UP</a>
+  </div>
+</div>
+
+<div id="message-list"></div>
+
+<div id="settings-overlay" class="hidden fullscreen-overlay">
+  <svg class="overlay-close-button" onclick="acolyte.toggleSettings()" viewBox="0 0 24 24">
+    <path fill="currentColor"
+      d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+  </svg>
+  <h2>Settings</h2>
+  <input id="settings-username-input" type="text" placeholder="username">
+</div>
+
+<div id="user-list-overlay" class="hidden fullscreen-overlay">
+  <svg class="overlay-close-button" onclick="acolyte.toggleUserList()" viewBox="0 0 24 24">
+    <path fill="currentColor"
+      d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+  </svg>
+  <h2>Users</h2>
+  <div id="user-list-list" class="wrapper card" style="margin-top: 0;">
+  </div>
+</div>
+
+<button id="messages-below" class="hidden" onclick="window.scrollTo(0, document.body.scrollHeight)">Scroll to
+  bottom
+</button>
+<div id="message-entry">
+  <div id="autocompletion-popup" class="hidden card"></div>
+  <div id="emote-popup" class="hidden card"></div>
+  <textarea id="entry-body" style="resize: none;" class="authorize-form-input"
+    placeholder="Say something as {{ user.username }}" autocomplete="off"></textarea>
+  <a id="emote-button" onclick="acolyte.toggleEmotePopup()">Emotes</a>
+  <a id="settings-button" onclick="acolyte.toggleSettings()">Settings</a>
+  <a id="user-list-button" onclick="acolyte.toggleUserList()">Users</a>
+</div>
+
+<script>
+  window.onload = function () {
+    liveChat = new acolyte.MBChat("ws://localhost:8080/chat/ws",
+      window.innerHeight * 3, false, "{{ user.username }}", "{{user.permissions.at_least(permissions::MODERATOR)}}");
+
+    liveChat.initializeConnection();
+  }
+</script>

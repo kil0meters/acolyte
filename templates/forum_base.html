@@ -4,7 +4,7 @@
 <header class="header card container" style="margin-bottom:16px">
   <a class="logo" href="/">{% block page_title %}header{% endblock %}</a>
   <ul class="header-links">
-    {% if logged_in %}
+    {% if user.permissions.at_least(permissions::STANDARD) %}
     <li class="header-link"><a href="/forum/create-post">Create Post</a></li>
     <li class="header-link"><a href="/preferences">Preferences</a></li>
     <li class="header-link"><a href="/logout">Log Out</a></li>
@@ -19,7 +19,7 @@
     <span></span>
     <span></span>
     <div class="header-hamburger-links">
-      {% if logged_in %}
+      {% if user.permissions.at_least(permissions::STANDARD) %}
       <li class="header-link"><a href="/forum/create-post">Create Post</a></li>
       <li class="header-link"><a href="/preferences">Preferences</a></li>
       <li class="header-link"><a href="/logout">Log Out</a></li>
