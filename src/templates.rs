@@ -77,8 +77,9 @@ pub struct BlogIndex<'a> {
 #[template(path = "blog_post_editor.html")]
 pub struct BlogPostEditor {}
 
-// #[derive(Template)]
-// #[template(path = "forum_thread.html")]
-// pub struct ForumThread {
-//     pub post: models::Post,
-// }
+#[derive(Template)]
+#[template(path = "forum_thread.html")]
+pub struct ForumThread {
+    pub user: models::User,
+    pub thread: models::Thread,
+}

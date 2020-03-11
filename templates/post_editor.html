@@ -1,12 +1,12 @@
 {% extends "forum_base.html" %}
 
-{% block title %}Post Editor - milesbenton.com{% endblock %}
-{% block title %}Post Editor - milesbenton.com{% endblock %}
+{% block title %}New Post{% endblock %}
+{% block page_title %}Create a new post{% endblock %}
 
 {% block content %}
 
 <div class="wrapper padded card">
-  <form action="/forum/create-post" method="POST" style="margin: 0;">
+  <form action="/forum/create-thread" method="POST" style="margin: 0;">
     <input name="title" type="text" class="authorize-form-input" placeholder="Title">
     <input name="link" type="url" class="authorize-form-input" placeholder="Link/Image">
     <textarea name="body" class="authorize-form-input" id="markdown-editor" placeholder="Body" rows="30"></textarea>

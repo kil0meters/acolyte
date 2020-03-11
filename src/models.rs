@@ -71,6 +71,7 @@ impl User {
     pub fn from_identity(id: actix_identity::Identity) -> User {
         if let Some(id) = id.identity() {
             if let Ok(user) = serde_json::from_str::<User>(&id) {
+                debug!("Identity: {:?}", user);
                 return user;
             }
         }
@@ -104,8 +105,8 @@ impl User {
 /// ```
 /// struct Thread {
 ///     id: String,
-///     username: String,
 ///     user_id: String,
+///     username: String,
 ///     title: String,
 ///     body: Option<String>,
 ///     link: Option<String>,
@@ -120,8 +121,8 @@ impl User {
 #[table_name = "threads"]
 pub struct Thread {
     pub id: String,
-    pub username: String,
     pub user_id: String,
+    pub username: String,
     pub title: String,
     pub body: Option<String>,
     pub link: Option<String>,

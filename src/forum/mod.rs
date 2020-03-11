@@ -1,13 +1,13 @@
 use actix_identity::Identity;
-use actix_web::{get, http, post, web, HttpResponse};
-use anyhow::anyhow;
+use actix_web::{get, http, post, web, Error, HttpResponse};
+use diesel::prelude::*;
 // use anyhow::{anyhow, Result};
 use askama::Template;
 use serde::Deserialize;
 
 use crate::auth::permissions;
 use crate::auth::permissions::Permission;
-use crate::models::User;
+use crate::models::{Thread, User};
 use crate::{templates, DbPool};
 
 pub mod threads;
@@ -20,10 +20,7 @@ pub struct ThreadForm {
 }
 
 #[get("")]
-pub async fn index(
-    pool: web::Data<DbPool>,
-    id: Identity,
-) -> Result<HttpResponse, actix_web::Error> {
+pub async fn index(pool: web::Data<DbPool>, id: Identity) -> Result<HttpResponse, Error> {
     let conn = pool.get().expect("Error getting database");
 
     let threads = web::block(move || threads::get_hot_threads(0, &conn))
@@ -47,7 +44,7 @@ pub async fn create_thread_form(
     id: Identity,
     pool: web::Data<DbPool>,
     form: web::Form<ThreadForm>,
-) -> Result<HttpResponse, actix_web::Error> {
+) -> Result<HttpResponse, Error> {
     let user = User::from_identity(id);
 
     if !user.permissions.at_least(permissions::STANDARD) {
@@ -88,4 +85,34 @@ pub async fn thread_editor(id: Identity) -> HttpResponse {
     HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(s)
+}
+
+#[get("/{id}")]
+pub async fn serve_thread(
+    id: Identity,
+    pool: web::Data<DbPool>,
+    post_id: web::Path<String>,
+) -> Result<HttpResponse, Error> {
+    use crate::schema::threads;
+
+    let user = User::from_identity(id);
+
+    let conn = pool
+        .get()
+        .map_err(|_| HttpResponse::InternalServerError())?;
+
+    let thread = web::block(move || {
+        threads::table
+            .select(threads::all_columns)
+            .filter(threads::id.eq(&post_id.to_string()))
+            .first::<Thread>(&conn)
+    })
+    .await
+    .map_err(|_| HttpResponse::InternalServerError())?;
+
+    let s = templates::ForumThread { user, thread }.render().unwrap();
+
+    Ok(HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(s))
 }
