@@ -14,6 +14,7 @@ actix-rt = "1"
 actix-web-actors = "2"
 actix-web = "2"
 askama = "0.9"
+ammonia = "3"
 
 # TODO: Switch to 3.0 once it comes out
 clap = { git = "https://github.com/clap-rs/clap/" }

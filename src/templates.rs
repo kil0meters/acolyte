@@ -78,8 +78,17 @@ pub struct BlogIndex<'a> {
 pub struct BlogPostEditor {}
 
 #[derive(Template)]
-#[template(path = "forum_thread.html")]
+#[template(path = "forum_thread.html", escape = "none")]
 pub struct ForumThread {
     pub user: models::User,
     pub thread: models::Thread,
+    pub comments: Vec<CommentWidget>,
+}
+
+#[derive(Template)]
+#[template(path = "comment_widget.html", escape = "none")]
+pub struct CommentWidget {
+    pub comment: models::Comment,
+    pub has_more_children: bool,
+    pub children: Vec<CommentWidget>,
 }

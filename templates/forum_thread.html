@@ -11,15 +11,15 @@
       <div class="wrapper card">
         <div class="post-meta">
           <span class="post-title">{{ thread.title }}</span>
-          <span class="post-byline">posted by <a href="/user/{{ thread.username }}">{{ thread.username }}</a>
+          <span class="post-byline">by <a href="/user/{{ thread.username }}">{{ thread.username }}</a>
             {{ thread.created_at.format("%B %-d, %Y").to_string() }}</span>
           {% if thread.link.is_some() %}
           <a class="link-preview-link"
             href="{{ thread.link.as_ref().unwrap() }}">{{ thread.link.as_ref().unwrap() }}</a>
           {% endif %}
         </div>
-        {% if thread.body.is_some() %}
-        <div id="post-body" class="post-body">{{ thread.body.as_ref().unwrap() }}</div>
+        {% if thread.body_html.is_some() %}
+        <div id="post-body" class="post-body">{{ thread.body_html.as_ref().unwrap() }}</div>
         {% endif %}
       </div>
       <div class="wrapper comment-entry">
@@ -27,6 +27,9 @@
         </comment-editor>
       </div>
       <div class="wrapper replies">
+        {% for node in comments %}
+        {{ node.render().unwrap() }}
+        {% endfor %}
       </div>
     </div>
     <div class="forum-sidebar">

@@ -28,13 +28,6 @@ pub fn create_new_thread(
     link: String,
     conn: &PgConnection,
 ) -> Result<Thread> {
-    // make sure user is allowed to thread
-    if !permissions::check_auth_level(author.permissions, permissions::STANDARD) {
-        return Err(anyhow!(
-            "User doesn't have minimum permsission level to thread"
-        ));
-    }
-
     let thread = Thread::new(author, title, body, link);
 
     thread.validate()?;

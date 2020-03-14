@@ -56,13 +56,14 @@ class CommentEditor extends HTMLElement {
     connectedCallback() {
         let username = this.getAttribute('username');
         let parentID = this.getAttribute('parent-id');
-        let postID = this.getAttribute('post-id');
+        let threadID = this.getAttribute('post-id');
 
         this.innerHTML = `
         <div class="comment-editor">
             <span>Comment as <a href="/user/${username}">${username}</a></span>
-            <form action="/forum/posts/${parentID}" method="POST">
-                <input type="hidden" name="post-id" value="${postID}">
+            <form action="/forum/create-comment" method="POST">
+                <input type="hidden" name="thread_id" value="${threadID}">
+                <input type="hidden" name="parent_id" value="${parentID}">
                 <textarea name="body" class="authorize-form-input" id="comment-entry" cols="30" rows="10"
                           placeholder="make a nice comment please"></textarea>
                 <button class="authorize-form-button">COMMENT</button>

@@ -269,8 +269,9 @@ async fn main() -> std::io::Result<()> {
                         web::scope("/forum")
                             .service(forum::index)
                             .service(forum::create_thread_form)
-                            .service(forum::serve_thread)
-                            .service(forum::thread_editor),
+                            .service(forum::thread_editor)
+                            .service(forum::comment_form)
+                            .service(forum::serve_thread),
                     )
                     .service(
                         web::scope("/chat")

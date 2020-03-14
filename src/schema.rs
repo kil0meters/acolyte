@@ -9,12 +9,29 @@ table! {
 }
 
 table! {
+    comments (id) {
+        id -> Text,
+        id_parents -> Text,
+        user_id -> Text,
+        username -> Text,
+        body -> Text,
+        body_html -> Text,
+        removed -> Bool,
+        updated_at -> Timestamp,
+        created_at -> Timestamp,
+        upvotes -> Int4,
+        downvotes -> Int4,
+    }
+}
+
+table! {
     threads (id) {
         id -> Text,
         user_id -> Text,
         username -> Text,
         title -> Text,
         body -> Nullable<Text>,
+        body_html -> Nullable<Text>,
         link -> Nullable<Text>,
         removed -> Bool,
         updated_at -> Timestamp,
@@ -35,10 +52,9 @@ table! {
     }
 }
 
-joinable!(threads -> users (user_id));
-
 allow_tables_to_appear_in_same_query!(
     blog_posts,
+    comments,
     threads,
     users,
 );

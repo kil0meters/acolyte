@@ -10,7 +10,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 
 use crate::auth::{passwords, permissions};
-use crate::schema::{blog_posts, threads, users};
+use crate::schema::{blog_posts, comments, threads, users};
 
 const ID_LENGTH: usize = 8;
 
@@ -37,7 +37,7 @@ fn create_id(length: usize) -> String {
 ///     permissions: permissions::AuthLevel,
 /// }
 /// ```
-#[derive(Serialize, Deserialize, Insertable, Queryable, Identifiable, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Insertable, Queryable, Identifiable, Clone, Debug, PartialEq)]
 #[table_name = "users"]
 pub struct User {
     pub id: String,
@@ -69,6 +69,17 @@ impl User {
     }
 
     pub fn from_identity(id: actix_identity::Identity) -> User {
+        lazy_static! {
+            static ref DEFAULT_USER: User = User {
+                id: String::new(),
+                username: "ANON".to_owned(),
+                password_hash: String::new(),
+                created_at: NaiveDateTime::from_timestamp(0, 0),
+                updated_at: NaiveDateTime::from_timestamp(0, 0),
+                permissions: permissions::LOGGED_OUT,
+            };
+        }
+
         if let Some(id) = id.identity() {
             if let Ok(user) = serde_json::from_str::<User>(&id) {
                 debug!("Identity: {:?}", user);
@@ -76,14 +87,7 @@ impl User {
             }
         }
 
-        User {
-            id: String::new(),
-            username: "ANON".to_owned(),
-            password_hash: String::new(),
-            created_at: NaiveDateTime::from_timestamp(0, 0),
-            updated_at: NaiveDateTime::from_timestamp(0, 0),
-            permissions: permissions::LOGGED_OUT,
-        }
+        DEFAULT_USER.clone()
     }
 
     /// Checks an user ot see if it's valid
@@ -125,6 +129,7 @@ pub struct Thread {
     pub username: String,
     pub title: String,
     pub body: Option<String>,
+    pub body_html: Option<String>,
     pub link: Option<String>,
     pub removed: bool,
     pub updated_at: chrono::NaiveDateTime,
@@ -137,13 +142,23 @@ pub struct Thread {
 }
 
 impl Thread {
+    // TODO: Sanitize html
     pub fn new(author: User, title: String, body: String, link: String) -> Thread {
+        use pulldown_cmark::{html, Options, Parser};
+
         let id = create_id(ID_LENGTH);
 
-        let body: Option<String> = if body.trim().is_empty() {
-            None
+        let (body, body_html) = if body.trim().is_empty() {
+            (None, None)
         } else {
-            Some(body)
+            let parser = Parser::new_ext(&body, Options::all());
+
+            let mut unsafe_body_html = String::new();
+            html::push_html(&mut unsafe_body_html, parser);
+
+            let body_html = ammonia::clean(&*unsafe_body_html);
+
+            (Some(body), Some(body_html))
         };
 
         let link: Option<String> = if link.trim().is_empty() {
@@ -160,6 +175,7 @@ impl Thread {
             username: author.username,
             title,
             body,
+            body_html,
             link,
             removed: false,
             updated_at: now,
@@ -243,5 +259,58 @@ impl FromStr for BlogPost {
         } else {
             Err(anyhow!("Invalid post data:\n\"{}\"", post.trim()))
         }
+    }
+}
+
+#[derive(Insertable, Queryable, Debug, Clone, PartialEq)]
+#[table_name = "comments"]
+pub struct Comment {
+    pub id: String,
+    pub id_parents: String,
+    pub user_id: String,
+    pub username: String,
+    pub body: String,
+    pub body_html: String,
+    pub removed: bool,
+    pub updated_at: chrono::NaiveDateTime,
+    pub created_at: chrono::NaiveDateTime,
+    pub upvotes: i32,
+    pub downvotes: i32,
+    // pub chilidren: Vec<Comment>,
+}
+
+impl Comment {
+    pub fn new(author: User, parent_id: String, body: String) -> Comment {
+        use pulldown_cmark::{html, Options, Parser};
+
+        let parser = Parser::new_ext(&body, Options::all());
+
+        let mut unsafe_body_html = String::new();
+        html::push_html(&mut unsafe_body_html, parser);
+
+        let body_html = ammonia::clean(&*unsafe_body_html);
+
+        let now = Utc::now().naive_utc();
+
+        let id = create_id(ID_LENGTH);
+
+        Comment {
+            // poor ordering but this is more efficient
+            id_parents: format!("{}-{}", parent_id, id),
+            id,
+            user_id: author.id,
+            username: author.username,
+            body,
+            body_html,
+            removed: false,
+            updated_at: now,
+            created_at: now,
+            upvotes: 0,
+            downvotes: 0,
+        }
+    }
+
+    pub fn validate(&self) -> Result<()> {
+        Ok(())
     }
 }

@@ -10,6 +10,7 @@ use crate::auth::permissions::Permission;
 use crate::models::{Thread, User};
 use crate::{templates, DbPool};
 
+mod comments;
 pub mod threads;
 
 #[derive(Deserialize)]
@@ -80,18 +81,59 @@ pub async fn thread_editor(id: Identity) -> HttpResponse {
         user: User::from_identity(id),
     }
     .render()
-    .unwrap();
+    .expect("HELLO");
 
     HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(s)
 }
 
-#[get("/{id}")]
+#[derive(Deserialize, Debug)]
+pub struct CommentForm {
+    thread_id: String,
+    parent_id: String,
+    body: String,
+}
+
+#[post("/create-comment")]
+pub async fn comment_form(
+    id: Identity,
+    form: web::Form<CommentForm>,
+    pool: web::Data<DbPool>,
+) -> Result<HttpResponse, Error> {
+    debug!("New comment: {:?}", form);
+    let user = User::from_identity(id);
+
+    if !user.permissions.at_least(permissions::STANDARD) {
+        debug!("Unauthorized request");
+        return Ok(HttpResponse::Unauthorized().finish());
+    }
+
+    let conn = pool.get().expect("Error getting database");
+
+    let thread_id = form.thread_id.to_owned();
+    let comment = web::block(move || {
+        comments::create_new_comment(user, form.parent_id.to_owned(), form.body.to_owned(), &conn)
+    })
+    .await
+    .map_err(|e| {
+        error!("error creating thread: {}", e);
+        HttpResponse::InternalServerError();
+    })?;
+
+    Ok(HttpResponse::SeeOther()
+        .header(
+            http::header::LOCATION,
+            format!("/forum/thread/{}#{}", thread_id, comment.id),
+        )
+        .finish())
+}
+
+#[get("/thread/{id}")]
 pub async fn serve_thread(
     id: Identity,
     pool: web::Data<DbPool>,
-    post_id: web::Path<String>,
+    thread_id: web::Path<String>,
 ) -> Result<HttpResponse, Error> {
     use crate::schema::threads;
 
@@ -101,18 +143,30 @@ pub async fn serve_thread(
         .get()
         .map_err(|_| HttpResponse::InternalServerError())?;
 
-    let thread = web::block(move || {
-        threads::table
+    let (mut thread, comments) = web::block(move || {
+        let thread = threads::table
             .select(threads::all_columns)
-            .filter(threads::id.eq(&post_id.to_string()))
-            .first::<Thread>(&conn)
+            .filter(threads::id.eq(&thread_id.to_string()))
+            .first::<Thread>(&conn)?;
+
+        let comments =
+            comments::get_commnet_tree_from_parent(&thread_id.to_string(), &conn).unwrap_or(vec![]);
+
+        Ok::<(Thread, Vec<templates::CommentWidget>), anyhow::Error>((thread, comments))
     })
     .await
     .map_err(|_| HttpResponse::InternalServerError())?;
 
-    let s = templates::ForumThread { user, thread }.render().unwrap();
+    let s = templates::ForumThread {
+        user,
+        thread,
+        comments,
+    }
+    .render()
+    .unwrap();
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(s))
 }
+
