@@ -86,7 +86,7 @@ export class MessageList {
         let usernameElement = document.createElement("a");
         usernameElement.href = '#' + message.username;
         usernameElement.textContent = message.username;
-        usernameElement.classList.add("message-username");
+        usernameElement.classList.add("username");
 
         let textElement = document.createElement("span");
         textElement.innerHTML = message.text;
@@ -186,12 +186,12 @@ export class MessageList {
             let mostRecentMessage = <HTMLDivElement>this.messageListElement.lastElementChild;
 
             if (mostRecentMessage !== null) {
-                if (Array.from(mostRecentMessage.classList).includes('combo-message') && mostRecentMessage.firstElementChild.getAttribute('alt') === this.currentCombo[0].text) {
+                if (Array.from(mostRecentMessage.classList).includes('combo') && mostRecentMessage.firstElementChild.getAttribute('alt') === this.currentCombo[0].text) {
                     currentComboElement = mostRecentMessage;
                 }
             }
 
-            currentComboElement.classList.add('chat-message', 'combo-message');
+            currentComboElement.classList.add('chat-message', 'combo');
             currentComboElement.innerHTML = `${replaceTextWithEmotes(this.currentCombo[0].text)} ${this.currentCombo.length}x ~combo~`;
 
             this.messageListElement.appendChild(currentComboElement);

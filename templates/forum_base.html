@@ -1,44 +1,51 @@
 {% extends "base.html" %}
 
 {% block body %}
-<header class="header card container" style="margin-bottom:16px">
-  <a class="logo" href="/">{% block page_title %}header{% endblock %}</a>
-  <ul class="header-links">
-    {% if user.permissions.at_least(permissions::STANDARD) %}
-    <li class="header-link"><a href="/forum/create-post">Create Post</a></li>
-    <li class="header-link"><a href="/preferences">Preferences</a></li>
-    <li class="header-link"><a href="/logout">Log Out</a></li>
-    {% else %}
-    <li class="header-link"><a href="/signup">Sign Up</a></li>
-    <li class="header-link"><a href="/login">Log In</a></li>
-    {% endif %}
-  </ul>
-  <ul class="header-hamburger-menu-container">
-    <input type="checkbox" class="header-hamburger-menu">
-    <span></span>
-    <span></span>
-    <span></span>
-    <div class="header-hamburger-links">
-      {% if user.permissions.at_least(permissions::STANDARD) %}
-      <li class="header-link"><a href="/forum/create-post">Create Post</a></li>
-      <li class="header-link"><a href="/preferences">Preferences</a></li>
-      <li class="header-link"><a href="/logout">Log Out</a></li>
-      {% else %}
-      <li class="header-link"><a href="/signup">Sign Up</a></li>
-      <li class="header-link"><a href="/login">Log In</a></li>
-      {% endif %}
+<div class="wide-wrapper">
+  <div class="padded card">
+    <header>
+      <h1>{% block page_title %}header{% endblock %}</h1>
+      <div class="header-links-container">
+        <input type="checkbox" class="hamburger-menu-checkbox">
+        <div class="hamburger-menu">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </div>
+        <ul class="header-links">
+          {% if user.permissions.at_least(permissions::STANDARD) %}
+          <li><a href="/forum/create-post">Create Post</a></li>
+          <li><a href="/preferences">Preferences</a></li>
+          <li><a href="/logout">Log Out</a></li>
+          {% else %}
+          <li><a href="/signup">Sign Up</a></li>
+          <li><a href="/login">Log In</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </header>
+  </div>
+
+  <main class="forum-grid">
+    <div class="content">
+      {% block content %}{% endblock %}
     </div>
-  </ul>
-</header>
+    <div class="sidebar">
+      <div class="card" style="height: 100%">
+        {% include "chat_embed.html"%}
+      </div>
+    </div>
+  </main>
 
-{% block content %}
-<p>base</p>
-{% endblock %}
+  <footer class="card">
+    <a class="footer-link" href="mailto:me@milesbenton.com">Contact</a>
+    <a class="footer-link" href="/privacy">Privacy</a>
+    <a class="footer-link" onclick="acolyte.toggleDarkMode()">Change theme</a>
+  </footer>
+</div>
 
-<footer class="card container">
-  <a class="footer-link" href="mailto:me@milesbenton.com">Contact</a>
-  <a class="footer-link" href="/privacy">Privacy</a>
-  <a class="footer-link" onclick="acolyte.toggleDarkMode()">Change theme</a>
-</footer>
+<script>
+  const username = '{{ user.username }}';
+</script>
 
 {% endblock %}

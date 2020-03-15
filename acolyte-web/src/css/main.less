@@ -1,0 +1,47 @@
+@import "variables.less";
+@import "containers.less";
+@import "widgets.less";
+@import "markdown.less";
+@import "comment.less";
+@import "chat.less";
+
+//////////////////////
+// BOILERPLATE CODE //
+//////////////////////
+
+html {
+    font-family: sans-serif;
+    font-size: 16px;
+    background: @background-color;
+    color: @text-color;
+    min-height: 100vh;
+}
+
+body {
+    margin: 0;
+}
+
+* {
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    hyphens: auto;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+h1, h2, h3, h4, h5 {
+    color: @text-color-bold;
+}
+
+a {
+    cursor: pointer;
+    color: @link-color;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}

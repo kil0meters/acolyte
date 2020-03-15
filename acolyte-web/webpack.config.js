@@ -5,6 +5,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const zopfli = require('@gfx/zopfli');
 const CompressionPlugin = require('compression-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const CleanCSSPlugin = require('less-plugin-clean-css');
 
 module.exports = (env, argv) => ({
     optimization: {
@@ -13,12 +14,12 @@ module.exports = (env, argv) => ({
     },
     plugins: [
         // new BundleAnalyzerPlugin(),
-        new MiniCssExtractPlugin({
-            filename: 'bundle.css',
-            chunkFilename: 'chunk.css',
-        }),
         // compression: we explicitly ignore woff, woff2, jpg, and png files since they cannot be compressed with
         // generic lossless algorithms well
+        new MiniCssExtractPlugin({
+            filename: 'bundle.css',
+            chunkFilename: '[name].css',
+        }),
         new CompressionPlugin({
             filename: '[path].br[query]',
             algorithm: 'brotliCompress',
@@ -56,6 +57,36 @@ module.exports = (env, argv) => ({
     module: {
         rules: [
             {
+                test: /\.less$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader', // translates CSS into CommonJS
+                    },
+                    {
+                        loader: 'less-loader', // compiles Less to CSS
+                        options: {
+                            noIeComapt: true,
+                            math: 'parens-division',
+                            plugins: [
+                                new CleanCSSPlugin({
+                                    level: {
+                                        1: {
+                                            all: true,
+                                        },
+                                        2: {
+                                            all: true,
+                                        }
+                                    },
+                                    advanced: true
+                                })
+                            ]
+                        }
+
+                    },
+                ],
+            },
+            {
                 test: /\.ts$/,
                 use: 'ts-loader',
                 exclude: /node_modules/,
@@ -73,10 +104,10 @@ module.exports = (env, argv) => ({
                     }
                 }
             },
-            {
-                test: /\.css$/i,
-                use: [MiniCssExtractPlugin.loader, 'css-loader'],
-            },
+            // {
+            //     test: /\.css$/i,
+            //     use: [MiniCssExtractPlugin.loader, 'css-loader'],
+            // },
             {
                 test: /\.(png|jpe?g|gif)$/i,
                 use: [

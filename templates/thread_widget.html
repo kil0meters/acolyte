@@ -1,5 +1,5 @@
 <div class="list-card">
-  <a class="post-title" href="/forum/thread/{{ thread.id }}">{{ thread.title }}</a>
+  <h2 style="margin:0"><a href="/forum/thread/{{ thread.id }}">{{ thread.title }}</a></h2>
   <div class="post-byline">by <a href="/user/forum/{{ thread.username }}">{{ thread.username }}</a>
     {{ thread.created_at.format("%B %-d, %Y").to_string() }}
   </div>

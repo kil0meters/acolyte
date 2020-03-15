@@ -1,40 +1,8 @@
-html {
-    font-family: 'Open Sans', sans-serif;
-    background: var(--background-color);
-    color: var(--text-color-bold);
-    min-height: 100vh;
-}
-
-body {
-    margin: 0;
-}
-
-* {
-    box-sizing: border-box;
-    text-overflow: ellipsis;
-    word-break: break-word;
-    hyphens: auto;
-}
-
-*:focus {
-    outline: none;
-}
-
-a {
-    cursor: pointer;
-    color: var(--link-color);
-    text-decoration: none;
-}
-
-a:hover {
-    color: var(--link-color) !important;
-    text-decoration: underline;
-}
-
 :root {
     --background-color: #F8F8F8;
     --card-color: white;
     --text-color-bold: black;
+    --text-color: #0f0f0f;
     --text-color-subtle: darkslategrey;
     --link-color: blueviolet;
     --accent-color: lightgrey;
@@ -50,6 +18,7 @@ a:hover {
         --background-color: #021615;
         --card-color: black;
         --text-color-bold: white;
+        --text-color: #f0f0f0;
         --text-color-subtle: #e0e0e0;
         --link-color: #35deea;
         --accent-color: #092d2c;
@@ -60,3 +29,25 @@ a:hover {
         --brand-background: linear-gradient(-45deg, #0f3538, #240f38);
     }
 }
+
+@background-color: var(--background-color);
+@card-color: var(--card-color);
+@text-color-bold: var(--text-color-bold);
+@text-color: var(--text-color);
+@text-color-subtle: var(--text-color-subtle);
+@link-color: var(--link-color);
+@accent-color: var(--accent-color);
+@shadow-color: var(--shadow-color);
+@shadow-color-initense: var(--shadow-color-intense);
+@brand-background: var(--brand-background);
+
+@container-narrow-width: 800px;
+@container-wide-width: 1200px;
+@container-padding: 16px;
+
+@break-small: 768px;
+@break-large: 1024px;
+
+@animation-time: 200ms;
+
+@radius: 8px;

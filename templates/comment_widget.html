@@ -1,21 +1,21 @@
 <div id="{{ comment.id }}" class="comment card">
-  <input name="{{ comment.id }}" type="checkbox" autocomplete="on" class="comment-collapse-toggle">
-  <span class="comment-collapse-toggle-visible"></span>
-  <div class="comment-container">
-    <div class="comment-byline">
-      <a class="comment-username" href="/user/{{ comment.username }}">{{ comment.username }}</a>
-      <span class="comment-date"> {{ comment.created_at.format("%B %-d, %Y").to_string() }}</span>
+  <input name="{{ comment.id }}" type="checkbox" autocomplete="on" class="collapse-toggle">
+  <span class="collapse-visible"></span>
+  <div class="content">
+    <div class="byline">
+      <a href="/user/{{ comment.username }}">{{ comment.username }}</a>
+      <time> {{ comment.created_at.format("%B %-d, %Y").to_string() }}</time>
     </div>
-    <div class="comment-body">
+    <div class="body markdown">
       {{ comment.body_html }}
     </div>
     {% if has_more_children %}
     <a style="font-weight:bold" href="">CONTINIUE
       ➡</a>
     {% else %}
-    <ul class="comment-actions">
+    <ul class="actions">
       <li>
-        <a onclick="acolyte.toggleReplyEditorVisibility('{{ comment.id_parents }}')">Reply</a>
+        <a onclick="acolyte.toggleReplyEditorVisibility('{{ comment.id_parents }}', '{{ comment.id }}')">Reply</a>
       </li>
       <li><a>Report</a></li>
     </ul>

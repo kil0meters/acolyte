@@ -2,34 +2,33 @@
 
 {% block body %}
 
-<header class="header wrapper" style="padding:0">
-  <span class="logo">{% block page_title %}header{% endblock %}</span>
-  <ul class="header-links">
-    {% for link in header_links %}
-    <li class="header-link"><a href="{{ link.url }}">{{ link.title }}</a></li>
-    {% endfor %}
-  </ul>
-  <ul class="header-hamburger-menu-container">
-    <input type="checkbox" class="header-hamburger-menu">
-    <span></span>
-    <span></span>
-    <span></span>
-    <div class="header-hamburger-links">
-      {% for link in header_links %}
-      <li class="header-link"><a href="{{ link.url }}">{{ link.title }}</a></li>
-      {% endfor %}
+<div class="wrapper">
+  <header>
+    <h1>{% block page_title %}header{% endblock %}</h1>
+    <div class="header-links-container">
+      <input type="checkbox" class="hamburger-menu-checkbox">
+      <div class="hamburger-menu">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </div>
+      <ul class="header-links">
+        {% for link in header_links %}
+        <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+        {% endfor %}
+      </ul>
     </div>
-  </ul>
-</header>
+  </header>
 
-{% block content %}
-<p>base</p>
-{% endblock %}
+  {% block content %}
+  <p>base</p>
+  {% endblock %}
 
-<footer class="card wrapper">
-  <a class="footer-link" href="mailto:me@milesbenton.com">Contact</a>
-  <a class="footer-link" href="/privacy">Privacy</a>
-  <a class="footer-link" onclick="acolyte.toggleDarkMode()">Change theme</a>
-</footer>
+  <footer class="card">
+    <a href="mailto:me@milesbenton.com">Contact</a>
+    <a href="/privacy">Privacy</a>
+    <a onclick="acolyte.toggleDarkMode()">Change theme</a>
+  </footer>
+</div>
 
 {% endblock %}

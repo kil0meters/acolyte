@@ -5,39 +5,27 @@
 
 {% block content %}
 
-<main class="container">
-  <div class="wrapper forum-grid">
-    <div class="forum-content">
-      <div class="wrapper card">
-        <div class="post-meta">
-          <span class="post-title">{{ thread.title }}</span>
-          <span class="post-byline">by <a href="/user/{{ thread.username }}">{{ thread.username }}</a>
-            {{ thread.created_at.format("%B %-d, %Y").to_string() }}</span>
-          {% if thread.link.is_some() %}
-          <a class="link-preview-link"
-            href="{{ thread.link.as_ref().unwrap() }}">{{ thread.link.as_ref().unwrap() }}</a>
-          {% endif %}
-        </div>
-        {% if thread.body_html.is_some() %}
-        <div id="post-body" class="post-body">{{ thread.body_html.as_ref().unwrap() }}</div>
-        {% endif %}
-      </div>
-      <div class="wrapper comment-entry">
-        <comment-editor username="{{ user.username }}" parent-id="{{ thread.id }}" post-id="{{ thread.id }}">
-        </comment-editor>
-      </div>
-      <div class="wrapper replies">
-        {% for node in comments %}
-        {{ node.render().unwrap() }}
-        {% endfor %}
-      </div>
-    </div>
-    <div class="forum-sidebar">
-      <div class="wrapper card" style="height: 100%">
-        {% include "chat_embed.html" %}
-      </div>
-    </div>
+<div class="card">
+  <div class="thread-meta padded">
+    <h1>{{ thread.title }}</h1>
+    <span class="byline">by <a href="/user/{{ thread.username }}">{{ thread.username }}</a>
+      <time>{{ thread.created_at.format("%B %-d, %Y").to_string() }}</time></span>
+    {% if thread.link.is_some() %}
+    <a class="link-preview-link" href="{{ thread.link.as_ref().unwrap() }}">{{ thread.link.as_ref().unwrap() }}</a>
+    {% endif %}
   </div>
-</main>
+  {% if thread.body_html.is_some() %}
+  <div class="padded markdown">{{ thread.body_html.as_ref().unwrap() }}</div>
+  {% endif %}
+</div>
+<div class="comment-entry">
+  <comment-editor username="{{ user.username }}" parent-id="{{ thread.id }}" post-id="{{ thread.id }}">
+  </comment-editor>
+</div>
+<div class="replies">
+  {% for node in comments %}
+  {{ node.render().unwrap() }}
+  {% endfor %}
+</div>
 
 {% endblock %}

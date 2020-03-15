@@ -29,6 +29,7 @@ yarn-error.log*
 
 dist
 main
+old
 acolyte
 
 #Added by cargo

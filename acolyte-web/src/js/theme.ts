@@ -2,6 +2,7 @@ interface Theme {
     backgroundColor: string,
     cardColor: string,
     textColorBold: string,
+    textColor: string,
     textColorSubtle: string,
     linkColor: string,
     accentColor: string,
@@ -14,6 +15,7 @@ const lightTheme = {
     backgroundColor: '#F8F8F8',
     cardColor: 'white',
     textColorBold: 'black',
+    textColor: '#0f0f0f',
     textColorSubtle: 'darkslategrey',
     linkColor: 'blueviolet',
     accentColor: 'lightgrey',
@@ -26,6 +28,7 @@ const darkTheme = {
     backgroundColor: '#021615',
     cardColor: 'black',
     textColorBold: 'white',
+    textColor: '#f0f0f0',
     textColorSubtle: '#e0e0e0',
     linkColor: '#35deea',
     accentColor: '#092d2c',
@@ -43,6 +46,7 @@ export function setTheme(theme: Theme) {
 
     documentElementStyle.setProperty('--card-color', theme.cardColor);
     documentElementStyle.setProperty('--text-color-bold', theme.textColorBold);
+    documentElementStyle.setProperty('--text-color', theme.textColor);
     documentElementStyle.setProperty('--text-color-subtle', theme.textColorSubtle);
     documentElementStyle.setProperty('--link-color', theme.linkColor);
     documentElementStyle.setProperty('--accent-color', theme.accentColor);

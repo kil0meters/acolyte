@@ -1,3 +1,5 @@
+let username = "";
+
 function formatDate(date: Date) {
     let monthNames = [
         "January", "February", "March",
@@ -55,15 +57,13 @@ class CommentEditor extends HTMLElement {
 
     connectedCallback() {
         let username = this.getAttribute('username');
-        let parentID = this.getAttribute('parent-id');
-        let threadID = this.getAttribute('post-id');
+        let idParents = this.getAttribute('id-parents');
 
         this.innerHTML = `
         <div class="comment-editor">
             <span>Comment as <a href="/user/${username}">${username}</a></span>
             <form action="/forum/create-comment" method="POST">
-                <input type="hidden" name="thread_id" value="${threadID}">
-                <input type="hidden" name="parent_id" value="${parentID}">
+                <input type="hidden" name="id_parents" value="${idParents}">
                 <textarea name="body" class="authorize-form-input" id="comment-entry" cols="30" rows="10"
                           placeholder="make a nice comment please"></textarea>
                 <button class="authorize-form-button">COMMENT</button>
@@ -72,16 +72,15 @@ class CommentEditor extends HTMLElement {
     }
 }
 
-export function toggleReplyEditorVisibility(parentID: string, postID: string, username: string) {
-    let editor = document.querySelector(`#${parentID} .comment-container .comment-actions comment-editor`);
-    let commentActions = document.querySelector(`#${parentID} .comment-container .comment-actions`);
+export function toggleReplyEditorVisibility(idParents: string, commentID: string) {
+    let editor = document.querySelector(`#${commentID} .content .actions comment-editor`);
 
     if (editor === undefined || editor === null) {
+        let commentActions = document.querySelector(`#${commentID} .content .actions`);
 
         editor = document.createElement('comment-editor');
         editor.setAttribute('username', username);
-        editor.setAttribute('parent-id', parentID);
-        editor.setAttribute('post-id', postID);
+        editor.setAttribute('id-parents', idParents);
 
         commentActions.appendChild(editor)
     } else {

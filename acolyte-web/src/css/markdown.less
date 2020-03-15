@@ -1,0 +1,57 @@
+.markdown {
+    h1:first-child {
+        margin-top: 0;
+    }
+
+    table {
+        margin: auto;
+        border-spacing: 0;
+    }
+
+    table thead th {
+        border-bottom: 2px solid var(--accent-color);
+    }
+
+    table tbody tr:nth-child(2n)  {
+        background-color: var(--accent-color);
+    }
+
+    th, td {
+        padding: 12px;
+    }
+
+    /* code */
+
+    pre {
+        font-size: 14px;
+        padding: 12px;
+        border-radius: 8px;
+        background-color: var(--accent-color);
+        overflow-x: auto;
+    }
+
+    /* Quotes */
+
+    blockquote {
+        margin-left: 0;
+        margin-bottom: 0;
+        border-left: 4px solid var(--accent-color);
+        padding: 12px;
+    }
+
+    blockquote ~ blockquote {
+        margin-top: 0;
+    }
+
+    blockquote blockquote:first-child {
+        margin-top: 0;
+    }
+
+    blockquote p:first-child {
+        margin-top: 0;
+    }
+
+    blockquote p:last-child {
+        margin-bottom: 0;
+    }
+}

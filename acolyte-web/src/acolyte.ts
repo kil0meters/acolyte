@@ -5,14 +5,7 @@ import {renderEmotesInElement} from './js/emotes';
 import {renderLinksInElement} from "./js/messageList";
 import {LogSearch} from './js/logs';
 
-import './css/chat.css';
-import './css/fonts.css';
-import './css/homepage.css';
-import './css/livestream.css';
-import './css/markdown.css';
-import './css/forum.css';
-import './css/post-editor.css';
-import './css/logs.css';
+import "./css/main.less";
 
 export {
     MBChat,

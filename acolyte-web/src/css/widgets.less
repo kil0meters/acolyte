@@ -1,0 +1,44 @@
+@import "variables.less";
+
+textarea, input[type="text"] {
+    display: block;
+    font-family: inherit;
+    font-size: inherit;
+    box-shadow: none;
+    background-color: @background-color;
+    color: @text-color-bold;
+    border-radius: @radius;
+    border: 3px solid @accent-color;
+    padding: (@container-padding / 2);
+    width: 100%;
+
+    &:not(:last-child) {
+        margin-bottom: 12px;
+    }
+
+    &:focus {
+        border-color: @link-color;
+    }
+
+    &:invalid {
+        border-color: red;
+    }
+}
+
+button, .button {
+    border: none;
+    font-size: 1.2em;
+    border-radius: @radius;
+    text-align: center;
+    font-family: sans-serif;
+    font-weight: bold;
+
+    padding: (@container-padding / 2) (@container-padding * 2);
+    color: @text-color-bold;
+    background-color: @accent-color;
+
+    &:hover {
+        color: @background-color;
+        background-color: @link-color;
+    }
+}
