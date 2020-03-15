@@ -10,22 +10,19 @@ const CleanCSSPlugin = require('less-plugin-clean-css');
 module.exports = (env, argv) => ({
     optimization: {
         minimize: argv.mode === 'production',
-        minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})]
+        minimizer: [new TerserJSPlugin({})]
     },
     plugins: [
         // new BundleAnalyzerPlugin(),
         // compression: we explicitly ignore woff, woff2, jpg, and png files since they cannot be compressed with
         // generic lossless algorithms well
-        new MiniCssExtractPlugin({
-            filename: 'bundle.css',
-            chunkFilename: '[name].css',
-        }),
         new CompressionPlugin({
             filename: '[path].br[query]',
             algorithm: 'brotliCompress',
             test: (argv.mode === 'production') ? /\.(js|css|html|svg|eot|ttf)$/ : /.^/,
             compressionOptions: {level: 11},
-            threshold: 10240,
+            // threshold: 10240,
+            threshold: 0,
             minRatio: 0.9
         }),
         new CompressionPlugin({
@@ -37,9 +34,13 @@ module.exports = (env, argv) => ({
             compressionOptions: {
                 numiterations: 15,
             },
-            threshold: 10240,
+            threshold: 0,
             minRatio: 0.9
-        })
+        }),
+        new MiniCssExtractPlugin({
+            filename: 'bundle.css',
+            chunkFilename: '[name].css',
+        }),
     ],
     mode: 'development',
     entry: {
@@ -56,6 +57,24 @@ module.exports = (env, argv) => ({
     },
     module: {
         rules: [
+            {
+                test: /\.ts$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
+            {
+                test: /\.(eot|woff|woff2|svg|ttf)([?]?.*)$/,
+                loader: 'file-loader',
+                options: {
+                    name(file) {
+                        if (argv.mode !== 'production') {
+                            return '[name].[ext]';
+                        }
+
+                        return '[contenthash].[ext]';
+                    }
+                }
+            },
             {
                 test: /\.less$/,
                 use: [
@@ -79,35 +98,13 @@ module.exports = (env, argv) => ({
                                         }
                                     },
                                     advanced: true
-                                })
+                                }),
                             ]
                         }
 
                     },
                 ],
             },
-            {
-                test: /\.ts$/,
-                use: 'ts-loader',
-                exclude: /node_modules/,
-            },
-            {
-                test: /\.(eot|woff|woff2|svg|ttf)([?]?.*)$/,
-                loader: 'file-loader',
-                options: {
-                    name(file) {
-                        if (argv.mode !== 'production') {
-                            return '[name].[ext]';
-                        }
-
-                        return '[contenthash].[ext]';
-                    }
-                }
-            },
-            // {
-            //     test: /\.css$/i,
-            //     use: [MiniCssExtractPlugin.loader, 'css-loader'],
-            // },
             {
                 test: /\.(png|jpe?g|gif)$/i,
                 use: [
