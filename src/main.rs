@@ -27,6 +27,7 @@ pub mod blog;
 pub mod chat;
 pub mod forum;
 pub mod frontpage;
+pub mod macros;
 pub mod models;
 pub mod schema;
 pub mod templates;
@@ -68,10 +69,9 @@ struct Chat {
     #[clap(short, long, default_value = "8080")]
     /// Port to listen on
     port: String,
-
-    #[clap(short, long, default_value = "https://localhost:8000")]
-    /// Not implemented yet. Would be used for pooling chat instances together.
-    master: String,
+    // #[clap(short, long, default_value = "https://localhost:8000")]
+    // /// Not implemented yet. Would be used for pooling chat instances together.
+    // master: String,
 }
 
 #[derive(Clap)]
@@ -80,10 +80,9 @@ struct Forum {
     #[clap(short, long, default_value = "8080")]
     /// Port to listen on
     port: String,
-
-    #[clap(short, long, default_value = "http://localhost:8080")]
-    /// Link to chat instance
-    chat_url: String,
+    // #[clap(short, long, default_value = "http://localhost:8080")]
+    // /// Link to chat instance
+    // chat_url: String,
 }
 
 #[derive(RustEmbed)]

@@ -13,16 +13,15 @@
     </div>
     {% endif %}
     <input name="target" type="hidden" value="{{ target }}">
-    <label for="username" class="authorize-form-label">Username</label>
-    <input name="username" class="authorize-form-input" pattern="[a-zA-Z0-9]+" minlength="1" maxlength="16">
-    <label for="password" class="authorize-form-label">Password</label>
-    <input name="password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8" maxlength="256"
-      type="password">
-    <label for="verify_password" class="authorize-form-label">Verify Password</label>
-    <input name="verify_password" class="authorize-form-input" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8"
-      maxlength="256" oninput="checkVerifyPassword()" type="password">
+    <label for="username">Username</label>
+    <input name="username" pattern="[a-zA-Z0-9]+" minlength="1" maxlength="16" type="text">
+    <label for="password">Password</label>
+    <input name="password" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8" maxlength="256" type="password">
+    <label for="verify_password">Verify Password</label>
+    <input name="verify_password" pattern="[a-zA-Z0-9!@#$%^&*()\s]+" minlength="8" maxlength="256"
+      oninput="checkVerifyPassword()" type="password">
 
-    <button class="authorize-form-button" type="submit">SIGN UP</button>
+    <button type="submit">SIGN UP</button>
   </form>
 </div>
 <script>

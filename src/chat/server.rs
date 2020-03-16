@@ -7,11 +7,6 @@ use serde_json;
 
 use super::message_types::*;
 
-pub struct Client {
-    username: String,
-    authentication_level: String,
-}
-
 pub struct Server {
     sessions: HashMap<usize, Recipient<Broadcast>>,
     rng: ThreadRng,

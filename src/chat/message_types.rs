@@ -4,8 +4,6 @@ use actix::prelude::{Message, Recipient};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::auth::permissions::AuthLevel;
-
 // Struct sent to users
 #[derive(Message)]
 #[rtype(result = "()")]

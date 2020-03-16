@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use actix_identity::Identity;
-use actix_web::{get, http, post, web, Error, HttpResponse};
+use actix_web::{get, http, post, web, HttpResponse};
 use anyhow::anyhow;
 use askama::Template;
 use diesel::prelude::*;
@@ -10,36 +10,29 @@ use serde::Deserialize;
 
 use crate::auth::permissions;
 use crate::frontpage::HEADER_LINKS;
-use crate::models;
+use crate::models::{BlogPost, User};
 use crate::schema::blog_posts;
-use crate::templates;
+use crate::templates::{self, BlogIndex, BlogPostEditor};
 use crate::DbPool;
+use crate::{redirect_to, serve_template, unauthorized, unwrap_or_notfound, unwrap_or_redirect};
 
 #[get("/blog")]
-pub async fn blog_index(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
-    let conn = pool
-        .get()
-        .map_err(|_| HttpResponse::InternalServerError())?;
+pub async fn blog_index(pool: web::Data<DbPool>) -> HttpResponse {
+    let conn = pool.get().unwrap();
 
     let posts = web::block(move || {
         blog_posts::table
             .select(blog_posts::all_columns)
-            .load::<models::BlogPost>(&conn)
+            .load::<BlogPost>(&conn)
             .map_err(|_| anyhow!("Error fetching blogpost"))
     })
     .await
-    .map_err(|_| HttpResponse::InternalServerError())?;
+    .unwrap_or(vec![]);
 
-    let s = templates::BlogIndex {
+    serve_template!(BlogIndex {
         posts,
         header_links: &HEADER_LINKS,
-    }
-    .render()
-    .map_err(|_| HttpResponse::InternalServerError())?;
-
-    Ok(HttpResponse::Ok()
-        .content_type("text/html; charset=utf-8")
-        .body(s))
+    });
 }
 
 #[derive(Deserialize)]
@@ -54,101 +47,65 @@ pub async fn blog_upload_form(
     pool: web::Data<DbPool>,
     form: web::Form<BlogUploadForm>,
 ) -> HttpResponse {
-    if let Some(id) = id.identity() {
-        let user = serde_json::from_str::<models::User>(&id).unwrap();
+    let user = User::from_identity(id);
 
-        if user.permissions == permissions::ADMIN {
-            match models::BlogPost::from_str(&form.data) {
-                Ok(post) => {
-                    let conn = pool.get().unwrap();
-                    let post_id = post.id.clone();
-
-                    web::block(move || {
-                        diesel::insert_into(blog_posts::table)
-                            .values(&post)
-                            .execute(&conn)
-                    })
-                    .await
-                    .unwrap();
-
-                    HttpResponse::SeeOther()
-                        .header(http::header::LOCATION, format!("/blog/{}", post_id))
-                        .finish()
-                }
-                Err(e) => {
-                    error!("Encountered an error while parsing blog post: {}", e);
-
-                    HttpResponse::SeeOther()
-                        .header(http::header::LOCATION, "/blog/new?error=1")
-                        .finish()
-                }
-            }
-        } else {
-            HttpResponse::SeeOther()
-                .header(http::header::LOCATION, "/unauthorized")
-                .finish()
-        }
-    } else {
-        HttpResponse::SeeOther()
-            .header(http::header::LOCATION, "/unauthorized")
-            .finish()
+    if user.permissions != permissions::ADMIN {
+        unauthorized!();
     }
+
+    let post = unwrap_or_redirect!(
+        BlogPost::from_str(&form.data) => "/blog/new?error=1");
+
+    let conn = pool.get().unwrap();
+    let post_id = post.id.clone();
+
+    unwrap_or_redirect!({
+        web::block(move || {
+            diesel::insert_into(blog_posts::table)
+                .values(&post)
+                .execute(&conn)
+        }).await
+    } => "/blog/new?error=1");
+
+    redirect_to!("/blog/{}", post_id);
 }
 
 #[get("/blog/new")]
 pub async fn blog_editor(id: Identity) -> HttpResponse {
-    if let Some(id) = id.identity() {
-        let user = serde_json::from_str::<models::User>(&id).unwrap();
+    let user = User::from_identity(id);
 
-        if user.permissions == permissions::ADMIN {
-            let s = templates::BlogPostEditor {}.render().unwrap();
-
-            return HttpResponse::Ok()
-                .content_type("text/html; charset=utf-8")
-                .body(s);
-        }
+    if user.permissions != permissions::ADMIN {
+        unauthorized!();
     }
-    HttpResponse::SeeOther()
-        .header(http::header::LOCATION, "/unauthorized")
-        .finish()
+
+    serve_template!(BlogPostEditor {});
 }
 
 #[get("/blog/{id}")]
-pub async fn serve_blog_post(
-    pool: web::Data<DbPool>,
-    id: web::Path<String>,
-) -> Result<HttpResponse, Error> {
-    let id: String = id.to_string();
-    let conn = pool
-        .get()
-        .map_err(|_| HttpResponse::InternalServerError())?;
+pub async fn serve_blog_post(pool: web::Data<DbPool>, id: web::Path<String>) -> HttpResponse {
+    let id = id.to_string();
+    let conn = pool.get().unwrap();
 
-    let post = web::block(move || {
-        blog_posts::table
-            .select(blog_posts::all_columns)
-            .filter(blog_posts::id.eq(&id))
-            .first::<models::BlogPost>(&conn)
-            .map_err(|_| anyhow!("Error fetching blogpost"))
-    })
-    .await
-    .map_err(|_| HttpResponse::InternalServerError())?;
+    let post: BlogPost = unwrap_or_notfound!(
+        web::block(move || {
+            blog_posts::table
+                .select(blog_posts::all_columns)
+                .filter(blog_posts::id.eq(&id))
+                .first::<BlogPost>(&conn)
+        })
+        .await
+    );
 
     // let (content, metadata) = extract_metadata(post.body).unwrap();
     let html_output = render_content(&post.body);
 
-    let s = templates::BlogPost {
+    serve_template!(templates::BlogPost {
         title: post.title,
         created_at: post.created_at,
         updated_at: post.updated_at,
         post_body: html_output,
         header_links: &HEADER_LINKS,
-    }
-    .render()
-    .unwrap();
-
-    Ok(HttpResponse::Ok()
-        .content_type("text/html; charset=utf-8")
-        .body(s))
+    });
 }
 
 fn render_content(content: &str) -> String {
@@ -159,6 +116,3 @@ fn render_content(content: &str) -> String {
 
     html_output
 }
-
-/// Regenerates all post markdown, graphs, etc.
-fn generate_templates() {}

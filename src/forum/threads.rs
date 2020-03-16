@@ -1,8 +1,7 @@
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 
-use crate::auth::permissions;
 use crate::models::{Thread, User};
 use crate::schema::threads;
 

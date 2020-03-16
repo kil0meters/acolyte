@@ -1,8 +1,14 @@
 @import "variables.less";
 
-textarea, input[type="text"] {
+label {
+    display: block;
+    font-weight: bold;
+}
+
+textarea, input[type="text"], input[type="password"] {
     display: block;
     font-family: inherit;
+    resize: vertical;
     font-size: inherit;
     box-shadow: none;
     background-color: @background-color;
@@ -27,7 +33,7 @@ textarea, input[type="text"] {
 
 button, .button {
     border: none;
-    font-size: 1.2em;
+    font-size: 1.1em;
     border-radius: @radius;
     text-align: center;
     font-family: sans-serif;

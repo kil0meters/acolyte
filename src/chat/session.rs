@@ -15,7 +15,7 @@ const CLIENT_TIMEOUT: time::Duration = time::Duration::from_secs(10);
 pub struct Client {
     pub id: usize,
 
-    pub username: Option<String>,
+    pub username: String,
     pub auth_level: AuthLevel,
     // If client doesn't send a ping every 10 seconds
     // it gets absolutely murdered
@@ -81,9 +81,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Client {
                 let m = text.trim();
                 println!("{}", m);
                 if m.starts_with('/') {
-                } else if let Some(username) = &self.username {
+                } else if &self.username != "ANON" {
                     self.conn.do_send(ChatMessage {
-                        username: username.to_owned(),
+                        username: self.username.clone(),
                         id: Uuid::new_v4(),
                         date: time::SystemTime::now(),
                         text,
