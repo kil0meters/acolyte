@@ -1,15 +1,17 @@
 #[macro_export]
 macro_rules! not_found {
-    () => {
-        $crate::serve_html!("Not found")
-    };
+    () => {{
+        use askama::Template;
+        $crate::serve_template!($crate::templates::NotFound { header_links: &[] })
+    }};
 }
 
 #[macro_export]
 macro_rules! unauthorized {
-    () => {
-        $crate::serve_html!("Unauthorized")
-    };
+    () => {{
+        use askama::Template;
+        $crate::serve_template!($crate::templates::Unauthorized { header_links: &[] })
+    }};
 }
 
 #[macro_export]

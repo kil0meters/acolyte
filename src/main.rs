@@ -277,6 +277,7 @@ async fn main() -> std::io::Result<()> {
                             .service(chat::frontend)
                             .service(chat::ws_upgrader),
                     )
+                    .default_service(web::get().to(|| not_found!()))
             })
             .bind(format!("0.0.0.0:{}", opts.port))?
             .run()

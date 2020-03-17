@@ -92,3 +92,15 @@ pub struct CommentWidget {
     pub has_more_children: bool,
     pub children: Vec<CommentWidget>,
 }
+
+#[derive(Template)]
+#[template(path = "not_found.html")]
+pub struct NotFound<'a> {
+    pub header_links: &'a [HeaderLink<'a>],
+}
+
+#[derive(Template)]
+#[template(path = "unauthorized.html")]
+pub struct Unauthorized<'a> {
+    pub header_links: &'a [HeaderLink<'a>],
+}
