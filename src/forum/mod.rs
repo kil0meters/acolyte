@@ -74,8 +74,8 @@ pub async fn thread_editor(id: Identity) -> HttpResponse {
 
 #[derive(Deserialize, Debug)]
 pub struct CommentForm {
-    thread_id: String,
     parent_id: String,
+    thread_id: String,
     body: String,
 }
 
@@ -135,6 +135,8 @@ pub async fn serve_thread(
         })
         .await
     );
+
+    debug!("{:?}", comments);
 
     serve_template!(templates::ForumThread {
         user,

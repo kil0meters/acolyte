@@ -5,14 +5,14 @@
 
 {% block content %}
 
-<div class="wrapper padded card">
+<div class="padded card">
   <form action="/forum/create-thread" method="POST" style="margin: 0;">
-    <input name="title" type="text" class="authorize-form-input" placeholder="Title">
-    <input name="link" type="url" class="authorize-form-input" placeholder="Link/Image">
-    <textarea name="body" class="authorize-form-input" id="markdown-editor" placeholder="Body" rows="30"></textarea>
-    <div class="authorize-form-grid">
-      <button class="authorize-form-button" style="grid-column: 1;" type="button">PREVIEW</button>
-      <button class="authorize-form-button" style="grid-column: 2;">POST</button>
+    <input name="title" type="text" placeholder="Title">
+    <input name="link" type="url" placeholder="Link/Image">
+    <textarea name="body" id="markdown-editor" placeholder="Body" rows="30"></textarea>
+    <div>
+      <button style="grid-column: 1;" type="button">PREVIEW</button>
+      <button style="grid-column: 2;">POST</button>
     </div>
   </form>
 </div>

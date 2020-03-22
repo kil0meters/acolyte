@@ -18,8 +18,8 @@
   <div class="padded markdown">{{ thread.body_html.as_ref().unwrap() }}</div>
   {% endif %}
 </div>
-<div class="comment-entry">
-  <comment-editor username="{{ user.username }}" parent-id="{{ thread.id }}" post-id="{{ thread.id }}">
+<div>
+  <comment-editor username="{{ user.username }}" thread-id="{{ thread.id }}" parent-id="{{ thread.id }}" />
   </comment-editor>
 </div>
 <div class="replies">

@@ -9,8 +9,14 @@
         margin-top: 16px;
     }
 
-    &:target .content {
-        border: 1px solid @link-color;
+    &:target {
+        .content {
+            border-color: @link-color;
+        }
+
+        .collapse-visible {
+            background-color: @link-color;
+        }
     }
 
     .comment {
@@ -24,6 +30,8 @@
         border: 1px solid @accent-color;
         border-bottom-right-radius: @radius;
         border-top-right-radius: @radius;
+
+        transition: @animation-time ease;
     }
 
     .collapse-toggle {
@@ -34,19 +42,26 @@
         width: 12px;
         margin: 0;
         opacity: 0;
-        // cursor: pointer;
+        cursor: pointer;
+
+        &:hover {
+            ~ .content {
+                border-color: @link-color;
+            }
+
+            ~ .collapse-visible {
+                background-color: @link-color;
+            }
+        }
 
         &:checked {
             ~ .content .byline {
-                color: @text-color-subtle;
+                color: @text-color-subtle !important;
+                margin: 0;
                 font-style: italic;
             }
 
-            ~ .content .actions {
-                display: none;
-            }
-
-            ~ .content .body {
+            ~ .content > :not(.byline) {
                 display: none;
             }
         }
@@ -62,7 +77,7 @@
         border-top-left-radius: @radius;
         width: 12px;
 
-        transition: 0.2s ease;
+        transition: @animation-time ease;
     }
 
     .actions {

@@ -13,14 +13,14 @@ pub struct HeaderLink<'a> {
     pub url: &'a str,
 }
 
-#[derive(Template)]
+#[derive(Template, Debug)]
 #[template(path = "home.html")]
 pub struct Homepage<'a> {
     pub header_links: &'a [HeaderLink<'a>],
     pub live_status: bool,
 }
 
-#[derive(Template)]
+#[derive(Template, Debug)]
 #[template(path = "signup.html")]
 pub struct Signup<'a> {
     pub header_links: &'a [HeaderLink<'a>],
@@ -28,7 +28,7 @@ pub struct Signup<'a> {
     pub error: bool,
 }
 
-#[derive(Template)]
+#[derive(Template, Debug)]
 #[template(path = "login.html")]
 pub struct Login<'a> {
     pub header_links: &'a [HeaderLink<'a>],
@@ -36,27 +36,27 @@ pub struct Login<'a> {
     pub error: bool,
 }
 
-#[derive(Template)]
+#[derive(Template, Debug)]
 #[template(path = "chat.html")]
 pub struct ChatPage {
     pub user: models::User,
     pub is_embed: bool,
 }
 
-#[derive(Template)]
+#[derive(Template, Debug)]
 #[template(path = "forum_frontpage.html")]
 pub struct ForumFrontpage {
     pub user: models::User,
     pub threads: Vec<models::Thread>,
 }
 
-#[derive(Template)]
+#[derive(Template, Debug)]
 #[template(path = "thread_editor.html")]
 pub struct ThreadEditor {
     pub user: models::User,
 }
 
-#[derive(Template)]
+#[derive(Template, Debug)]
 #[template(path = "blog_post_page.html", escape = "none")]
 pub struct BlogPost<'a> {
     pub title: String,
@@ -66,18 +66,18 @@ pub struct BlogPost<'a> {
     pub header_links: &'a [HeaderLink<'a>],
 }
 
-#[derive(Template)]
+#[derive(Template, Debug)]
 #[template(path = "blog_index.html")]
 pub struct BlogIndex<'a> {
     pub posts: Vec<models::BlogPost>,
     pub header_links: &'a [HeaderLink<'a>],
 }
 
-#[derive(Template)]
+#[derive(Template, Debug)]
 #[template(path = "blog_post_editor.html")]
 pub struct BlogPostEditor {}
 
-#[derive(Template)]
+#[derive(Template, Debug)]
 #[template(path = "forum_thread.html", escape = "none")]
 pub struct ForumThread {
     pub user: models::User,
@@ -85,7 +85,7 @@ pub struct ForumThread {
     pub comments: Vec<CommentWidget>,
 }
 
-#[derive(Template)]
+#[derive(Template, Debug)]
 #[template(path = "comment_widget.html", escape = "none")]
 pub struct CommentWidget {
     pub comment: models::Comment,
@@ -93,13 +93,13 @@ pub struct CommentWidget {
     pub children: Vec<CommentWidget>,
 }
 
-#[derive(Template)]
+#[derive(Template, Debug)]
 #[template(path = "not_found.html")]
 pub struct NotFound<'a> {
     pub header_links: &'a [HeaderLink<'a>],
 }
 
-#[derive(Template)]
+#[derive(Template, Debug)]
 #[template(path = "unauthorized.html")]
 pub struct Unauthorized<'a> {
     pub header_links: &'a [HeaderLink<'a>],

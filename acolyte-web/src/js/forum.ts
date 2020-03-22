@@ -57,13 +57,15 @@ class CommentEditor extends HTMLElement {
 
     connectedCallback() {
         let username = this.getAttribute('username');
-        let idParents = this.getAttribute('id-parents');
+        let threadId = this.getAttribute('thread-id');
+        let parentId = this.getAttribute('parent-id');
 
         this.innerHTML = `
         <div class="comment-editor">
             <span>Comment as <a href="/user/${username}">${username}</a></span>
             <form action="/forum/create-comment" method="POST">
-                <input type="hidden" name="id_parents" value="${idParents}">
+                <input type="hidden" name="thread_id" value="${threadId}">
+                <input type="hidden" name="parent_id" value="${parentId}">
                 <textarea name="body" class="authorize-form-input" id="comment-entry" cols="30" rows="10"
                           placeholder="make a nice comment please"></textarea>
                 <button class="authorize-form-button">COMMENT</button>
@@ -72,7 +74,7 @@ class CommentEditor extends HTMLElement {
     }
 }
 
-export function toggleReplyEditorVisibility(idParents: string, commentID: string) {
+export function toggleReplyEditorVisibility(parentId: string, commentID: string) {
     let editor = document.querySelector(`#${commentID} .content .actions comment-editor`);
 
     if (editor === undefined || editor === null) {
@@ -80,7 +82,8 @@ export function toggleReplyEditorVisibility(idParents: string, commentID: string
 
         editor = document.createElement('comment-editor');
         editor.setAttribute('username', username);
-        editor.setAttribute('id-parents', idParents);
+        editor.setAttribute('thread-id', parentId.split('-')[0]);
+        editor.setAttribute('parent-id', parentId);
 
         commentActions.appendChild(editor)
     } else {

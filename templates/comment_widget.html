@@ -9,10 +9,6 @@
     <div class="body markdown">
       {{ comment.body_html }}
     </div>
-    {% if has_more_children %}
-    <a style="font-weight:bold" href="">CONTINIUE
-      ➡</a>
-    {% else %}
     <ul class="actions">
       <li>
         <a onclick="acolyte.toggleReplyEditorVisibility('{{ comment.id_parents }}', '{{ comment.id }}')">Reply</a>
@@ -22,6 +18,5 @@
     {% for node in children %}
     {{ node.render().unwrap() }}
     {% endfor %}
-    {% endif %}
   </div>
 </div>

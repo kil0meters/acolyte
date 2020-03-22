@@ -20,18 +20,67 @@ pub fn get_commnet_tree_from_parent(
         .order_by(length(comments::id))
         .load::<Comment>(conn)?;
 
-    let first = match comments.get(0) {
-        Some(x) => x,
-        None => return Err(anyhow!("No comments")),
-    };
+    let tree = build_tree(comments);
+    Ok(tree)
+}
 
-    let comment_tree = CommentWidget {
-        comment: first.to_owned(),
-        has_more_children: false,
-        children: vec![],
-    };
+// this is probably poorly written, but is still significantly better than
+// than doing recursive sql loops
+fn build_tree(comments: Vec<Comment>) -> Vec<CommentWidget> {
+    // end recursion
+    if comments.len() == 0 {
+        return Vec::new();
+    }
 
-    Ok(vec![comment_tree])
+    let mut tree = Vec::new();
+    let mut current_shortest_length = usize::max_value();
+    for comment in comments {
+        println!("id: comment.id_parents");
+        let id_len = comment.id_parents.len();
+
+        if id_len <= current_shortest_length {
+            current_shortest_length = id_len;
+
+            tree.push(CommentWidget {
+                comment,
+                has_more_children: true,
+                children: Vec::new(),
+            });
+        } else {
+            for parent_element in &mut tree {
+                println!("1: {} 2: {}", comment.id_parents, parent_element.comment.id);
+
+                if comment
+                    .id_parents
+                    .starts_with(&parent_element.comment.id_parents)
+                {
+                    parent_element.children.push(CommentWidget {
+                        comment,
+                        has_more_children: true,
+                        children: Vec::new(),
+                    });
+
+                    break;
+                }
+            }
+        }
+    }
+
+    for mut element in &mut tree {
+        element.children = build_tree(
+            element
+                .children
+                .iter()
+                .map(|x| x.comment.clone())
+                .collect::<Vec<Comment>>(),
+        );
+
+        if element.children.len() == 0 {
+            element.has_more_children = false;
+        }
+    }
+
+    tree
 }
 
 pub fn create_new_comment(
