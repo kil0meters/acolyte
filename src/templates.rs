@@ -104,3 +104,10 @@ pub struct NotFound<'a> {
 pub struct Unauthorized<'a> {
     pub header_links: &'a [HeaderLink<'a>],
 }
+
+#[derive(Template, Debug)]
+#[template(path = "stream_embed.html")]
+pub struct StreamEmbed<'a> {
+    pub user: models::User,
+    pub channel_id: &'a str,
+}

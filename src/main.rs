@@ -256,6 +256,7 @@ async fn main() -> std::io::Result<()> {
                     .data(pool.clone())
                     .data(srv.clone())
                     .service(frontpage::index)
+                    .service(frontpage::stream_embed)
                     .service(auth::login)
                     .service(auth::login_form)
                     .service(auth::signup)

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Live{% endblock %}
+
+{% block body %}
+
+<body>
+  <div id="livestream-grid">
+    <div id="livestream-header">
+      <a class="logo" href="/">Miles Benton</a>
+      <a class="subscribe-button" href="https://youtube.com/channel/{{ channel_id }}?sub_confirmation=1">SUBSCRIBE</a>
+    </div>
+    <div class="livestream-left">
+      <iframe src="https://www.youtube-nocookie.com/embed/live_stream?channel={{ channel_id }}&modestbranding=1"
+        allowfullscreen></iframe>
+    </div>
+    <div class="livestream-right">
+      {% include "chat_embed.html" %}
+    </div>
+  </div>
+</body>
+
+{% endblock %}

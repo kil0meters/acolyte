@@ -35,7 +35,6 @@ fn build_tree(comments: Vec<Comment>) -> Vec<CommentWidget> {
     let mut tree = Vec::new();
     let mut current_shortest_length = usize::max_value();
     for comment in comments {
-        println!("id: comment.id_parents");
         let id_len = comment.id_parents.len();
 
         if id_len <= current_shortest_length {
@@ -48,8 +47,6 @@ fn build_tree(comments: Vec<Comment>) -> Vec<CommentWidget> {
             });
         } else {
             for parent_element in &mut tree {
-                println!("1: {} 2: {}", comment.id_parents, parent_element.comment.id);
-
                 if comment
                     .id_parents
                     .starts_with(&parent_element.comment.id_parents)
