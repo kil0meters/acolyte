@@ -28,7 +28,7 @@ pub async fn ws_upgrader(
         session::Client {
             id: 0,
             username: user.username,
-            auth_level: permissions::LOGGED_OUT,
+            auth_level: user.permissions,
             hb: time::Instant::now(),
             conn: srv.get_ref().clone(),
         },

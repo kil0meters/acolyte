@@ -9,6 +9,14 @@ use uuid::Uuid;
 #[rtype(result = "()")]
 pub struct Broadcast(pub String);
 
+/// Struct containing data for a message sent through the live chat.
+///
+/// ```rust
+/// pub username: String,
+/// pub date: time::SystemTime,
+/// pub id: Uuid,
+/// pub text: String,
+/// ```
 #[derive(Debug, Message, Serialize, Deserialize)]
 #[rtype(result = "()")]
 pub struct ChatMessage {
@@ -30,6 +38,14 @@ pub struct Disconnect {
     pub id: usize,
 }
 
+/// A struct representing a parsed command structure
+/// (any chat message starting with "/")
+///
+/// ```rust
+/// pub from: String,
+/// pub name: String,
+/// pub args: Vec<String>
+/// ```
 #[derive(Debug, Message)]
 #[rtype(result = "()")]
 pub struct Command {
@@ -37,4 +53,3 @@ pub struct Command {
     pub name: String,
     pub args: Vec<String>,
 }
-

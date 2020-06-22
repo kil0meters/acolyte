@@ -38,7 +38,6 @@ impl Handler<ChatMessage> for Server {
 
     fn handle(&mut self, msg: ChatMessage, _: &mut Context<Self>) {
         let m = serde_json::to_string(&msg).unwrap();
-
         self.broadcast_message(m);
     }
 }
