@@ -12,6 +12,7 @@ use crate::auth::permissions::{self, AuthLevel, Permission};
 const HEARTBEAT_INTERVAL: time::Duration = time::Duration::from_secs(5);
 const CLIENT_TIMEOUT: time::Duration = time::Duration::from_secs(10);
 
+#[derive(Debug, Clone)]
 pub struct Client {
     pub id: usize,
 
@@ -35,6 +36,7 @@ impl Actor for Client {
         let addr = ctx.address();
         self.conn
             .send(Connect {
+                client: self.clone().to_owned(),
                 addr: addr.recipient(),
             })
             .into_actor(self)
@@ -83,20 +85,17 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Client {
                 debug!("[{}] {}", self.username, m);
 
                 if m.starts_with('/') {
+                    self.conn
+                        .do_send(ChatCommand::new(self.clone().to_owned(), &m));
                 }
                 // test if a user is logged in before broadcasting
                 else if self.auth_level.at_least(permissions::STANDARD) {
                     // make sure message does not exceed maximum length
-                    if text.trim().len() > 5000 {
+                    if m.len() > 5000 {
                         return;
                     }
 
-                    self.conn.do_send(ChatMessage {
-                        username: self.username.clone(),
-                        id: Uuid::new_v4(),
-                        date: time::SystemTime::now(),
-                        text: text.trim().to_owned(),
-                    });
+                    self.conn.do_send(ChatMessage::new(&self.username, &m));
                 }
             }
             // ws::Message::Binary(bin) => ctx.binary(bin),

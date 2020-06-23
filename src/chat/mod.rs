@@ -6,11 +6,11 @@ use actix_web::{get, web, Error, HttpRequest, HttpResponse};
 use actix_web_actors::ws;
 use askama::Template;
 
-use crate::auth::permissions;
 use crate::models::User;
 use crate::serve_template;
 use crate::templates;
 
+pub mod commands;
 pub mod message_types;
 pub mod server;
 pub mod session;
