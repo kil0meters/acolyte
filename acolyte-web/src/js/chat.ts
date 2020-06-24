@@ -2,14 +2,14 @@ import { getEmotes, replaceTextWithEmotes } from "./emotes";
 import { Message, MessageList } from "./messageList";
 import { UserList } from "./userList";
 import { Autocompletion } from "./autocompletion";
+import * as permissions from "./permissions";
 
 export class MBChat {
   websocketLocation: string;
   conn: WebSocket;
 
   username: string;
-  moderatorPerms: boolean;
-  authorized: boolean = true;
+  permissions: Number = permissions.LOGGED_OUT;
   timeoutInterval: number;
 
   maxHeight: number;
@@ -24,18 +24,11 @@ export class MBChat {
     websocketLocation: string,
     maxHeight: number,
     noEntry: boolean,
-    username: string,
-    moderatorPerms: boolean
+    username: string
   ) {
     this.websocketLocation = websocketLocation;
 
-    this.moderatorPerms = moderatorPerms === true;
-    this.messageList = new MessageList(
-      "message-list",
-      maxHeight,
-      username,
-      this.moderatorPerms
-    );
+    this.messageList = new MessageList("message-list", maxHeight, username);
 
     this.maxHeight = maxHeight;
     this.conn = new WebSocket(websocketLocation);
@@ -82,9 +75,13 @@ export class MBChat {
           this.userList.add(username);
         }
         this.autocompletionHelper.setUsers(this.userList.list);
-      } else if (message.username === "unauthorized") {
-        this.authorized = false;
+      } else if (message.username === "permission-level") {
+        this.permissions = Number(message.text);
+        this.messageList.setPermissions(this.permissions);
+      } else if (message.username === "remove-message") {
+        this.messageList.removeByID(message.text);
       } else {
+        console.log(message);
         this.messageList.push(message);
       }
     });
@@ -126,7 +123,7 @@ export class MBChat {
         if (event.key === "Enter" && !event.shiftKey) {
           event.preventDefault();
 
-          if (this.authorized) {
+          if (this.permissions <= permissions.STANDARD) {
             let entry = <HTMLInputElement>document.getElementById("entry-body");
             this.sendMessage(entry.value);
 
